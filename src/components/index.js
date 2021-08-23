@@ -1,4 +1,4 @@
-<!--
+/*
     Pangsworth Info Butler. At your service anywhere in Madrigal.
     Copyright (C) 2021  https://github.com/robolivable
 
@@ -16,19 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
     You can contact the author by email at robolivable@gmail.com.
--->
-<!doctype html>
-<html>
+*/
+import World from './world'
+import Classes from './classes'
+import Monsters from './monsters'
+import Items from './items'
+import EquipmentSet from './equipment-set'
+import Skills from './skills'
+import NPCs from './npcs'
 
-<body>
-  <!-- Fonts to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-  <!-- Icons to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="stylesheet" href="popup.css" />
-  <div id="root"></div>
-  <script src="../build/bundle.js"></script>
-  <script src="popup.js"></script>
-</body>
-
-</html>
+export {
+  World,
+  Classes,
+  Monsters,
+  Items,
+  EquipmentSet,
+  Skills,
+  NPCs
+}

@@ -1,4 +1,4 @@
-<!--
+/*
     Pangsworth Info Butler. At your service anywhere in Madrigal.
     Copyright (C) 2021  https://github.com/robolivable
 
@@ -16,19 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
     You can contact the author by email at robolivable@gmail.com.
--->
-<!doctype html>
-<html>
+*/
+import React from 'react'
 
-<body>
-  <!-- Fonts to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-  <!-- Icons to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="stylesheet" href="popup.css" />
-  <div id="root"></div>
-  <script src="../build/bundle.js"></script>
-  <script src="popup.js"></script>
-</body>
-
-</html>
+export default function NPCs () {
+  return (
+    <div>TODO</div>
+  )
+}
