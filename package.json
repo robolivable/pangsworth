@@ -15,6 +15,16 @@
   "dependencies": {
     "material-ui": "^0.20.2",
     "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "standard": {
+    "ignore": [
+      "build"
+    ],
+    "parser": "babel-eslint"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "standard": "^16.0.3"
   }
 }
