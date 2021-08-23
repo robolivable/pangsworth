@@ -27,11 +27,8 @@ const BUNDLE_NAME = 'bundle.js'
 
 const PATHS = {
   build: 'build',
-  images: 'images',
-  lib: 'lib',
   nodeModules: 'node_modules',
-  src: 'src',
-  static: 'static'
+  src: 'src'
 }
 
 const projectPath = (...args) => path.resolve(__dirname, ...args)

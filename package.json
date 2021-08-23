@@ -2,9 +2,6 @@
   "name": "pangsworth",
   "version": "1.0.0",
   "description": "Pangsworth at your service anywhere in Madrigal.",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "build": "webpack",
     "build-release": "NODE_ENV=production npm run build",

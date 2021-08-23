@@ -7,9 +7,9 @@
   },
   "action": {
     "default_icon": {
-      "16": "images/icon16.png",
-      "24": "images/icon24.png",
-      "32": "images/icon32.png"
+      "16": "static/images/icon16.png",
+      "24": "static/images/icon24.png",
+      "32": "static/images/icon32.png"
     },
     "default_title": "Pangsworth",
     "default_popup": "static/popup.html"
