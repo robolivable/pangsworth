@@ -19,8 +19,40 @@
 */
 import React from 'react'
 
-export default function Skills () {
-  return (
-    <div>TODO</div>
-  )
+import { SvgIcon } from '@material-ui/core'
+
+import { PangNavigationButton } from './common'
+import EnlightenmentIcon from '../../static/images/enlightenment.svg'
+
+export default class Skills extends React.Component {
+  render () {
+    return (
+      <div>TODO Skills</div>
+    )
+  }
 }
+
+Skills.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="Skills"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={EnlightenmentIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('skills, yay!')
+  }
+}
+
+Skills.NAVIGATION = 'skills'

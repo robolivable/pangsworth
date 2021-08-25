@@ -18,9 +18,40 @@
     You can contact the author by email at robolivable@gmail.com.
 */
 import React from 'react'
+import { SvgIcon } from '@material-ui/core'
 
-export default function Classes () {
-  return (
-    <div>TODO</div>
-  )
+import { PangNavigationButton } from './common'
+import FamilyTreeIcon from '../../static/images/family-tree.svg'
+
+export default class Classes extends React.Component {
+  render () {
+    return (
+      <div>TODO Classes</div>
+    )
+  }
 }
+
+Classes.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="Classes"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={FamilyTreeIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('classes, yay!')
+  }
+}
+
+Classes.NAVIGATION = 'classes'

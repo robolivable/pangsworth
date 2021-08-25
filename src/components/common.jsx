@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export function ReactiveDrawer (props) {
+export function PangReactiveDrawer (props) {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
 
@@ -88,13 +88,23 @@ export function ReactiveDrawer (props) {
       </IconButton>
       <Divider />
       <List>
-        {props.items.map(([text, IconComp], index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{React.createElement(IconComp, {})}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        {props.items}
       </List>
     </Drawer>
+  )
+}
+
+export function PangNavigationButton (props) {
+  const SvgIcon = props.children
+  SvgIcon.props.viewBox = "0 0 500 476.6"
+  return (
+    <ListItem button
+      title={props.name}
+      key={props.name}
+      onClick={props._handleNavigationChange(props.onClick)}
+    >
+      <ListItemIcon>{SvgIcon}</ListItemIcon>
+      <ListItemText primary={props.name} />
+    </ListItem>
   )
 }

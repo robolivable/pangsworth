@@ -25,12 +25,15 @@ import EquipmentSet from './equipment-set'
 import Skills from './skills'
 import NPCs from './npcs'
 
-export {
-  World,
-  Classes,
-  Monsters,
-  Items,
-  EquipmentSet,
-  Skills,
-  NPCs
+const Navigation = {
+  [World.NAVIGATION]: World,
+  [Monsters.NAVIGATION]: Monsters,
+  [Items.NAVIGATION]: Items,
+  [EquipmentSet.NAVIGATION]: EquipmentSet,
+  [Classes.NAVIGATION]: Classes,
+  [Skills.NAVIGATION]: Skills,
+  [NPCs.NAVIGATION]: NPCs,
 }
+Object.defineProperty(Navigation, 'default', { get: () => World.NAVIGATION })
+
+export default Navigation

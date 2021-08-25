@@ -18,9 +18,40 @@
     You can contact the author by email at robolivable@gmail.com.
 */
 import React from 'react'
+import { SvgIcon } from '@material-ui/core'
 
-export default function World () {
-  return (
-    <div>TODO</div>
-  )
+import { PangNavigationButton } from './common'
+import MountainsIcon from '../../static/images/mountains.svg'
+
+export default class World extends React.Component {
+  render () {
+    return (
+      <div>TODO World</div>
+    )
+  }
 }
+
+World.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="World"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={MountainsIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('world, yay!')
+  }
+}
+
+World.NAVIGATION = 'world'

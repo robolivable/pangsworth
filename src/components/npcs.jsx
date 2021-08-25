@@ -19,8 +19,40 @@
 */
 import React from 'react'
 
-export default function NPCs () {
-  return (
-    <div>TODO</div>
-  )
+import { SvgIcon } from '@material-ui/core'
+
+import { PangNavigationButton } from './common'
+import BlacksmithIcon from '../../static/images/blacksmith.svg'
+
+export default class NPCs extends React.Component {
+  render () {
+    return (
+      <div>TODO NPCs</div>
+    )
+  }
 }
+
+NPCs.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="NPCs"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={BlacksmithIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('npcs, yay!')
+  }
+}
+
+NPCs.NAVIGATION = 'npcs'

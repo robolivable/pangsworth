@@ -19,8 +19,40 @@
 */
 import React from 'react'
 
-export default function Items () {
-  return (
-    <div>TODO</div>
-  )
+import { SvgIcon } from '@material-ui/core'
+
+import { PangNavigationButton } from './common'
+import BagIcon from '../../static/images/swap-bag.svg'
+
+export default class Items extends React.Component {
+  render () {
+    return (
+      <div>TODO Items</div>
+    )
+  }
 }
+
+Items.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="Items"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={BagIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('items, yay!')
+  }
+}
+
+Items.NAVIGATION = 'items'

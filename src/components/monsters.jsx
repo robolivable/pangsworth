@@ -19,8 +19,40 @@
 */
 import React from 'react'
 
-export default function Monsters () {
-  return (
-    <div>TODO</div>
-  )
+import { SvgIcon } from '@material-ui/core'
+
+import { PangNavigationButton } from './common'
+import MimicChestIcon from '../../static/images/mimic-chest.svg'
+
+export default class Monsters extends React.Component {
+  render () {
+    return (
+      <div>TODO Monsters</div>
+    )
+  }
 }
+
+Monsters.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="Monsters"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={MimicChestIcon} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('monsters, yay!')
+  }
+}
+
+Monsters.NAVIGATION = 'monsters'

@@ -19,8 +19,40 @@
 */
 import React from 'react'
 
-export default function EquipmentSet () {
-  return (
-    <div>TODO</div>
-  )
+import { SvgIcon } from '@material-ui/core'
+
+import { PangNavigationButton } from './common'
+import BattleGear from '../../static/images/battle-gear.svg'
+
+export default class EquipmentSet extends React.Component {
+  render () {
+    return (
+      <div>TODO Equipment set</div>
+    )
+  }
 }
+
+EquipmentSet.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationButton
+        name="Equipment Set"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={BattleGear} />
+      </PangNavigationButton>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('equipment set, yay!')
+  }
+}
+
+EquipmentSet.NAVIGATION = 'equipmentSet'

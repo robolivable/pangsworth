@@ -46,6 +46,10 @@ const config = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack']
       }
     ]
   },
@@ -65,6 +69,10 @@ if (process.env.NODE_ENV === 'production') {
   )
   config.plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
   config.plugins.push(new webpack.HashedModuleIdsPlugin())
+} else {
+  config.plugins.push(
+    new webpack.SourceMapDevToolPlugin()
+  )
 }
 
 module.exports = config

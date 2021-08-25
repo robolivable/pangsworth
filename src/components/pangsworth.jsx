@@ -25,8 +25,8 @@ import Typography from '@material-ui/core/Typography'
 import InboxIcon from '@material-ui/icons/MoveToInbox'
 import MailIcon from '@material-ui/icons/Mail'
 
-import Navigation from './'
-import { ReactiveDrawer } from './common'
+import Navigation from './index'
+import { PangReactiveDrawer } from './common'
 
 const RootDiv = styled('div')(() => ({
   display: 'flex'
@@ -40,39 +40,38 @@ const Main = styled('main')(({ theme }) => ({
 export default class Pangsworth extends React.Component {
   constructor (...args) {
     super(...args)
+    this._handleNavigationChange = this._handleNavigationChange.bind(this)
     this.state = {
+      navigation: Navigation.default
     }
   }
 
   render () {
+    const items = Object.values(Navigation).map(
+      Pangponent => ([Pangponent.Button, Pangponent.NAVIGATION])
+    )
     return (
       <RootDiv>
         <CssBaseline />
-        <ReactiveDrawer items={[
-          ['Inbox', MailIcon],
-          ['Starred', InboxIcon],
-          ['Send email', MailIcon],
-          ['Drafts', InboxIcon]
-        ]}
-        />
+        <PangReactiveDrawer items={items.map(([Pangponent, navigation]) => (
+          <Pangponent _handleNavigationChange={
+            this._handleNavigationChange(navigation)
+          } />
+        ))}/>
         <Main>
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-            dolor purus non enim praesent elementum facilisis leo vel. Risus at
-            ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-            quisque non tellus. Convallis convallis tellus id interdum velit
-            laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-            adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-            integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-            eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-            quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-            vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-            lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-            faucibus et molestie ac.
-          </Typography>
+          {React.createElement(Navigation[this.state.navigation], {})}
         </Main>
       </RootDiv>
     )
+  }
+
+  _handleNavigationChange (navigation) {
+    return (fn) => (e) => {
+      this.setState({ navigation })
+      if (typeof fn !== 'function') {
+        return
+      }
+      return fn(e)
+    }
   }
 }
