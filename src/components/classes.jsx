@@ -20,7 +20,7 @@
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import FamilyTreeIcon from '../../static/images/family-tree.svg'
 
 export default class Classes extends React.Component {
@@ -39,13 +39,13 @@ Classes.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="Classes"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={FamilyTreeIcon} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 

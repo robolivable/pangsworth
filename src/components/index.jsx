@@ -17,42 +17,28 @@
 
     You can contact the author by email at robolivable@gmail.com.
 */
-import React from 'react'
+import World from './world'
+import Classes from './classes'
+import Monsters from './monsters'
+import Items from './items'
+import EquipmentSet from './equipment-set'
+import Skills from './skills'
+import NPCs from './npcs'
+import Settings from './settings'
 
-import { SvgIcon } from '@material-ui/core'
-
-import { PangNavigationItem } from './common'
-import BagIcon from '../../static/images/swap-bag.svg'
-
-export default class Items extends React.Component {
-  render () {
-    return (
-      <div>TODO Items</div>
-    )
-  }
+const Navigation = {
+  [World.NAVIGATION]: World,
+  [Monsters.NAVIGATION]: Monsters,
+  [Items.NAVIGATION]: Items,
+  [EquipmentSet.NAVIGATION]: EquipmentSet,
+  [Classes.NAVIGATION]: Classes,
+  [Skills.NAVIGATION]: Skills,
+  [NPCs.NAVIGATION]: NPCs,
 }
+Object.defineProperty(Navigation, 'default', { get: () => World.NAVIGATION })
 
-Items.Button = class extends React.Component {
-  constructor (...args) {
-    super(...args)
-    this._handleOnClick = this._handleOnClick.bind(this)
-  }
+// NOTE: settings component exported differently to bypass dynamic
+// loading
+Object.defineProperty(Navigation, 'settings', { get: () => Settings })
 
-  render () {
-    return (
-      <PangNavigationItem
-        name="Items"
-        onClick={this._handleOnClick}
-        {...this.props}
-      >
-        <SvgIcon component={BagIcon} />
-      </PangNavigationItem>
-    )
-  }
-
-  _handleOnClick () {
-    console.log('items, yay!')
-  }
-}
-
-Items.NAVIGATION = 'items'
+export default Navigation

@@ -19,7 +19,7 @@
 */
 import React from 'react'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, styled } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerOpen: {
     width: drawerWidth,
+    overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
@@ -55,6 +56,12 @@ const useStyles = makeStyles((theme) => ({
       width: theme.spacing(7) + 1
     }
   }
+}))
+
+const NavigationFooterDiv = styled('div')(() => ({
+  position: 'absolute',
+  bottom: 0,
+  width: '-webkit-fill-available',
 }))
 
 export function PangReactiveDrawer (props) {
@@ -90,11 +97,17 @@ export function PangReactiveDrawer (props) {
       <List>
         {props.items}
       </List>
+      <NavigationFooterDiv>
+        <Divider />
+        <List>
+          {props.settingsItem}
+        </List>
+      </NavigationFooterDiv>
     </Drawer>
   )
 }
 
-export function PangNavigationButton (props) {
+export function PangNavigationItem (props) {
   const SvgIcon = props.children
   SvgIcon.props.viewBox = "0 0 500 476.6"
   return (

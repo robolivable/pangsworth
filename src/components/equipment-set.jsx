@@ -21,7 +21,7 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import BattleGear from '../../static/images/battle-gear.svg'
 
 export default class EquipmentSet extends React.Component {
@@ -40,13 +40,13 @@ EquipmentSet.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="Equipment Set"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={BattleGear} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 

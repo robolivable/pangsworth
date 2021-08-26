@@ -20,7 +20,7 @@
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import MountainsIcon from '../../static/images/mountains.svg'
 
 export default class World extends React.Component {
@@ -39,13 +39,13 @@ World.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="World"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={MountainsIcon} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 

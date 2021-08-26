@@ -22,9 +22,6 @@ import { styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Typography from '@material-ui/core/Typography'
 
-import InboxIcon from '@material-ui/icons/MoveToInbox'
-import MailIcon from '@material-ui/icons/Mail'
-
 import Navigation from './index'
 import { PangReactiveDrawer } from './common'
 
@@ -53,11 +50,18 @@ export default class Pangsworth extends React.Component {
     return (
       <RootDiv>
         <CssBaseline />
-        <PangReactiveDrawer items={items.map(([Pangponent, navigation]) => (
-          <Pangponent _handleNavigationChange={
-            this._handleNavigationChange(navigation)
-          } />
-        ))}/>
+        <PangReactiveDrawer
+          items={items.map(([Pangponent, navigation]) => (
+            <Pangponent _handleNavigationChange={
+              this._handleNavigationChange(navigation)
+            } />
+          ))}
+          settingsItem={React.createElement(Navigation.settings.Button, {
+            _handleNavigationChange: this._handleNavigationChange(
+              Navigation.settings.NAVIGATION
+            )
+          })}
+        />
         <Main>
           {React.createElement(Navigation[this.state.navigation], {})}
         </Main>

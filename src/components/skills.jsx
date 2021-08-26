@@ -21,7 +21,7 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 
 export default class Skills extends React.Component {
@@ -40,13 +40,13 @@ Skills.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="Skills"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={EnlightenmentIcon} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 

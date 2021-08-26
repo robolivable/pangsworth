@@ -21,7 +21,7 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import BlacksmithIcon from '../../static/images/blacksmith.svg'
 
 export default class NPCs extends React.Component {
@@ -40,13 +40,13 @@ NPCs.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="NPCs"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={BlacksmithIcon} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 

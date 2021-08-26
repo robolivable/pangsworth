@@ -17,23 +17,41 @@
 
     You can contact the author by email at robolivable@gmail.com.
 */
-import World from './world'
-import Classes from './classes'
-import Monsters from './monsters'
-import Items from './items'
-import EquipmentSet from './equipment-set'
-import Skills from './skills'
-import NPCs from './npcs'
+import React from 'react'
+import { SvgIcon } from '@material-ui/core'
 
-const Navigation = {
-  [World.NAVIGATION]: World,
-  [Monsters.NAVIGATION]: Monsters,
-  [Items.NAVIGATION]: Items,
-  [EquipmentSet.NAVIGATION]: EquipmentSet,
-  [Classes.NAVIGATION]: Classes,
-  [Skills.NAVIGATION]: Skills,
-  [NPCs.NAVIGATION]: NPCs,
+import { PangNavigationItem } from './common'
+import CogIcon from '../../static/images/cog.svg'
+
+export default class Settings extends React.Component {
+  render () {
+    return (
+      <div>TODO Settings</div>
+    )
+  }
 }
-Object.defineProperty(Navigation, 'default', { get: () => World.NAVIGATION })
 
-export default Navigation
+Settings.Button = class extends React.Component {
+  constructor (...args) {
+    super(...args)
+    this._handleOnClick = this._handleOnClick.bind(this)
+  }
+
+  render () {
+    return (
+      <PangNavigationItem
+        name="Settings"
+        onClick={this._handleOnClick}
+        {...this.props}
+      >
+        <SvgIcon component={CogIcon} />
+      </PangNavigationItem>
+    )
+  }
+
+  _handleOnClick () {
+    console.log('settings, yay!')
+  }
+}
+
+Settings.NAVIGATION = 'settings'

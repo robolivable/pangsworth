@@ -21,7 +21,7 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
-import { PangNavigationButton } from './common'
+import { PangNavigationItem } from './common'
 import MimicChestIcon from '../../static/images/mimic-chest.svg'
 
 export default class Monsters extends React.Component {
@@ -40,13 +40,13 @@ Monsters.Button = class extends React.Component {
 
   render () {
     return (
-      <PangNavigationButton
+      <PangNavigationItem
         name="Monsters"
         onClick={this._handleOnClick}
         {...this.props}
       >
         <SvgIcon component={MimicChestIcon} />
-      </PangNavigationButton>
+      </PangNavigationItem>
     )
   }
 
