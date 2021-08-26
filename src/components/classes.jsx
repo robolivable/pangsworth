@@ -17,6 +17,7 @@
 
     You can contact the author by email at robolivable@gmail.com.
 */
+/* eslint-disable react/jsx-handler-names */
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 
@@ -40,7 +41,7 @@ Classes.Button = class extends React.Component {
   render () {
     return (
       <PangNavigationItem
-        name="Classes"
+        name='Classes'
         onClick={this._handleOnClick}
         {...this.props}
       >

@@ -20,7 +20,6 @@
 import React from 'react'
 import { styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import Typography from '@material-ui/core/Typography'
 
 import Navigation from './index'
 import { PangReactiveDrawer } from './common'
@@ -52,9 +51,11 @@ export default class Pangsworth extends React.Component {
         <CssBaseline />
         <PangReactiveDrawer
           items={items.map(([Pangponent, navigation]) => (
-            <Pangponent _handleNavigationChange={
+            <Pangponent
+              key={navigation} _handleNavigationChange={
               this._handleNavigationChange(navigation)
-            } />
+            }
+            />
           ))}
           settingsItem={React.createElement(Navigation.settings.Button, {
             _handleNavigationChange: this._handleNavigationChange(

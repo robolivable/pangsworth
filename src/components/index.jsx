@@ -33,7 +33,7 @@ const Navigation = {
   [EquipmentSet.NAVIGATION]: EquipmentSet,
   [Classes.NAVIGATION]: Classes,
   [Skills.NAVIGATION]: Skills,
-  [NPCs.NAVIGATION]: NPCs,
+  [NPCs.NAVIGATION]: NPCs
 }
 Object.defineProperty(Navigation, 'default', { get: () => World.NAVIGATION })
 

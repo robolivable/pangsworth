@@ -9,8 +9,8 @@ module.exports = {
         ids: () => '/class',
         getById: id => `/class/${id}`,
         getByIds: ids => `/class/${ids.join()}`,
-        image: (style, fileName) => `/image/class/${style}/${fileName}`,
-      },
+        image: (style, fileName) => `/image/class/${style}/${fileName}`
+      }
     },
     world: {
       name: 'world',
@@ -19,8 +19,8 @@ module.exports = {
         ids: () => '/world',
         getById: id => `/world/${id}`,
         getByIds: ids => `/world/${ids.join()}`,
-        image: (tileName, tileX, tileY) => `/image/world/${tileName}${tileX}-${tileY}-0.png`,
-      },
+        image: (tileName, tileX, tileY) => `/image/world/${tileName}${tileX}-${tileY}-0.png`
+      }
     },
     monsters: {
       name: 'monsters',
@@ -29,8 +29,8 @@ module.exports = {
         ids: () => '/monster',
         getById: id => `/monster/${id}`,
         getByIds: ids => `/monster/${ids.join()}`,
-        image: fileName => `/image/monster/${fileName}`,
-      },
+        image: fileName => `/image/monster/${fileName}`
+      }
     },
     items: {
       name: 'items',
@@ -39,8 +39,8 @@ module.exports = {
         ids: () => '/item',
         getById: id => `/item/${id}`,
         getByIds: ids => `/item/${ids.join()}`,
-        image: fileName => `/image/class/${fileName}`,
-      },
+        image: fileName => `/image/class/${fileName}`
+      }
     },
     equipmentSets: {
       name: 'equipmentSets',
@@ -48,8 +48,8 @@ module.exports = {
       api: {
         ids: () => '/equipset',
         getById: id => `/equipset/${id}`,
-        getByIds: ids => `/equipset/${ids.join()}`,
-      },
+        getByIds: ids => `/equipset/${ids.join()}`
+      }
     },
     skills: {
       name: 'skills',
@@ -58,8 +58,8 @@ module.exports = {
         ids: () => '/skill',
         getById: id => `/skill/${id}`,
         getByIds: ids => `/skill/${ids.join()}`,
-        image: (style, fileName) => `/image/skill/${style}/${fileName}`,
-      },
+        image: (style, fileName) => `/image/skill/${style}/${fileName}`
+      }
     },
     npcs: {
       name: 'npcs',
@@ -68,9 +68,9 @@ module.exports = {
         ids: () => '/npc',
         getById: id => `/npc/${id}`,
         getByIds: ids => `/npc/${ids.join()}`,
-        image: fileName => `/image/npc/${fileName}`,
-      },
-    }
+        image: fileName => `/image/npc/${fileName}`
+      }
+    },
     versions: {
       name: 'versions',
       cache: true,

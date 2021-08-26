@@ -8,7 +8,7 @@ const dbMigration = idb.open(config.CACHE_NAME, config.CACHE_VERSION, db => {
         if (!resourceType.cache) {
           continue
         }
-        db.createObjectStore(resourceType.name, {keyPath: 'id'})
+        db.createObjectStore(resourceType.name, { keyPath: 'id' })
       }
   }
 })
@@ -33,7 +33,7 @@ class Cache {
     return tx.complete
   }
 
-  query () { /*TODO: indexes/queries */ }
+  query () { /* TODO: indexes/queries */ }
 
   static async withIndexedDb () {
     if (!SingletonDb) {

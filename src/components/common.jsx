@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 const NavigationFooterDiv = styled('div')(() => ({
   position: 'absolute',
   bottom: 0,
-  width: '-webkit-fill-available',
+  width: '-webkit-fill-available'
 }))
 
 export function PangReactiveDrawer (props) {
@@ -109,9 +109,10 @@ export function PangReactiveDrawer (props) {
 
 export function PangNavigationItem (props) {
   const SvgIcon = props.children
-  SvgIcon.props.viewBox = "0 0 500 476.6"
+  SvgIcon.props.viewBox = '0 0 500 476.6'
   return (
-    <ListItem button
+    <ListItem
+      button
       title={props.name}
       key={props.name}
       onClick={props._handleNavigationChange(props.onClick)}

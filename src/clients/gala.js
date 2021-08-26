@@ -17,10 +17,10 @@
 
     You can contact the author by email at robolivable@gmail.com.
 */
+const config = require('./config')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-retry')(nodeFetch, config.REQUEST_RETRY_OPTIONS)
 
-const config = require('./config')
 const Cache = require('./cache')
 
 class GalaResource {
@@ -33,7 +33,7 @@ class GalaResource {
       return
     }
     const cache = await Cache.withIndexedDb()
-    const {version, lastChecked} = await cache.get(
+    const { version, lastChecked } = await cache.get(
       config.API_RESOURCE_TYPES.versions, this.type.name
     )
     const skipHydrate = lastChecked &&
@@ -48,7 +48,7 @@ class GalaResource {
       return
     }
     const lastVersionCheck = Date.now()
-    const newVersion = {version: liveVersion, lastChecked: lastVersionCheck}
+    const newVersion = { version: liveVersion, lastChecked: lastVersionCheck }
     await cache.set(
       config.API_RESOURCE_TYPES.versions, this.type.name, newVersion
     )
@@ -66,9 +66,9 @@ class GalaResource {
     }
 
     return cache
-  } 
+  }
 
-  get (key) {
+  async get (key) {
     if (!this.type.cache) {
       const resourceUri = this.type.api.get()
       const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
@@ -92,3 +92,9 @@ class GameObject {
 }
 
 class GameObjectCollection {}
+
+module.exports = {
+  GalaResource,
+  GameObject,
+  GameObjectCollection
+}
