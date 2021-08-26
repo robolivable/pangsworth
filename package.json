@@ -16,6 +16,9 @@
     "@material-ui/icons": "^4.11.2",
     "@svgr/webpack": "^5.5.0",
     "clsx": "^1.1.1",
+    "fetch-retry": "^4.1.1",
+    "node-fetch": "^2.6.1",
+    "queue": "^6.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
