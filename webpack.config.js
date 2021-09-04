@@ -17,7 +17,6 @@
 
     You can contact the author by email at robolivable@gmail.com.
 */
-
 /* eslint-disable */
 const path = require('path')
 const webpack = require('webpack')
@@ -70,9 +69,7 @@ if (process.env.NODE_ENV === 'production') {
   config.plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
   config.plugins.push(new webpack.HashedModuleIdsPlugin())
 } else {
-  config.plugins.push(
-    new webpack.SourceMapDevToolPlugin()
-  )
+  config.plugins.push(new webpack.SourceMapDevToolPlugin())
 }
 
 module.exports = config

@@ -1,3 +1,23 @@
+/*
+    Pangsworth Info Butler. At your service anywhere in Madrigal.
+    Copyright (C) 2021  https://github.com/robolivable
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+    You can contact the author by email at robolivable@gmail.com.
+*/
+
 module.exports = {
   API_VERSION_CHECK_INTERVAL_MS: 3600 * 1000,
   API_BASE_URL: 'https://flyff-api.sniegu.fr',
@@ -5,6 +25,7 @@ module.exports = {
     classes: {
       name: 'classes',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/class',
         getById: id => `/class/${id}`,
@@ -15,6 +36,7 @@ module.exports = {
     world: {
       name: 'world',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/world',
         getById: id => `/world/${id}`,
@@ -25,6 +47,7 @@ module.exports = {
     monsters: {
       name: 'monsters',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/monster',
         getById: id => `/monster/${id}`,
@@ -35,6 +58,7 @@ module.exports = {
     items: {
       name: 'items',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/item',
         getById: id => `/item/${id}`,
@@ -45,6 +69,7 @@ module.exports = {
     equipmentSets: {
       name: 'equipmentSets',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/equipset',
         getById: id => `/equipset/${id}`,
@@ -54,6 +79,7 @@ module.exports = {
     skills: {
       name: 'skills',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/skill',
         getById: id => `/skill/${id}`,
@@ -64,6 +90,7 @@ module.exports = {
     npcs: {
       name: 'npcs',
       cache: true,
+      hydrate: true,
       api: {
         ids: () => '/npc',
         getById: id => `/npc/${id}`,
@@ -80,18 +107,21 @@ module.exports = {
     },
     languages: {
       name: 'languages',
+      cache: true,
       api: {
         get: () => '/language'
       }
     },
     places: {
       name: 'places',
+      cache: true,
       api: {
         image: fileName => `/image/place/${fileName}`
       }
     },
     elements: {
       name: 'elements',
+      cache: true,
       api: {
         image: (style, fileName) => `/image/element/${style}/${fileName}`
       }

@@ -1,45 +1,27 @@
-const config = require('./config')
-
-const dbMigration = idb.open(config.CACHE_NAME, config.CACHE_VERSION, db => {
-  switch (db.oldVersion) {
-    case 0:
-    case 1:
-      for (const resourceType of Object.values(config.API_RESOURCE_TYPES)) {
-        if (!resourceType.cache) {
-          continue
-        }
-        db.createObjectStore(resourceType.name, { keyPath: 'id' })
-      }
-  }
-})
-
-let SingletonDb
+const IndexedDb = require('./indexeddb')
 
 class Cache {
-  constructor (db) {
+  constructor (db, table) {
     this.db = db
+    this.table = table
   }
 
-  async get (type, key) {
-    const tx = this.db.transaction(type.name, 'readonly')
-    const store = tx.objectStore(type.name)
-    return store.get(key)
-  }
-
-  async set (type, value) {
-    const tx = this.db.transaction(type.name, 'readwrite')
-    const store = tx.objectStore(type.name)
-    store.put(value)
-    return tx.complete
+  async get (key) { return this.db.get(this.table, key) }
+  async getAll (...args) { return this.db.getAll(this.table, ...args) }
+  async set (key, value) {
+    const o = {}
+    if (Object.prototype.hasOwnProperty.call(value, 'id')) {
+      o.__id = value.id
+    }
+    const v = Object.assign(o, value, {id: key})
+    return this.db.set(this.table, v)
   }
 
   query () { /* TODO: indexes/queries */ }
 
-  static async withIndexedDb () {
-    if (!SingletonDb) {
-      SingletonDb = await dbMigration()
-    }
-    const cache = new Cache(SingletonDb)
+  static async withIndexedDb (table) {
+    const indexed = await IndexedDb.New()
+    const cache = new Cache(indexed, table)
     return cache
   }
 }
