@@ -19,6 +19,7 @@
 */
 
 module.exports = {
+  API_ID_FETCH_BATCH_SIZE: 1000,
   API_VERSION_CHECK_INTERVAL_MS: 3600 * 1000,
   API_BASE_URL: 'https://flyff-api.sniegu.fr',
   API_RESOURCE_TYPES: {

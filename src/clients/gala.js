@@ -27,7 +27,7 @@ const Cache = require('./cache')
 class GalaResource {
   constructor (name) { this.name = name }
 
-  static async _versionCasheMiss (versionKey) {
+  static async _versionCacheMiss (versionKey) {
     const versionCacheTable = config.API_RESOURCE_TYPES.versions.name
     const cache = await Cache.withIndexedDb(versionCacheTable)
     const verObj = await cache.get(versionKey)
@@ -61,27 +61,33 @@ class GalaResource {
 
   static async hydrateMainCacheObjects () {
     for (const [name, resource] of Object.entries(config.API_RESOURCE_TYPES)) {
-      if (!resource.type.hydrate || !resource.type.cache) {
+      if (!resource.hydrate || !resource.cache) {
         continue
       }
-      const cacheMiss = await GalaResource._versionCasheMiss(name)
+      const cacheMiss = await GalaResource._versionCacheMiss(name)
       if (!cacheMiss) {
         continue
       }
       const cache = await Cache.withIndexedDb(name)
-      const resourceIdsUri = resource.type.api.ids()
+      const resourceIdsUri = resource.api.ids()
       const resourceIdsUrl = `${config.API_BASE_URL}${resourceIdsUri}`
       const ids = await (await fetch(resourceIdsUrl)).json()
-      const resourceUri = resource.type.api.getByIds(ids)
-      const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
-      const resourcePayload = await (await fetch(resourceUrl)).json()
-      for (const value of resourcePayload) {
-        await cache.set(resourceUrl, value)
+      for (let i = 0; i < ids.length; i = i + config.API_ID_FETCH_BATCH_SIZE) {
+        const _ids = ids.slice(i, i + config.API_ID_FETCH_BATCH_SIZE)
+        const resourceUri = resource.api.getByIds(_ids)
+        const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
+        const resourcePayload = await (await fetch(resourceUrl)).json()
+        for (const value of resourcePayload) {
+          const singleResourceUri = resource.api.getById(value.id)
+          const singleResourceUrl = `${config.API_BASE_URL}${singleResourceUri}`
+          await cache.set(singleResourceUrl, value)
+        }
       }
     }
   }
 
-  async get (resourceUrl) {
+  async get (resourceUri) {
+    const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
     const cache = await Cache.withIndexedDb(this.name)
     const result = await cache.get(resourceUrl)
     const versionCacheMiss = GalaResource._versionCacheMiss(this.name)
@@ -116,58 +122,6 @@ class GalaResource {
   }
 }
 
-class GameObject {
-  constructor ({ name = '' }, props = {}) {
-    this.resource = new GalaResource(name)
-    this.props = props
-  }
-
-  get id () { return this.props.__id || this.props.id }
-  get resourceId () { throw new Error('must implement resourceId getter') }
-  get isEmpty () { return !Object.keys(this.props).length }
-
-  get (key) {
-    if (this.props[key] === undefined || this.props[key] === null) {
-      return null
-    }
-    return this.props[key]
-  }
-
-  async fetch () {
-    this.props = await this.resource.get(this.resourceId)
-  }
-}
-
-class GameObjectCollection {
-  constructor (clazz, { name = '' }) {
-    this.objectMap = {}
-    this.collection = []
-    this.resource = new GalaResource(name)
-  }
-
-  // eslint-disable-next-line
-  get (id) { return new this.clazz(this.collection[this.objectMap[id]]) }
-  * iter () {
-    for (const object of this.collection) {
-      yield new this.clazz(object) // eslint-disable-line
-    }
-  }
-
-  async fetch () {
-    this.collection = await this.resource.getAll()
-    for (const key in this.collection) {
-      const object = this.collection[key]
-      this.objectMap[object.__id || object.id] = key
-    }
-  }
-
-  get length () {
-    return this.collection.length
-  }
-}
-
 module.exports = {
-  GalaResource,
-  GameObject,
-  GameObjectCollection
+  GalaResource
 }
