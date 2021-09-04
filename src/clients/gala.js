@@ -31,6 +31,7 @@ class GalaResource {
     const versionCacheTable = config.API_RESOURCE_TYPES.versions.name
     const cache = await Cache.withIndexedDb(versionCacheTable)
     const verObj = await cache.get(versionKey)
+    let liveVersion
     if (verObj && verObj.lastChecked) {
       const versionCheckDelta = Date.now() - verObj.lastChecked
       const staleLocalVersionCheck =
@@ -42,7 +43,7 @@ class GalaResource {
 
       const liveVersionUri = config.API_RESOURCE_TYPES.versions.api.get()
       const liveVersionUrl = `${config.API_BASE_URL}${liveVersionUri}`
-      const liveVersion = await (await fetch(liveVersionUrl)).json()
+      liveVersion = await (await fetch(liveVersionUrl)).json()
       const staleVersion = verObj.version !== liveVersion
       if (!staleVersion) {
         return false
@@ -78,7 +79,6 @@ class GalaResource {
         await cache.set(resourceUrl, value)
       }
     }
-    return cache
   }
 
   async get (resourceUrl) {
@@ -117,7 +117,7 @@ class GalaResource {
 }
 
 class GameObject {
-  constructor ({name = ''}, props = {}) {
+  constructor ({ name = '' }, props = {}) {
     this.resource = new GalaResource(name)
     this.props = props
   }
@@ -139,16 +139,17 @@ class GameObject {
 }
 
 class GameObjectCollection {
-  constructor (clazz, {name = ''}) {
+  constructor (clazz, { name = '' }) {
     this.objectMap = {}
     this.collection = []
     this.resource = new GalaResource(name)
   }
 
+  // eslint-disable-next-line
   get (id) { return new this.clazz(this.collection[this.objectMap[id]]) }
   * iter () {
     for (const object of this.collection) {
-      yield new this.clazz(object)
+      yield new this.clazz(object) // eslint-disable-line
     }
   }
 

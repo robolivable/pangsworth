@@ -13,7 +13,7 @@ class Cache {
     if (Object.prototype.hasOwnProperty.call(value, 'id')) {
       o.__id = value.id
     }
-    const v = Object.assign(o, value, {id: key})
+    const v = Object.assign(o, value, { id: key })
     return this.db.set(this.table, v)
   }
 
