@@ -20,10 +20,11 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
 
-export default class Items extends React.Component {
+export default class Items extends BaseComponent {
   render () {
     return (
       <div>TODO Items</div>
@@ -31,16 +32,17 @@ export default class Items extends React.Component {
   }
 }
 
-Items.Button = class extends React.Component {
+Items.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:items:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='Items'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >

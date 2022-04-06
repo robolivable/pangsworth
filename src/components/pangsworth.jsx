@@ -19,6 +19,7 @@ import React from 'react'
 import { styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
+import BaseComponent from './base-component'
 import Navigation from './index'
 import { PangReactiveDrawer } from './common'
 
@@ -31,7 +32,7 @@ const Main = styled('main')(({ theme }) => ({
   padding: theme.spacing(3)
 }))
 
-export default class Pangsworth extends React.Component {
+export default class Pangsworth extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleNavigationChange = this._handleNavigationChange.bind(this)

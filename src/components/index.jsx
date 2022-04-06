@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+import Search from './search'
 import World from './world'
 import Classes from './classes'
 import Monsters from './monsters'
@@ -25,6 +26,7 @@ import NPCs from './npcs'
 import Settings from './settings'
 
 const Navigation = {
+  [Search.NAVIGATION]: Search,
   [World.NAVIGATION]: World,
   [Monsters.NAVIGATION]: Monsters,
   [Items.NAVIGATION]: Items,
@@ -33,7 +35,7 @@ const Navigation = {
   [Skills.NAVIGATION]: Skills,
   [NPCs.NAVIGATION]: NPCs
 }
-Object.defineProperty(Navigation, 'default', { get: () => World.NAVIGATION })
+Object.defineProperty(Navigation, 'default', { get: () => Search.NAVIGATION })
 
 // NOTE: settings component exported differently to bypass dynamic
 // loading

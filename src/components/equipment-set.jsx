@@ -20,10 +20,11 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import BattleGear from '../../static/images/battle-gear.svg'
 
-export default class EquipmentSet extends React.Component {
+export default class EquipmentSet extends BaseComponent {
   render () {
     return (
       <div>TODO Equipment set</div>
@@ -31,16 +32,17 @@ export default class EquipmentSet extends React.Component {
   }
 }
 
-EquipmentSet.Button = class extends React.Component {
+EquipmentSet.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:equipments:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='Equipment Set'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >

@@ -19,10 +19,16 @@
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import MountainsIcon from '../../static/images/mountains.svg'
 
-export default class World extends React.Component {
+export default class World extends BaseComponent {
+  constructor (...args) {
+    super(...args)
+    this.i18nKey = 'components:world'
+  }
+
   render () {
     return (
       <div>TODO World</div>
@@ -30,16 +36,17 @@ export default class World extends React.Component {
   }
 }
 
-World.Button = class extends React.Component {
+World.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:world:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='World'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >

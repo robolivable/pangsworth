@@ -20,10 +20,11 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 
-export default class Skills extends React.Component {
+export default class Skills extends BaseComponent {
   render () {
     return (
       <div>TODO Skills</div>
@@ -31,16 +32,17 @@ export default class Skills extends React.Component {
   }
 }
 
-Skills.Button = class extends React.Component {
+Skills.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:skills:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='Skills'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >

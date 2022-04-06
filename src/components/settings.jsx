@@ -19,10 +19,11 @@
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import CogIcon from '../../static/images/cog.svg'
 
-export default class Settings extends React.Component {
+export default class Settings extends BaseComponent {
   render () {
     return (
       <div>TODO Settings</div>
@@ -30,16 +31,17 @@ export default class Settings extends React.Component {
   }
 }
 
-Settings.Button = class extends React.Component {
+Settings.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:settings:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='Settings'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >

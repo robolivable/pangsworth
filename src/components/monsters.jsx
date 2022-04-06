@@ -20,10 +20,11 @@ import React from 'react'
 
 import { SvgIcon } from '@material-ui/core'
 
+import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import MimicChestIcon from '../../static/images/mimic-chest.svg'
 
-export default class Monsters extends React.Component {
+export default class Monsters extends BaseComponent {
   render () {
     return (
       <div>TODO Monsters</div>
@@ -31,16 +32,17 @@ export default class Monsters extends React.Component {
   }
 }
 
-Monsters.Button = class extends React.Component {
+Monsters.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this.i18nKey = 'components:monsters:button'
   }
 
   render () {
     return (
       <PangNavigationItem
-        name='Monsters'
+        name={this.displayName}
         onClick={this._handleOnClick}
         {...this.props}
       >
