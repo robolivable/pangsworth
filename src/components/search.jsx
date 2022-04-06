@@ -21,26 +21,21 @@ import { SvgIcon } from '@material-ui/core'
 
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
-import MountainsIcon from '../../static/images/mountains.svg'
+import SearchIcon from '../../static/images/magnifying-glass.svg'
 
-export default class World extends BaseComponent {
-  constructor (...args) {
-    super(...args)
-    this.i18nKey = 'components:world'
-  }
-
+export default class Search extends BaseComponent {
   render () {
     return (
-      <div>TODO World</div>
+      <div>TODO Search</div>
     )
   }
 }
 
-World.Button = class extends BaseComponent {
+Search.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
-    this.i18nKey = 'components:world:button'
+    this.i18nKey = 'components:search:button'
   }
 
   render () {
@@ -50,14 +45,14 @@ World.Button = class extends BaseComponent {
         onClick={this._handleOnClick}
         {...this.props}
       >
-        <SvgIcon component={MountainsIcon} />
+        <SvgIcon component={SearchIcon} />
       </PangNavigationItem>
     )
   }
 
   _handleOnClick () {
-    console.log('world, yay!', this.constructor.name)
+    console.log('search, yay!', this.constructor.name)
   }
 }
 
-World.NAVIGATION = 'world'
+Search.NAVIGATION = 'search'
