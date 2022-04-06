@@ -1,10 +1,15 @@
 const config = require('./config')
 const { GalaResource } = require('./gala')
+const { Keyphrases } = require('./search')
+const i18nConfig = require('../i18n/config')
+const i18nUtils = require('../i18n/utils')
+const JSQueue = require('./js-queue')
 
 class GameObject {
   constructor ({ name = '' }, props = {}) {
     this.resource = new GalaResource(name)
     this.props = props
+    this.keyphrases = new Keyphrases(this.id, this.type.name)
   }
 
   get id () { return this.props.__id || this.props.id }
@@ -18,13 +23,52 @@ class GameObject {
     return this.props[key]
   }
 
+  _findKeyphrases (props, l10n = i18nConfig.defaultLocale) {
+    const proc = JSQueue.from(Object.keys(props))
+    while (proc.length) {
+      const currentKey = proc.dequeue()
+      const currentValue = props[currentKey]
+      if (!currentValue) {
+        continue
+      }
+      if (i18nConfig.LOCALIZABLE_PROPS[currentKey]) {
+        const localizedKeyphrase = currentValue[l10n.id]
+        this.keyphrases.addIndex(currentKey, localizedKeyphrase)
+        continue
+      }
+      if (isObject(currentValue)) {
+        proc.push(...Object.keys(currentValue))
+        continue
+      }
+      if (isArrayOfObjects(currentValue)) {
+        for (const p of currentValue) {
+          this._findKeyphrases(p, l10n)
+        }
+        continue
+      }
+      if (Array.isArray(currentValue)) {
+        // flatten arrays of primitives
+        this.keyphrases.addIndex(currentKey, currentValue.join(', '))
+        continue
+      }
+      this.keyphrases.addIndex(currentKey, currentValue)
+    }
+  }
+
   async fetch () {
     this.props = await this.resource.get(this.resourceUri)
+    const l10n = await i18nUtils.getLocalization()
+    this._findKeyphrases(this.props, l10n)
+    return this
   }
 }
 
+const isObject = o => typeof o === 'object' && !Array.isArray(o) && o !== null
+const isArrayOfObjects = a => Array.isArray(a) && isObject(a[0])
+
 class GameObjectCollection {
   constructor (clazz, { name = '' }) {
+    this.clazz = clazz
     this.objectMap = {}
     this.collection = []
     this.resource = new GalaResource(name)
@@ -34,6 +78,11 @@ class GameObjectCollection {
   get (id) { return new this.clazz(this.collection[this.objectMap[id]]) }
   * iter () {
     for (const object of this.collection) {
+      // TODO: what is this??
+      if (Object.prototype.hasOwnProperty(object, 'prototype')) { // eslint-disable-line
+        yield object
+        continue
+      }
       yield new this.clazz(object) // eslint-disable-line
     }
   }
@@ -44,11 +93,10 @@ class GameObjectCollection {
       const object = this.collection[key]
       this.objectMap[object.__id || object.id] = key
     }
+    return this
   }
 
-  get length () {
-    return this.collection.length
-  }
+  get length () { return this.collection.length }
 }
 
 class World extends GameObject {

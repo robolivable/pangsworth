@@ -1,9 +1,16 @@
-require("fake-indexeddb/auto")
+require('fake-indexeddb/auto')
 
-var {World} = require('./src/clients/game-objects')
+const { World } = require('./src/clients/game-objects')
 
-var w = new World({id:6063})
+const w = new World({ id: 6063 })
 
 w.fetch().then(o => {
   console.log(o)
 })
+
+//const { Search } = require('./src/clients/search')
+//
+//Search.New().then(async s => {
+//  await s.hydrateIndex()
+//  return s
+//})
