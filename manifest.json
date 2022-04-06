@@ -13,5 +13,8 @@
     },
     "default_title": "Pangsworth",
     "default_popup": "static/popup.html"
-  }
+  },
+  "permissions": [
+    "storage"
+  ]
 }
