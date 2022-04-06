@@ -1,0 +1,62 @@
+{
+  "components:world": {
+    "displayName": {
+      "en": "",
+      "pt": ""
+    }
+  },
+  "components:world:button": {
+    "displayName": {
+      "en": "World",
+      "pt": "Mundo"
+    }
+  },
+  "components:monsters:button": {
+    "displayName": {
+      "en": "Monsters",
+      "pt": "Monstros"
+    }
+  },
+  "components:classes:button": {
+    "displayName": {
+      "en": "Classes",
+      "pt": "Classes"
+    }
+  },
+  "components:skills:button": {
+    "displayName": {
+      "en": "Skills",
+      "pt": "Habilidades"
+    }
+  },
+  "components:npcs:button": {
+    "displayName": {
+      "en": "NPCs",
+      "pt": "NPCs"
+    }
+  },
+  "components:items:button": {
+    "displayName": {
+      "en": "Items",
+      "pt": "Items"
+    }
+  },
+  "components:equipments:button": {
+    "displayName": {
+      "en": "Equipment Set",
+      "pt": "Conjuntos de Equip"
+    }
+  },
+  "components:settings:button": {
+    "displayName": {
+      "en": "Settings",
+      "pt": "Opções"
+    }
+  },
+  "components:search:button": {
+    "displayName": {
+      "en": "Search",
+      "pt": "Buscar"
+    }
+  }
+}
