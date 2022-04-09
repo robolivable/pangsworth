@@ -100,7 +100,7 @@ class GameObject {
     }
   }
 
-  async index() {
+  async index () {
     const l10n = await i18nUtils.getLocalization()
     this._findKeyphrases(this.props, l10n)
   }
