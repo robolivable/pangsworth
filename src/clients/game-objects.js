@@ -1,9 +1,54 @@
-const config = require('./config')
 const { GalaResource } = require('./gala')
-const { Keyphrases } = require('./search')
+
+const config = require('./config')
 const i18nConfig = require('../i18n/config')
 const i18nUtils = require('../i18n/utils')
 const JSQueue = require('./js-queue')
+const utils = require('./utils')
+
+class Keyphrases {
+  constructor (docId, docType) {
+    this.docId = docId
+    this.docType = docType
+    this.indexes = { [config.SEARCH_INDEX_SECONDARY]: [] }
+  }
+
+  addIndex (name, value) {
+    if (name === config.SEARCH_DOCUMENT_REF_NAME) {
+      this.indexes[config.SEARCH_INDEX_SECONDARY].push(value)
+      return
+    }
+    if (config.SEARCH_INCLUDE_PROP_INDEXES[name]) {
+      // we want to associate these values with their prop names instead
+      this.indexes[config.SEARCH_INDEX_SECONDARY].push(name)
+      return
+    }
+    if (!this.indexes[name]) {
+      this.indexes[name] = []
+    }
+    this.indexes[name].push(value)
+  }
+
+  get index () {
+    const idx = {
+      [config.SEARCH_DOCUMENT_REF_NAME]: `${this.docId}:${this.docType}`,
+      [config.SEARCH_INDEX_SECONDARY]: ''
+    }
+    for (const [index, values] of Object.entries(this.indexes)) {
+      // primary (dynamic) indexes take up a property slot
+      if (config.SEARCH_PRIMARY_INDEXES[index]) {
+        idx[index] = utils.stripArrayDuplicates(values).join(', ')
+        continue
+      }
+      // all other values are indexed under the secondary index
+      idx[config.SEARCH_INDEX_SECONDARY] = [
+        idx[config.SEARCH_INDEX_SECONDARY],
+        utils.stripArrayDuplicates(values).join(', ')
+      ].filter(v => v).join(', ')
+    }
+    return idx
+  }
+}
 
 class GameObject {
   constructor ({ name = '' }, props = {}) {
@@ -36,11 +81,11 @@ class GameObject {
         this.keyphrases.addIndex(currentKey, localizedKeyphrase)
         continue
       }
-      if (isObject(currentValue)) {
+      if (utils.isObject(currentValue)) {
         proc.push(...Object.keys(currentValue))
         continue
       }
-      if (isArrayOfObjects(currentValue)) {
+      if (utils.isArrayOfObjects(currentValue)) {
         for (const p of currentValue) {
           this._findKeyphrases(p, l10n)
         }
@@ -55,16 +100,18 @@ class GameObject {
     }
   }
 
-  async fetch () {
-    this.props = await this.resource.get(this.resourceUri)
+  async index() {
     const l10n = await i18nUtils.getLocalization()
     this._findKeyphrases(this.props, l10n)
+  }
+
+  async fetch () {
+    this.props = await this.resource.get(this.resourceUri)
     return this
   }
-}
 
-const isObject = o => typeof o === 'object' && !Array.isArray(o) && o !== null
-const isArrayOfObjects = a => Array.isArray(a) && isObject(a[0])
+  toJSON () { return this.props }
+}
 
 class GameObjectCollection {
   constructor (clazz, { name = '' }) {
@@ -78,7 +125,6 @@ class GameObjectCollection {
   get (id) { return new this.clazz(this.collection[this.objectMap[id]]) }
   * iter () {
     for (const object of this.collection) {
-      // TODO: what is this??
       if (Object.prototype.hasOwnProperty(object, 'prototype')) { // eslint-disable-line
         yield object
         continue
@@ -97,6 +143,8 @@ class GameObjectCollection {
   }
 
   get length () { return this.collection.length }
+
+  toJSON () { return this.collection }
 }
 
 class World extends GameObject {
@@ -136,7 +184,7 @@ class Monster extends GameObject {
 
 class Monsters extends GameObjectCollection {
   constructor () {
-    const name = Monsters.type.name
+    const name = Monster.type.name
     super(Monster, { name })
   }
 }
@@ -156,7 +204,7 @@ class Class extends GameObject {
 
 class Classes extends GameObjectCollection {
   constructor () {
-    const name = Classes.type.name
+    const name = Class.type.name
     super(Class, { name })
   }
 }

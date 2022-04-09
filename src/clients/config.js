@@ -17,7 +17,7 @@
 */
 
 module.exports = {
-  API_ID_FETCH_BATCH_SIZE: 1000,
+  API_ID_FETCH_BATCH_SIZE: 200,
   API_VERSION_CHECK_INTERVAL_MS: 3600 * 1000,
   API_BASE_URL: 'https://flyff-api.sniegu.fr',
   API_RESOURCE_TYPES: {
@@ -128,6 +128,27 @@ module.exports = {
   },
   CACHE_NAME: 'pangsworth',
   CACHE_VERSION: 1,
+  CACHE_DEFAULT_KEY_PATH: 'id',
+  SEARCH_INDEX_CACHE_KEY: 'elasticlunr',
+  SEARCH_TABLE: 'search',
+  SEARCH_DOCUMENT_REF_NAME: 'id',
+  SEARCH_INDEX_SECONDARY: '__idx__',
+  // primary indexes are dynamic, can be added as we go
+  SEARCH_PRIMARY_INDEXES: {
+    name: true,
+    title: true,
+    description: true,
+    dialogsBegin: true,
+    dialogsAccept: true,
+    dialogsDecline: true,
+    dialogsComplete: true,
+    dialogsFail: true
+  },
+  SEARCH_INCLUDE_PROP_INDEXES: {
+    flying: true,
+    pk: true,
+    town: true
+  },
   REQUEST_RETRY_OPTIONS: {
     retries: 3,
     retryDelay: 1000,

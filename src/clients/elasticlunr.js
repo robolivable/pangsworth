@@ -1,6 +1,5 @@
 const elasticlunr = require('elasticlunr')
-
-const INDEX_CACHE_KEY = 'elasticlunr'
+const config = require('./config')
 
 let ElasticLunrInstance
 
@@ -10,18 +9,19 @@ class ElasticLunr {
     this.cache = cache
   }
 
-  setRef (value) { this.instance.setRef(value) }
-  addField (value) { this.instance.addField(value) }
-  updateDoc (value) { this.instance.updateDoc(value) }
+  setRef (...args) { this.instance.setRef(...args) }
+  addField (...args) { this.instance.addField(...args) }
+  updateDoc (...args) { this.instance.updateDoc(...args) }
+  search (...args) { return this.instance.search(...args) }
 
   async persistIndex () {
     const payload = JSON.stringify(this.instance)
-    await this.cache.set(INDEX_CACHE_KEY, { payload })
+    await this.cache.set(config.SEARCH_INDEX_CACHE_KEY, { payload })
   }
 
   static async withCache (cache) {
     if (!ElasticLunrInstance) {
-      const cachedIndex = await cache.get(INDEX_CACHE_KEY)
+      const cachedIndex = await cache.get(config.SEARCH_INDEX_CACHE_KEY)
       try {
         const payload = JSON.parse(cachedIndex.payload)
         ElasticLunrInstance = elasticlunr.Index.load(payload)

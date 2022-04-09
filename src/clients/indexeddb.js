@@ -28,8 +28,13 @@ const dbMigration = idb.openDB(config.CACHE_NAME, config.CACHE_VERSION, {
           if (!resourceType.cache) {
             continue
           }
-          db.createObjectStore(resourceType.name, { keyPath: 'id' })
+          db.createObjectStore(resourceType.name, {
+            keyPath: config.CACHE_DEFAULT_KEY_PATH
+          })
         }
+        db.createObjectStore(config.SEARCH_TABLE, {
+          keyPath: config.CACHE_DEFAULT_KEY_PATH
+        })
     }
   }
 })
