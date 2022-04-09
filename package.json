@@ -4,6 +4,7 @@
   "description": "Pangsworth at your service anywhere in Madrigal.",
   "scripts": {
     "build": "webpack",
+    "build-dev": "webpack watch --mode development",
     "build-release": "NODE_ENV=production npm run build",
     "jshint": "standard",
     "postinstall": "npm run build-release",
@@ -26,7 +27,8 @@
   },
   "standard": {
     "ignore": [
-      "build"
+      "build",
+      "test.js"
     ],
     "parser": "babel-eslint",
     "globals": [
