@@ -17,6 +17,7 @@
 */
 
 const config = require('./config')
+const utils = require('./utils')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-retry')(nodeFetch, config.REQUEST_RETRY_OPTIONS)
 
@@ -69,12 +70,9 @@ class GalaResource {
       const cache = await Cache.withIndexedDb(name)
       const resourceIdsUri = resource.api.ids()
       const resourceIdsUrl = `${config.API_BASE_URL}${resourceIdsUri}`
-
       const ids = await (await fetch(resourceIdsUrl)).json()
-
-      for (let i = 0; i < ids.length; i = i + config.API_ID_FETCH_BATCH_SIZE) {
-        const _ids = ids.slice(i, i + config.API_ID_FETCH_BATCH_SIZE)
-        const resourceUri = resource.api.getByIds(_ids)
+      await utils.batch(ids, async chunk => {
+        const resourceUri = resource.api.getByIds(chunk)
         const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
         const resourcePayload = await (await fetch(resourceUrl)).json()
         for (const value of resourcePayload) {
@@ -82,7 +80,7 @@ class GalaResource {
           const singleResourceUrl = `${config.API_BASE_URL}${singleResourceUri}`
           await cache.set(singleResourceUrl, value)
         }
-      }
+      })
     }
   }
 
@@ -115,15 +113,12 @@ class GalaResource {
     const type = config.API_RESOURCE_TYPES[this.name]
     const resourceIdsUri = type.api.ids()
     const resourceIdsUrl = `${config.API_BASE_URL}${resourceIdsUri}`
-    let fullResultPayload = []
     const ids = await (await fetch(resourceIdsUrl)).json()
-    for (let i = 0; i < ids.length; i = i + config.API_ID_FETCH_BATCH_SIZE) {
-      const _ids = ids.slice(i, i + config.API_ID_FETCH_BATCH_SIZE)
-      const resourceUri = type.api.getByIds(_ids)
+    const fullResultPayload = await utils.batch(ids, async chunk => {
+      const resourceUri = type.api.getByIds(chunk)
       const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
-      const resultPayload = await (await fetch(resourceUrl)).json()
-      fullResultPayload = fullResultPayload.concat(resultPayload)
-    }
+      return (await fetch(resourceUrl)).json()
+    })
     return fullResultPayload
   }
 }
