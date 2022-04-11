@@ -57,6 +57,4 @@ class Search {
   }
 }
 
-module.exports = {
-  Search
-}
+module.exports = Search

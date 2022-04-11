@@ -35,8 +35,6 @@ class Cache {
     return this.db.set(this.table, v)
   }
 
-  query () { /* TODO: indexes/queries */ }
-
   static async withIndexedDb (table) {
     const indexed = await IndexedDb.New()
     const cache = new Cache(indexed, table)

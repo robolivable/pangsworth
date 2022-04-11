@@ -26,7 +26,7 @@ const Cache = require('./cache')
 class GalaResource {
   constructor (name) { this.name = name }
 
-  static async _versionCacheMiss (versionKey) {
+  static async __versionCacheMiss (versionKey) {
     const versionCacheTable = config.API_RESOURCE_TYPES.versions.name
     const cache = await Cache.withIndexedDb(versionCacheTable)
     const verObj = await cache.get(versionKey)
@@ -58,7 +58,17 @@ class GalaResource {
     return true
   }
 
+  static async _versionCacheMiss (...args) {
+    const cacheMiss = await GalaResource.__versionCacheMiss(...args)
+    console.debug({ cacheMiss })
+    return cacheMiss
+  }
+
   static async hydrateMainCacheObjects () {
+    await GalaResource._hydrateMainCacheObjects()
+  }
+
+  static async _hydrateMainCacheObjects () {
     for (const [name, resource] of Object.entries(config.API_RESOURCE_TYPES)) {
       if (!resource.hydrate || !resource.cache) {
         continue

@@ -23,6 +23,8 @@ import BaseComponent from './base-component'
 import Navigation from './index'
 import { PangReactiveDrawer } from './common'
 
+import Context from '../clients/context'
+
 const RootDiv = styled('div')(() => ({
   display: 'flex'
 }))
@@ -36,6 +38,8 @@ export default class Pangsworth extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleNavigationChange = this._handleNavigationChange.bind(this)
+    this.PangContext = new Context()
+    this.PangContext.initialize()
     this.state = {
       navigation: Navigation.default
     }
@@ -51,9 +55,9 @@ export default class Pangsworth extends BaseComponent {
         <PangReactiveDrawer
           items={items.map(([Pangponent, navigation]) => (
             <Pangponent
-              key={navigation} _handleNavigationChange={
-              this._handleNavigationChange(navigation)
-            }
+              key={navigation}
+              _handleNavigationChange={this._handleNavigationChange(navigation)}
+              PangContext={this.PangContext}
             />
           ))}
           settingsItem={React.createElement(Navigation.settings.Button, {
