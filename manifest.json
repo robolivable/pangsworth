@@ -16,5 +16,8 @@
   },
   "permissions": [
     "storage"
+  ],
+  "host_permissions": [
+    "https://*.sniegu.fr/*"
   ]
 }
