@@ -3,6 +3,7 @@ const { getGameObjectsByTypeName } = require('./game-objects')
 const Cache = require('./cache')
 const config = require('./config')
 const ElasticLunr = require('./elasticlunr')
+const GalaResource = require('./gala')
 
 let SearchInstance
 
@@ -26,6 +27,14 @@ class Search {
   }
 
   async hydrateIndex () {
+    const persistedIndexVersion = await this.elasticlunr.persistedIndexVersion()
+    const result = await GalaResource.versionCacheMiss()
+    const cacheVersion = parseInt(result.curVersion)
+    if (persistedIndexVersion !== -1) {
+      if (!result.cacheMiss && (persistedIndexVersion === cacheVersion)) {
+        return
+      }
+    }
     for (const name of Object.keys(config.API_RESOURCE_TYPES)) {
       const GameObjects = getGameObjectsByTypeName(name)
       if (!GameObjects) {
@@ -39,7 +48,7 @@ class Search {
         this.elasticlunr.updateDoc(gameObject.keyphrases.index)
       }
     }
-    await this.elasticlunr.persistIndex()
+    await this.elasticlunr.persistIndex(cacheVersion)
   }
 
   static async New () {

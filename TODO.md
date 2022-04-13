@@ -1,3 +1,7 @@
+#### Bugs
+- Cache miss issue
+- Cache miss for live API updates within the version check threshold (need a manual button)
+
 #### Features for pangsworth
 - list items of a specific type
 - export data from search results

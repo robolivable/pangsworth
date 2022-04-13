@@ -18,7 +18,7 @@
 
 const exportDefault = {
   API_ID_FETCH_BATCH_SIZE: 200,
-  API_VERSION_CHECK_INTERVAL_MS: 3600 * 1000,
+  API_VERSION_CHECK_THRESHOLD_MS: 3600 * 1000,
   API_BASE_URL: 'https://flyff-api.sniegu.fr',
   API_RESOURCE_TYPES: {
     classes: {
@@ -130,6 +130,7 @@ const exportDefault = {
   CACHE_VERSION: 1,
   CACHE_DEFAULT_KEY_PATH: 'id',
   SEARCH_INDEX_CACHE_KEY: 'elasticlunr',
+  SEARCH_INDEX_CACHE_CHECK_KEY: 'elasticlunr-check',
   SEARCH_TABLE: 'search',
   SEARCH_DOCUMENT_REF_NAME: 'id',
   SEARCH_INDEX_SECONDARY: '__idx__',

@@ -32,22 +32,38 @@ class GalaResource {
     const verObj = await cache.get(versionKey)
     let liveVersion
     if (verObj && verObj.lastChecked) {
-      const versionCheckDelta = Date.now() - verObj.lastChecked
-      const staleLocalVersionCheck =
-        versionCheckDelta >= config.API_VERSION_CHECK_INTERVAL_MS
-
-      if (!staleLocalVersionCheck) {
-        return false
+      const versionCheckDelta = Date.now() - parseInt(verObj.lastChecked)
+      const localVersionStale =
+        versionCheckDelta >= config.API_VERSION_CHECK_THRESHOLD_MS
+      if (!localVersionStale) {
+        // TODO: edge case when live API updates within the check threshold
+        return {
+          prevVersion: verObj.version,
+          curVersion: verObj.version,
+          cacheMiss: false
+        }
       }
 
       const liveVersionUri = config.API_RESOURCE_TYPES.versions.api.get()
       const liveVersionUrl = `${config.API_BASE_URL}${liveVersionUri}`
       liveVersion = await (await fetch(liveVersionUrl)).json()
-      const staleVersion = verObj.version !== liveVersion
+      const staleVersion = parseInt(verObj.version) !== parseInt(liveVersion)
       if (!staleVersion) {
-        return false
+        const lastVersionCheck = Date.now()
+        const newVersion = {
+          id: versionKey,
+          version: liveVersion,
+          lastChecked: lastVersionCheck
+        }
+        await cache.set(versionKey, newVersion)
+        return {
+          prevVersion: verObj.version,
+          curVersion: liveVersion,
+          cacheMiss: false
+        }
       }
     }
+
     const lastVersionCheck = Date.now()
     const newVersion = {
       id: versionKey,
@@ -55,12 +71,20 @@ class GalaResource {
       lastChecked: lastVersionCheck
     }
     await cache.set(versionKey, newVersion)
-    return true
+    return {
+      prevVersion: verObj.version,
+      curVersion: liveVersion,
+      cacheMiss: true
+    }
+  }
+
+  static async versionCacheMiss (name = config.API_RESOURCE_TYPES.classes.name) {
+    return GalaResource._versionCacheMiss(name)
   }
 
   static async _versionCacheMiss (...args) {
     const cacheMiss = await GalaResource.__versionCacheMiss(...args)
-    console.debug({ cacheMiss })
+    console.log('debug:', { cacheMiss })
     return cacheMiss
   }
 
@@ -73,8 +97,8 @@ class GalaResource {
       if (!resource.hydrate || !resource.cache) {
         continue
       }
-      const cacheMiss = await GalaResource._versionCacheMiss(name)
-      if (!cacheMiss) {
+      const result = await GalaResource._versionCacheMiss(name)
+      if (!result.cacheMiss) {
         continue
       }
       const cache = await Cache.withIndexedDb(name)
@@ -98,8 +122,8 @@ class GalaResource {
     const resourceUrl = `${config.API_BASE_URL}${resourceUri}`
     const cache = await Cache.withIndexedDb(this.name)
     const result = await cache.get(resourceUrl)
-    const versionCacheMiss = GalaResource._versionCacheMiss(this.name)
-    if (result && !versionCacheMiss) {
+    const cmResult = await GalaResource._versionCacheMiss(this.name)
+    if (result && !cmResult.cacheMiss) {
       return result
     }
     if (versionCacheMiss) {
@@ -112,8 +136,8 @@ class GalaResource {
   async getAll () {
     const cache = await Cache.withIndexedDb(this.name)
     const result = await cache.getAll()
-    const versionCacheMiss = GalaResource._versionCacheMiss(this.name)
-    if (result.length && !versionCacheMiss) {
+    const cmResult = await GalaResource._versionCacheMiss(this.name)
+    if (result.length && !cmResult.cacheMiss) {
       return result
     }
     if (versionCacheMiss) {

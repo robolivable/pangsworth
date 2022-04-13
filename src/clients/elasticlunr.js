@@ -14,9 +14,18 @@ class ElasticLunr {
   updateDoc (...args) { this.instance.updateDoc(...args) }
   search (...args) { return this.instance.search(...args) }
 
-  async persistIndex () {
+  async persistIndex (version) {
     const payload = JSON.stringify(this.instance)
     await this.cache.set(config.SEARCH_INDEX_CACHE_KEY, { payload })
+    await this.cache.set(config.SEARCH_INDEX_CACHE_CHECK_KEY, { version })
+  }
+
+  async persistedIndexVersion () {
+    const payload = await this.cache.get(config.SEARCH_INDEX_CACHE_CHECK_KEY)
+    if (!payload) {
+      return -1
+    }
+    return payload.version
   }
 
   static async withCache (cache) {
