@@ -33,7 +33,7 @@ class Context {
       }
       this.initialized = true
     } catch (error) {
-      console.error('error initializing pang context', {error})
+      console.error('error initializing pang context', { error })
     }
     await chrome.storage.local.set({
       [config.STORAGE_VALUE_KEYS.cacheLoading]: false

@@ -126,7 +126,7 @@ class GalaResource {
     if (result && !cmResult.cacheMiss) {
       return result
     }
-    if (versionCacheMiss) {
+    if (cmResult.cacheMiss) {
       // NOTE: we trigger an async rehydration if version is outdated
       GalaResource.hydrateMainCacheObjects()
     }
@@ -140,7 +140,7 @@ class GalaResource {
     if (result.length && !cmResult.cacheMiss) {
       return result
     }
-    if (versionCacheMiss) {
+    if (cmResult.cacheMiss) {
       // NOTE: we trigger an async rehydration if version is outdated
       GalaResource.hydrateMainCacheObjects()
     }

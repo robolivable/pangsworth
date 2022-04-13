@@ -51,7 +51,7 @@ Settings.Button = class extends BaseComponent {
     this._getFirstLoadingState()
   }
 
-  async _getFirstLoadingState() {
+  async _getFirstLoadingState () {
     const result = await chrome.storage.local.get([config.STORAGE_VALUE_KEYS.cacheLoading])
     this.setState({ loading: result[config.STORAGE_VALUE_KEYS.cacheLoading] })
   }
