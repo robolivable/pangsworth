@@ -31,7 +31,24 @@ class GalaResource {
     const cache = await Cache.withIndexedDb(versionCacheTable)
     const verObj = await cache.get(versionKey)
     let liveVersion
-    if (verObj && verObj.lastChecked) {
+    if (!verObj) {
+      const liveVersionUri = config.API_RESOURCE_TYPES.versions.api.get()
+      const liveVersionUrl = `${config.API_BASE_URL}${liveVersionUri}`
+      liveVersion = await (await fetch(liveVersionUrl)).json()
+      const lastVersionCheck = Date.now()
+      const newVersion = {
+        id: versionKey,
+        version: liveVersion,
+        lastChecked: lastVersionCheck
+      }
+      await cache.set(versionKey, newVersion)
+      return {
+        prevVersion: -1,
+        curVersion: liveVersion,
+        cacheMiss: true
+      }
+    }
+    if (verObj.lastChecked) {
       const versionCheckDelta = Date.now() - parseInt(verObj.lastChecked)
       const localVersionStale =
         versionCheckDelta >= config.API_VERSION_CHECK_THRESHOLD_MS
