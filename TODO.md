@@ -1,13 +1,23 @@
 #### Bugs
-- Cache miss issue
+~~- Cache miss issue~~
 - Cache miss for live API updates within the version check threshold (need a manual button)
 
 #### Features for pangsworth
+- settings
+    - light/dark theme
+    - language
+    - manual refresh cache
+    - download all image data
+- image caching
+    - icons
+    - map squares
+    - avatars
 - list items of a specific type
 - export data from search results
 - copy in-game link to clipboard
 - search history saved in search bar
     - group history by date
+- search as you type
 - nested data types in lists
 - search results data list (less data focused)
     - include icon in each row, button to export, button to copy item id to clipboard

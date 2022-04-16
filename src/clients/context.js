@@ -67,6 +67,22 @@ class Context {
   get NPCs () {
     return this.gameData[config.API_RESOURCE_TYPES.npcs.name]
   }
+
+  get PartySkills () {
+    return this.gameData[config.API_RESOURCE_TYPES.partySkills.name]
+  }
+
+  get Quests () {
+    return this.gameData[config.API_RESOURCE_TYPES.quests.name]
+  }
+
+  get Karmas () {
+    return this.gameData[config.API_RESOURCE_TYPES.karma.name]
+  }
+
+  get Achievements () {
+    return this.gameData[config.API_RESOURCE_TYPES.achievements.name]
+  }
 }
 
 module.exports = Context

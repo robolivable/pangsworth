@@ -20,7 +20,8 @@ const config = require('./config')
 const idb = require('idb')
 
 const dbMigration = idb.openDB(config.CACHE_NAME, config.CACHE_VERSION, {
-  upgrade (db) {
+  upgrade (db, newVersion, oldVersion, tx) {
+    console.log({db, newVersion, oldVersion, tx})
     switch (db.version) {
       case 0:
       case 1:

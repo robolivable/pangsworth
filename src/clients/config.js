@@ -25,6 +25,7 @@ const exportDefault = {
       name: 'classes',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/class',
         getById: id => `/class/${id}`,
@@ -36,6 +37,7 @@ const exportDefault = {
       name: 'world',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/world',
         getById: id => `/world/${id}`,
@@ -47,6 +49,7 @@ const exportDefault = {
       name: 'monsters',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/monster',
         getById: id => `/monster/${id}`,
@@ -58,6 +61,7 @@ const exportDefault = {
       name: 'items',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/item',
         getById: id => `/item/${id}`,
@@ -69,6 +73,7 @@ const exportDefault = {
       name: 'equipmentSets',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/equipset',
         getById: id => `/equipset/${id}`,
@@ -79,6 +84,7 @@ const exportDefault = {
       name: 'skills',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/skill',
         getById: id => `/skill/${id}`,
@@ -90,11 +96,57 @@ const exportDefault = {
       name: 'npcs',
       cache: true,
       hydrate: true,
+      dataVersionAdded: 1,
       api: {
         ids: () => '/npc',
         getById: id => `/npc/${id}`,
         getByIds: ids => `/npc/${ids.join()}`,
         image: fileName => `/image/npc/${fileName}`
+      }
+    },
+    partySkills: {
+      name: 'partySkills',
+      cache: true,
+      hydrate: true,
+      dataVersionAdded: 1,
+      api: {
+        ids: () => '/partyskill',
+        getById: id => `/partyskill/${id}`,
+        getByIds: ids => `/partyskill/${ids.join()}`,
+        image: fileName => `/image/partyskill/${fileName}`
+      }
+    },
+    quests: {
+      name: 'quests',
+      cache: true,
+      hydrate: true,
+      dataVersionAdded: 1,
+      api: {
+        ids: () => '/quest',
+        getById: id => `/quest/${id}`,
+        getByIds: ids => `/quest/${ids.join()}`
+      }
+    },
+    karma: {
+      name: 'karma',
+      cache: true,
+      hydrate: true,
+      dataVersionAdded: 1,
+      api: {
+        ids: () => '/karma',
+        getById: id => `/karma/${id}`,
+        getByIds: ids => `/karma/${ids.join()}`
+      }
+    },
+    achievements: {
+      name: 'achievements',
+      cache: true,
+      hydrate: true,
+      dataVersionAdded: 1,
+      api: {
+        ids: () => '/achievement',
+        getById: id => `/achievement/${id}`,
+        getByIds: ids => `/achievement/${ids.join()}`
       }
     },
     versions: {

@@ -289,6 +289,86 @@ class NPCs extends GameObjectCollection {
   }
 }
 
+class PartySkill extends GameObject {
+  constructor (props) {
+    const name = PartySkill.type.name
+    super({ name }, props)
+  }
+
+  static get type () { return config.API_RESOURCE_TYPES.partySkills }
+  get type () { return PartySkill.type }
+  get resourceUri () {
+    return config.API_RESOURCE_TYPES.partySkills.api.getById(this.id)
+  }
+}
+
+class PartySkills extends GameObjectCollection {
+  constructor () {
+    const name = PartySkill.type.name
+    super(PartySkill, { name })
+  }
+}
+
+class Quest extends GameObject {
+  constructor (props) {
+    const name = Quest.type.name
+    super({ name }, props)
+  }
+
+  static get type () { return config.API_RESOURCE_TYPES.quests }
+  get type () { return Quest.type }
+  get resourceUri () {
+    return config.API_RESOURCE_TYPES.quests.api.getById(this.id)
+  }
+}
+
+class Quests extends GameObjectCollection {
+  constructor () {
+    const name = Quest.type.name
+    super(Quest, { name })
+  }
+}
+
+class Karma extends GameObject {
+  constructor (props) {
+    const name = Karma.type.name
+    super({ name }, props)
+  }
+
+  static get type () { return config.API_RESOURCE_TYPES.karma }
+  get type () { return Karma.type }
+  get resourceUri () {
+    return config.API_RESOURCE_TYPES.karma.api.getById(this.id)
+  }
+}
+
+class Karmas extends GameObjectCollection {
+  constructor () {
+    const name = Karma.type.name
+    super(Karma, { name })
+  }
+}
+
+class Achievement extends GameObject {
+  constructor (props) {
+    const name = Achievement.type.name
+    super({ name }, props)
+  }
+
+  static get type () { return config.API_RESOURCE_TYPES.achievements }
+  get type () { return Achievement.type }
+  get resourceUri () {
+    return config.API_RESOURCE_TYPES.achievements.api.getById(this.id)
+  }
+}
+
+class Achievements extends GameObjectCollection {
+  constructor () {
+    const name = Achievement.type.name
+    super(Achievement, { name })
+  }
+}
+
 const getGameObjectsByTypeName = typeName => {
   switch (typeName) {
     case config.API_RESOURCE_TYPES.classes.name:
@@ -305,6 +385,14 @@ const getGameObjectsByTypeName = typeName => {
       return [Skill, Skills]
     case config.API_RESOURCE_TYPES.npcs.name:
       return [NPC, NPCs]
+    case config.API_RESOURCE_TYPES.partySkills.name:
+      return [PartySkill, PartySkills]
+    case config.API_RESOURCE_TYPES.quests.name:
+      return [Quest, Quests]
+    case config.API_RESOURCE_TYPES.karma.name:
+      return [Karma, Karmas]
+    case config.API_RESOURCE_TYPES.achievements.name:
+      return [Achievement, Achievements]
     default:
   }
 }
@@ -326,5 +414,13 @@ module.exports = {
   Skills,
   NPC,
   NPCs,
+  PartySkill,
+  PartySkills,
+  Quest,
+  Quests,
+  Karma,
+  Karmas,
+  Achievement,
+  Achievements,
   getGameObjectsByTypeName
 }
