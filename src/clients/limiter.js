@@ -2,6 +2,7 @@ const EventEmitter = require('events')
 const JSQueue = require('./js-queue')
 
 const RATES = { millisecond: 1, second: 1000 }
+const QUEUE_EVENT = 'enqueue'
 
 class Limiter extends EventEmitter {
   constructor (rate, time, ...args) {
@@ -9,13 +10,13 @@ class Limiter extends EventEmitter {
     this.rate = rate
     this.time = time
     this.queue = new JSQueue()
-    this.on('enqueue', this.proc)
+    this.on(QUEUE_EVENT, this.proc)
     this._loading = false
   }
 
-  async load (promiseFn) {
-    this.queue.enqueue(promiseFn)
-    this.emit('enqueue')
+  async load (...promiseFn) {
+    this.queue.push(...promiseFn)
+    this.emit(QUEUE_EVENT)
   }
 
   async proc () {
@@ -24,14 +25,13 @@ class Limiter extends EventEmitter {
     }
     this._loading = true
     while (this.queue.length) {
-      const promiseFns = this.queue.dequeueN(this.rate)
-      const promises = []
-      for (const promiseFn of promiseFns) {
-        promises.push(promiseFn())
-      }
-      await Promise.all(promises)
+      const promiseFn = this.queue.dequeue()
+      const startedAt = Date.now()
+      promiseFn()
+      const delay = this.time / this.rate
+      const wait = Math.max(0, delay - (Date.now() - startedAt))
       // eslint-disable-next-line
-      await new Promise(r => setTimeout(r, this.time))
+      await new Promise(r => setTimeout(r, wait))
     }
     this._loading = false
   }

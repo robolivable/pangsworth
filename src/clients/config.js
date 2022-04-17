@@ -19,7 +19,7 @@ const API_BASE_URL = 'https://flyff-api.sniegu.fr'
 const exportDefault = {
   API_ID_FETCH_BATCH_SIZE: 200,
   API_VERSION_CHECK_THRESHOLD_MS: 3600 * 1000,
-  API_REQUEST_RATE_SEC: 100,
+  API_REQUEST_RATE_SEC: 5,
   API_BASE_URL,
   API_RESOURCE_TYPES: {
     classes: {
@@ -194,6 +194,7 @@ const exportDefault = {
     }
   },
   CACHE_NAME: 'pangsworth',
+  CACHE_NAME_IMAGES: 'pangsworth-images',
   CACHE_VERSION: 1,
   CACHE_DEFAULT_KEY_PATH: 'id',
   SEARCH_INDEX_CACHE_KEY: 'elasticlunr',

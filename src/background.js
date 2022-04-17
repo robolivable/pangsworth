@@ -19,6 +19,7 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 const { getGameObjectsByTypeName } = require('./clients/game-objects')
+const { Limiter, RATES } = require('./clients/limiter')
 const config = require('./clients/config')
 const utils = require('./clients/utils')
 
@@ -26,8 +27,7 @@ const getRetryBackoffMS = retry =>
   ((config.BG_IMG_PRELOAD.backoffExp * retry) ** 2) *
     utils.rollDice(config.BG_IMG_PRELOAD.backoffVarianceSec) *
       config.BG_IMG_PRELOAD.backoffMs
-
-const preloadRetry = async (src, retries = 0) => {
+const preloadRetry = async (limiter, src, retries = 0) => {
   if (retries > config.BG_IMG_PRELOAD.maxRetry) {
     return
   }
@@ -35,23 +35,28 @@ const preloadRetry = async (src, retries = 0) => {
     // eslint-disable-next-line
     await new Promise(r => setTimeout(r, getRetryBackoffMS(retries)))
   }
-  console.log('preloading', { src, retries })
-  try {
-    const c = await caches.open('pangsworth-images')
-    await c.add(src)
-  } catch (e) {
-    if (e.name !== 'TypeError') {
-      throw e
-    }
-    await preloadRetry(src, retries + 1)
+  const c = await caches.open(config.CACHE_NAME_IMAGES)
+  const skip = !!(await c.match(src))
+  if (skip) {
+    return
   }
+  limiter.load(async () => {
+    try {
+      await c.add(src)
+    } catch (error) {
+      if (error.name !== 'TypeError') {
+        throw error
+      }
+      await preloadRetry(limiter, src, retries + 1)
+    }
+  })
 }
 
-const preloadCollection = async collection => {
+const preloadCollection = async (collection, limiter) => {
   try {
     for (const object of collection.iter()) {
       for (const src of object.images()) {
-        preloadRetry(src)
+        preloadRetry(limiter, src)
       }
     }
   } catch (error) {
@@ -69,8 +74,9 @@ const preloadImages = async () => {
     collectionFetches.push(c.fetch())
   }
   const fetched = await Promise.all(collectionFetches)
+  const limiter = new Limiter(config.API_REQUEST_RATE_SEC, RATES.second)
   for (const collection of fetched) {
-    await preloadCollection(collection)
+    await preloadCollection(collection, limiter)
   }
 }
 

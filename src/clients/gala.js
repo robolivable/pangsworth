@@ -101,7 +101,6 @@ class GalaResource {
 
   static async _versionCacheMiss (...args) {
     const cacheMiss = await GalaResource.__versionCacheMiss(...args)
-    console.log('debug:', { cacheMiss })
     return cacheMiss
   }
 
