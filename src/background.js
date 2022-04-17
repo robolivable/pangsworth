@@ -18,8 +18,28 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Pangsworth from './components/pangsworth'
+const config = require('./clients/config')
 
-ReactDOM.render(<Pangsworth />, document.querySelector('#root'))
+let downloadCancel = false
+const downloadAllImageAssets = async () => {
+  downloadCancel = false
+  // TODO: full image asset download
+}
+
+const downloadAllImageAssetsCancel = () => { downloadCancel = true }
+
+const messageHandler = async (request, sender, respond) => {
+  switch (request.type) {
+    case config.MESSAGE_VALUE_KEYS.downloadAllImageAssets:
+      await downloadAllImageAssets()
+      break
+    case config.MESSAGE_VALUE_KEYS.downloadAllImageAssetsCancel:
+      downloadAllImageAssetsCancel()
+      break
+    default:
+      console.warn('unhandled message type', { request, sender })
+  }
+  respond() // NOTE: this is to suppress console errors (chromium bug #1304272)
+}
+
+chrome.runtime.onMessage.addListener(messageHandler)

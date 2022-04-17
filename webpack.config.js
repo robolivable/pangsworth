@@ -19,8 +19,8 @@
 const path = require('path')
 const webpack = require('webpack')
 
-const ENTRYPOINT_NAME = 'app.jsx'
-const BUNDLE_NAME = 'bundle.js'
+const APP_ENTRYPOINT_NAME = 'app.jsx'
+const BACKGROUND_SCRIPT_ENTRYPOINT_NAME = 'background.js'
 
 const PATHS = {
   build: 'build',
@@ -31,7 +31,13 @@ const PATHS = {
 const projectPath = (...args) => path.resolve(__dirname, ...args)
 
 const config = {
-  entry: projectPath(PATHS.src, ENTRYPOINT_NAME),
+  entry: {
+    app: projectPath(PATHS.src, APP_ENTRYPOINT_NAME),
+    background: {
+      import: projectPath(PATHS.src, BACKGROUND_SCRIPT_ENTRYPOINT_NAME),
+      filename: '[name].js'
+    }
+  },
   module: {
     rules: [
       {
@@ -52,7 +58,7 @@ const config = {
   },
   output: {
     path: projectPath(PATHS.build),
-    filename: BUNDLE_NAME
+    filename: '[name].js'
   },
   plugins: [],
   resolve: { extensions: ['.js', '.jsx'] }

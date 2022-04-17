@@ -63,7 +63,8 @@ export default class Pangsworth extends BaseComponent {
           settingsItem={React.createElement(Navigation.settings.Button, {
             _handleNavigationChange: this._handleNavigationChange(
               Navigation.settings.NAVIGATION
-            )
+            ),
+            PangContext: this.PangContext
           })}
         />
         <Main>

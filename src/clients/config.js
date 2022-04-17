@@ -208,7 +208,12 @@ const exportDefault = {
     retryOn: [503]
   },
   STORAGE_VALUE_KEYS: {
-    cacheLoading: 'CACHE_LOADING'
+    cacheLoading: 'CACHE_LOADING',
+    imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING'
+  },
+  MESSAGE_VALUE_KEYS: {
+    downloadAllImageAssets: 'DOWNLOAD_ALL_ASSETS',
+    downloadAllImageAssetsCancel: 'DOWNLOAD_ALL_ASSETS_CANCEL'
   }
 }
 

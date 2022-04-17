@@ -2,9 +2,6 @@
   "name": "Pangsworth Info Butler",
   "version": "1.0",
   "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js"
-  },
   "action": {
     "default_icon": {
       "16": "static/images/icon16.png",
@@ -13,6 +10,10 @@
     },
     "default_title": "Pangsworth",
     "default_popup": "static/popup.html"
+  },
+  "background": {
+    "service_worker": "build/background.js",
+    "type": "module"
   },
   "permissions": [
     "storage"

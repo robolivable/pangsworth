@@ -2,6 +2,8 @@
   "name": "pangsworth",
   "version": "1.0.0",
   "description": "Pangsworth at your service anywhere in Madrigal.",
+  "author": "https://github.com/robolivable",
+  "license": "GPL-3.0",
   "scripts": {
     "build": "webpack",
     "build-dev": "webpack watch --no-color --mode production",
@@ -10,8 +12,6 @@
     "postinstall": "npm run build-release",
     "test": "jest"
   },
-  "author": "https://github.com/robolivable",
-  "license": "GPL-3.0",
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
@@ -27,28 +27,6 @@
     "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.9"
   },
-  "standard": {
-    "ignore": [
-      "build",
-      "test.js"
-    ],
-    "parser": "babel-eslint",
-    "globals": [
-      "idb",
-      "chrome"
-    ]
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "json",
-      "text",
-      "lcov",
-      "clover"
-    ],
-    "verbose": true
-  },
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
@@ -62,5 +40,27 @@
     "style-loader": "^3.2.1",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "text",
+      "lcov",
+      "clover"
+    ],
+    "verbose": true
+  },
+  "standard": {
+    "ignore": [
+      "build",
+      "test.js"
+    ],
+    "parser": "babel-eslint",
+    "globals": [
+      "idb",
+      "chrome"
+    ]
   }
 }

@@ -15,9 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
-
 import React from 'react'
 
 const i18n = require('../i18n')

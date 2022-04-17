@@ -75,7 +75,7 @@ Settings.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {
-    console.log('settings, yay!')
+    console.log('settings, yay!', this.props)
   }
 
   _getName () {

@@ -12,6 +12,13 @@
     - icons
     - map squares
     - avatars
+- background image assets downloading
+    - UI/UX for background downloading
+        - build a button to trigger downloading
+        - the button should confirm the action
+        - while downloading, the button should change to "cancel download"
+        - while downloading, have a loading indicator
+        - if the "cancel download" button is clicked, confirm the action, and stop the background download
 - list items of a specific type
 - export data from search results
 - copy in-game link to clipboard
