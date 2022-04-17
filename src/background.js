@@ -23,6 +23,7 @@ const config = require('./clients/config')
 let downloadCancel = false
 const downloadAllImageAssets = async () => {
   downloadCancel = false
+  console.log({ downloadCancel })
   // TODO: full image asset download
 }
 
