@@ -18,24 +18,66 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
+const { getGameObjectsByTypeName } = require('./clients/game-objects')
 const config = require('./clients/config')
+const utils = require('./clients/utils')
 
-let downloadCancel = false
-const downloadAllImageAssets = async () => {
-  downloadCancel = false
-  console.log({ downloadCancel })
-  // TODO: full image asset download
+const getRetryBackoffMS = retry =>
+  ((config.BG_IMG_PRELOAD.backoffExp * retry) ** 2) *
+    utils.rollDice(config.BG_IMG_PRELOAD.backoffVarianceSec) *
+      config.BG_IMG_PRELOAD.backoffMs
+
+const preloadRetry = async (src, retries = 0) => {
+  if (retries > config.BG_IMG_PRELOAD.maxRetry) {
+    return
+  }
+  if (retries > 0) {
+    // eslint-disable-next-line
+    await new Promise(r => setTimeout(r, getRetryBackoffMS(retries)))
+  }
+  console.log('preloading', { src, retries })
+  try {
+    const c = await caches.open('pangsworth-images')
+    await c.add(src)
+  } catch (e) {
+    if (e.name !== 'TypeError') {
+      throw e
+    }
+    await preloadRetry(src, retries + 1)
+  }
 }
 
-const downloadAllImageAssetsCancel = () => { downloadCancel = true }
+const preloadCollection = async collection => {
+  try {
+    for (const object of collection.iter()) {
+      for (const src of object.images()) {
+        preloadRetry(src)
+      }
+    }
+  } catch (error) {
+    console.error('error loading collection', { error, collection })
+  }
+}
+
+const preloadImages = async () => {
+  const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
+    .filter(o => o.hydrate).map(o => o.name)
+  const collectionFetches = []
+  for (const name of hydratableResourceNames) {
+    const [, GameObjectCollection] = getGameObjectsByTypeName(name)
+    const c = new GameObjectCollection()
+    collectionFetches.push(c.fetch())
+  }
+  const fetched = await Promise.all(collectionFetches)
+  for (const collection of fetched) {
+    await preloadCollection(collection)
+  }
+}
 
 const messageHandler = async (request, sender, respond) => {
   switch (request.type) {
-    case config.MESSAGE_VALUE_KEYS.downloadAllImageAssets:
-      await downloadAllImageAssets()
-      break
-    case config.MESSAGE_VALUE_KEYS.downloadAllImageAssetsCancel:
-      downloadAllImageAssetsCancel()
+    case config.MESSAGE_VALUE_KEYS.preloadImages:
+      preloadImages()
       break
     default:
       console.warn('unhandled message type', { request, sender })

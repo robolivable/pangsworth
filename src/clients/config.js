@@ -15,22 +15,29 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
+const API_BASE_URL = 'https://flyff-api.sniegu.fr'
 const exportDefault = {
   API_ID_FETCH_BATCH_SIZE: 200,
   API_VERSION_CHECK_THRESHOLD_MS: 3600 * 1000,
-  API_BASE_URL: 'https://flyff-api.sniegu.fr',
+  API_REQUEST_RATE_SEC: 100,
+  API_BASE_URL,
   API_RESOURCE_TYPES: {
     classes: {
       name: 'classes',
       cache: true,
       hydrate: true,
       dataVersionAdded: 1,
+      iconStyles: {
+        messenger: 'messenger',
+        old_female: 'old_female',
+        old_male: 'old_male',
+        target: 'target'
+      },
       api: {
         ids: () => '/class',
         getById: id => `/class/${id}`,
         getByIds: ids => `/class/${ids.join()}`,
-        image: (style, fileName) => `/image/class/${style}/${fileName}`
+        image: (style, fileName) => `${API_BASE_URL}/image/class/${style}/${fileName}`
       }
     },
     world: {
@@ -42,7 +49,7 @@ const exportDefault = {
         ids: () => '/world',
         getById: id => `/world/${id}`,
         getByIds: ids => `/world/${ids.join()}`,
-        image: (tileName, tileX, tileY) => `/image/world/${tileName}${tileX}-${tileY}-0.png`
+        image: (tileName, tileX, tileY) => `${API_BASE_URL}/image/world/${tileName}${tileX}-${tileY}-0.png`
       }
     },
     monsters: {
@@ -54,7 +61,7 @@ const exportDefault = {
         ids: () => '/monster',
         getById: id => `/monster/${id}`,
         getByIds: ids => `/monster/${ids.join()}`,
-        image: fileName => `/image/monster/${fileName}`
+        image: fileName => `${API_BASE_URL}/image/monster/${fileName}`
       }
     },
     items: {
@@ -66,7 +73,7 @@ const exportDefault = {
         ids: () => '/item',
         getById: id => `/item/${id}`,
         getByIds: ids => `/item/${ids.join()}`,
-        image: fileName => `/image/class/${fileName}`
+        image: fileName => `${API_BASE_URL}/image/item/${fileName}`
       }
     },
     equipmentSets: {
@@ -85,11 +92,15 @@ const exportDefault = {
       cache: true,
       hydrate: true,
       dataVersionAdded: 1,
+      iconStyles: {
+        colored: 'colored',
+        old: 'old'
+      },
       api: {
         ids: () => '/skill',
         getById: id => `/skill/${id}`,
         getByIds: ids => `/skill/${ids.join()}`,
-        image: (style, fileName) => `/image/skill/${style}/${fileName}`
+        image: (style, fileName) => `${API_BASE_URL}/image/skill/${style}/${fileName}`
       }
     },
     npcs: {
@@ -101,7 +112,7 @@ const exportDefault = {
         ids: () => '/npc',
         getById: id => `/npc/${id}`,
         getByIds: ids => `/npc/${ids.join()}`,
-        image: fileName => `/image/npc/${fileName}`
+        image: fileName => `${API_BASE_URL}/image/npc/${fileName}`
       }
     },
     partySkills: {
@@ -109,11 +120,15 @@ const exportDefault = {
       cache: true,
       hydrate: true,
       dataVersionAdded: 1,
+      iconStyles: {
+        colored: 'colored',
+        old: 'old'
+      },
       api: {
         ids: () => '/partyskill',
         getById: id => `/partyskill/${id}`,
         getByIds: ids => `/partyskill/${ids.join()}`,
-        image: fileName => `/image/partyskill/${fileName}`
+        image: (style, fileName) => `${API_BASE_URL}/image/skill/${style}/${fileName}`
       }
     },
     quests: {
@@ -167,14 +182,14 @@ const exportDefault = {
       name: 'places',
       cache: true,
       api: {
-        image: fileName => `/image/place/${fileName}`
+        image: fileName => `${API_BASE_URL}/image/place/${fileName}`
       }
     },
     elements: {
       name: 'elements',
       cache: true,
       api: {
-        image: (style, fileName) => `/image/element/${style}/${fileName}`
+        image: (style, fileName) => `${API_BASE_URL}/image/element/${style}/${fileName}`
       }
     }
   },
@@ -212,8 +227,14 @@ const exportDefault = {
     imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING'
   },
   MESSAGE_VALUE_KEYS: {
-    downloadAllImageAssets: 'DOWNLOAD_ALL_ASSETS',
-    downloadAllImageAssetsCancel: 'DOWNLOAD_ALL_ASSETS_CANCEL'
+    preloadImages: 'PRELOAD_IMAGES',
+    preloadImagesCancel: 'PRELOAD_IMAGES_CANCEL'
+  },
+  BG_IMG_PRELOAD: {
+    maxRetry: 10,
+    backoffMs: 1000,
+    backoffExp: 1.5,
+    backoffVarianceSec: 30
   }
 }
 

@@ -60,6 +60,7 @@ class GameObject {
   get id () { return this.props.__id || this.props.id }
   get resourceUri () { throw new Error('must implement resourceUri getter') }
   get isEmpty () { return !Object.keys(this.props).length }
+  * images () {}
 
   get (key) {
     if (this.props[key] === undefined || this.props[key] === null) {
@@ -116,6 +117,7 @@ class GameObject {
 class GameObjectCollection {
   constructor (clazz, { name = '' }) {
     this.clazz = clazz
+    this.collectionName = name
     this.objectMap = {}
     this.collection = []
     this.resource = new GalaResource(name)
@@ -145,6 +147,10 @@ class GameObjectCollection {
   get length () { return this.collection.length }
 
   toJSON () { return this.collection }
+
+  toString () {
+    return `<${this.prototype.constructor} collection: ${this.collectionName}>`
+  }
 }
 
 class World extends GameObject {
@@ -158,6 +164,16 @@ class World extends GameObject {
 
   get resourceUri () {
     return config.API_RESOURCE_TYPES.world.api.getById(this.id)
+  }
+
+  * images () {
+    const tilesX = this.props?.width / this.props?.tileSize
+    const tilesY = this.props?.height / this.props?.tileSize
+    for (let x = 0; x < tilesX; ++x) {
+      for (let y = 0; y < tilesY; ++y) {
+        yield config.API_RESOURCE_TYPES.world.api.image(this.props.tileName, x, y)
+      }
+    }
   }
 }
 
@@ -176,9 +192,16 @@ class Monster extends GameObject {
 
   static get type () { return config.API_RESOURCE_TYPES.monsters }
   get type () { return Monster.type }
-
   get resourceUri () {
     return config.API_RESOURCE_TYPES.monsters.api.getById(this.id)
+  }
+
+  get icon () {
+    return config.API_RESOURCE_TYPES.monsters.api.image(this.props.icon)
+  }
+
+  * images () {
+    yield config.API_RESOURCE_TYPES.monsters.api.image(this.props.icon)
   }
 }
 
@@ -200,6 +223,18 @@ class Class extends GameObject {
   get resourceUri () {
     return config.API_RESOURCE_TYPES.classes.api.getById(this.id)
   }
+
+  get icon () { return this.iconStyled() }
+  iconStyled (style = config.API_RESOURCE_TYPES.classes.iconStyles.messenger) {
+    return config.API_RESOURCE_TYPES.classes.api.image(style, this.props.icon)
+  }
+
+  * images () {
+    const iconStyles = config.API_RESOURCE_TYPES.classes.iconStyles
+    for (const style of Object.values(iconStyles)) {
+      yield this.iconStyled(style)
+    }
+  }
 }
 
 class Classes extends GameObjectCollection {
@@ -219,6 +254,14 @@ class Item extends GameObject {
   get type () { return Item.type }
   get resourceUri () {
     return config.API_RESOURCE_TYPES.items.api.getById(this.id)
+  }
+
+  get icon () {
+    return config.API_RESOURCE_TYPES.items.api.image(this.props.icon)
+  }
+
+  * images () {
+    yield config.API_RESOURCE_TYPES.items.api.image(this.props.icon)
   }
 }
 
@@ -260,6 +303,18 @@ class Skill extends GameObject {
   get resourceUri () {
     return config.API_RESOURCE_TYPES.skills.api.getById(this.id)
   }
+
+  get icon () { return this.iconStyled() }
+  iconStyled (style = config.API_RESOURCE_TYPES.skills.iconStyles.old) {
+    return config.API_RESOURCE_TYPES.skills.api.image(style, this.props.icon)
+  }
+
+  * images () {
+    const iconStyles = config.API_RESOURCE_TYPES.skills.iconStyles
+    for (const style of Object.values(iconStyles)) {
+      yield this.iconStyled(style)
+    }
+  }
 }
 
 class Skills extends GameObjectCollection {
@@ -280,6 +335,14 @@ class NPC extends GameObject {
   get resourceUri () {
     return config.API_RESOURCE_TYPES.npcs.api.getById(this.id)
   }
+
+  get image () {
+    return config.API_RESOURCE_TYPES.npcs.api.image(this.props.image)
+  }
+
+  * images () {
+    yield config.API_RESOURCE_TYPES.npcs.api.image(this.props.image)
+  }
 }
 
 class NPCs extends GameObjectCollection {
@@ -299,6 +362,18 @@ class PartySkill extends GameObject {
   get type () { return PartySkill.type }
   get resourceUri () {
     return config.API_RESOURCE_TYPES.partySkills.api.getById(this.id)
+  }
+
+  get icon () { return this.iconStyled() }
+  iconStyled (style = config.API_RESOURCE_TYPES.partySkills.iconStyles.old) {
+    return config.API_RESOURCE_TYPES.partySkills.api.image(style, this.props.icon)
+  }
+
+  * images () {
+    const iconStyles = config.API_RESOURCE_TYPES.partySkills.iconStyles
+    for (const style of Object.values(iconStyles)) {
+      yield this.iconStyled(style)
+    }
   }
 }
 

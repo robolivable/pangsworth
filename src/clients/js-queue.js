@@ -38,6 +38,22 @@ class Queue {
     return node.value
   }
 
+  dequeueN (n = 1) {
+    const ret = []
+    n = parseInt(n)
+    if (!n || n < 0) {
+      return ret
+    }
+    for (let i = 0; i < n; ++i) {
+      const value = this.dequeue()
+      if (!value) {
+        continue
+      }
+      ret.push(value)
+    }
+    return ret
+  }
+
   push (...args) {
     for (const arg of args) {
       this.enqueue(arg)

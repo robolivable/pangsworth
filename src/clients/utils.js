@@ -24,9 +24,12 @@ const batch = async (aIn, f, size = config.API_ID_FETCH_BATCH_SIZE) => {
   return aOut
 }
 
+const rollDice = (max, min = 0) => Math.floor(Math.random() * (max - min) + min)
+
 module.exports = {
   stripArrayDuplicates,
   isObject,
   isArrayOfObjects,
-  batch
+  batch,
+  rollDice
 }
