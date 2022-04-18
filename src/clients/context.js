@@ -1,5 +1,6 @@
 const { GalaResource } = require('./gala')
 const { getGameObjectsByTypeName } = require('./game-objects')
+const { Settings } = require('./settings')
 
 const config = require('./config')
 const Search = require('./search')
@@ -14,7 +15,17 @@ class Context {
       const GameObjectCollection = GameObjects[1]
       this.gameData[name] = new GameObjectCollection()
     }
+    this.settings = new Settings()
     this.initialized = false
+  }
+
+  async _initStartup () {
+    if (this.settings.get(config.SETTINGS_VALUE_KEYS.backgroundImageLoading)) {
+      await chrome.runtime.sendMessage({
+        type: config.MESSAGE_VALUE_KEYS.preloadImages
+      })
+    }
+    // add additional checks here
   }
 
   async initialize () {
@@ -25,8 +36,10 @@ class Context {
       [config.STORAGE_VALUE_KEYS.cacheLoading]: true
     })
     try {
+      await this.settings.fetch()
       await GalaResource.hydrateMainCacheObjects()
-      this.searchClient = await Search.New()
+      await this._initStartup()
+      this.searchClient = await Search.New(this.settings.localization)
       await this.searchClient.hydrateIndex()
       for (const gameObjectCollection of Object.values(this.gameData)) {
         await gameObjectCollection.fetch()
@@ -39,6 +52,8 @@ class Context {
       [config.STORAGE_VALUE_KEYS.cacheLoading]: false
     })
   }
+
+  get Settings () { return this.settings }
 
   get Classes () {
     return this.gameData[config.API_RESOURCE_TYPES.classes.name]

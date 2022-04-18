@@ -4,14 +4,16 @@ const { GalaResource } = require('./gala')
 const Cache = require('./cache')
 const config = require('./config')
 const ElasticLunr = require('./elasticlunr')
+const i18nUtils = require('../i18n/utils')
 
 let SearchInstance
 
 class Search {
-  constructor (elasticlunr) {
+  constructor (elasticlunr, localization) {
     this.elasticlunr = elasticlunr
     this.lookup = this.lookup.bind(this)
     this.hydrateIndex = this.hydrateIndex.bind(this)
+    this.localization = localization
   }
 
   async lookup (term) {
@@ -44,14 +46,14 @@ class Search {
       const gameObjectCollection = new GameObjectCollection()
       await gameObjectCollection.fetch()
       for (const gameObject of gameObjectCollection.iter()) {
-        await gameObject.index()
+        await gameObject.index(this.localization)
         this.elasticlunr.updateDoc(gameObject.keyphrases.index)
       }
     }
     await this.elasticlunr.persistIndex(cacheVersion)
   }
 
-  static async New () {
+  static async New (l10n = i18nUtils.getDefaultLocale()) {
     if (!SearchInstance) {
       const cache = await Cache.withIndexedDb(config.SEARCH_TABLE)
       const elasticlunr = await ElasticLunr.withCache(cache)
@@ -60,7 +62,7 @@ class Search {
       for (const field of Object.keys(config.SEARCH_PRIMARY_INDEXES)) {
         elasticlunr.addField(field)
       }
-      SearchInstance = new Search(elasticlunr)
+      SearchInstance = new Search(elasticlunr, l10n)
     }
     return SearchInstance
   }

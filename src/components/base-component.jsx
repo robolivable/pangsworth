@@ -23,7 +23,6 @@ const i18n = require('../i18n')
 
 export default class BaseComponent extends React.Component {
   get displayName () {
-    const ctx = { language: 'en' }
-    return i18n.localize(ctx, this.i18nKey, 'displayName')
+    return i18n.localize(this.PangContext, this.i18nKey, 'displayName')
   }
 }

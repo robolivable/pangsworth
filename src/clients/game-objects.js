@@ -1,7 +1,6 @@
 const { GalaResource } = require('./gala')
 
 const config = require('./config')
-const i18nConfig = require('../i18n/config')
 const i18nUtils = require('../i18n/utils')
 const JSQueue = require('./js-queue')
 const utils = require('./utils')
@@ -69,7 +68,7 @@ class GameObject {
     return this.props[key]
   }
 
-  _findKeyphrases (props, l10n = i18nConfig.defaultLocale) {
+  _findKeyphrases (props, l10n) {
     const proc = JSQueue.from(Object.keys(props))
     while (proc.length) {
       const currentKey = proc.dequeue()
@@ -77,7 +76,7 @@ class GameObject {
       if (!currentValue) {
         continue
       }
-      if (i18nConfig.LOCALIZABLE_PROPS[currentKey]) {
+      if (i18nUtils.isLocalizableProp(currentKey)) {
         const localizedKeyphrase = currentValue[l10n.id]
         this.keyphrases.addIndex(currentKey, localizedKeyphrase)
         continue
@@ -101,8 +100,7 @@ class GameObject {
     }
   }
 
-  async index () {
-    const l10n = await i18nUtils.getLocalization()
+  async index (l10n = i18nUtils.getDefaultLocale()) {
     this._findKeyphrases(this.props, l10n)
   }
 

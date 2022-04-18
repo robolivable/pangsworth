@@ -225,17 +225,27 @@ const exportDefault = {
   },
   STORAGE_VALUE_KEYS: {
     cacheLoading: 'CACHE_LOADING',
-    imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING'
+    imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING',
+    userSettings: 'USER_SETTINGS'
   },
   MESSAGE_VALUE_KEYS: {
     preloadImages: 'PRELOAD_IMAGES',
-    preloadImagesCancel: 'PRELOAD_IMAGES_CANCEL'
+    preloadImagesProgress: 'PRELOAD_IMAGES_PROGRESS'
   },
   BG_IMG_PRELOAD: {
     maxRetry: 10,
     backoffMs: 1000,
     backoffExp: 1.5,
-    backoffVarianceSec: 30
+    backoffVarianceSec: 30,
+    progressTickMs: 1000
+  },
+  SETTINGS_VALUE_KEYS: {
+    backgroundImageLoading: 'backgroundImageLoading',
+    darkTheme: 'darkTheme'
+  },
+  DEFAULT_SETTINGS: {
+    backgroundImageLoading: false,
+    darkTheme: false
   }
 }
 

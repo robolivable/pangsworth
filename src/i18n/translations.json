@@ -2,61 +2,191 @@
   "components:world": {
     "displayName": {
       "en": "",
-      "pt": ""
+      "br": "",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:world:button": {
     "displayName": {
       "en": "World",
-      "pt": "Mundo"
+      "br": "Mundo",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:monsters:button": {
     "displayName": {
       "en": "Monsters",
-      "pt": "Monstros"
+      "br": "Monstros",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:classes:button": {
     "displayName": {
       "en": "Classes",
-      "pt": "Classes"
+      "br": "Classes",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:skills:button": {
     "displayName": {
       "en": "Skills",
-      "pt": "Habilidades"
+      "br": "Habilidades",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:npcs:button": {
     "displayName": {
       "en": "NPCs",
-      "pt": "NPCs"
+      "br": "NPCs",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:items:button": {
     "displayName": {
       "en": "Items",
-      "pt": "Items"
+      "br": "Items",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:equipments:button": {
     "displayName": {
       "en": "Equipment Set",
-      "pt": "Conjuntos de Equip"
+      "br": "Conjuntos de Equip",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:settings:button": {
     "displayName": {
       "en": "Settings",
-      "pt": "Opções"
+      "br": "Opções",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   },
   "components:search:button": {
     "displayName": {
       "en": "Search",
-      "pt": "Buscar"
+      "br": "Buscar",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
     }
   }
 }

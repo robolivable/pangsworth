@@ -64,6 +64,25 @@ const preloadCollection = async (collection, limiter) => {
   }
 }
 
+const progressNotifier = async limiter => {
+  while (!limiter.started) {
+    // eslint-disable-next-line
+    await new Promise(r => setTimeout(r, config.BG_IMG_PRELOAD.progressTickMs))
+  }
+  while (!limiter.done) {
+    await chrome.runtime.sendMessage({
+      type: config.MESSAGE_VALUE_KEYS.preloadImagesProgress,
+      limiter: limiter.toJSON()
+    })
+    // eslint-disable-next-line
+    await new Promise(r => setTimeout(r, config.BG_IMG_PRELOAD.progressTickMs))
+  }
+  await chrome.runtime.sendMessage({
+    type: config.MESSAGE_VALUE_KEYS.preloadImagesProgress,
+    limiter: limiter.toJSON()
+  })
+}
+
 const preloadImages = async () => {
   const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
     .filter(o => o.hydrate).map(o => o.name)
@@ -75,6 +94,7 @@ const preloadImages = async () => {
   }
   const fetched = await Promise.all(collectionFetches)
   const limiter = new Limiter(config.API_REQUEST_RATE_SEC, RATES.second)
+  progressNotifier(limiter)
   for (const collection of fetched) {
     await preloadCollection(collection, limiter)
   }
