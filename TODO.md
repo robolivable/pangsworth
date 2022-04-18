@@ -1,27 +1,28 @@
 #### Bugs
-~~- Cache miss issue~~
+- ~~Cache miss issue~~
 - Cache miss for live API updates within the version check threshold (need a manual button)
 - Offline mode throws errors
   - Identify when the app is running offline
   - Gracefully handle offline mode
 
 #### Features for pangsworth
-- settings
-  - light/dark theme
-  - language
+- ~~settings~~
+  - ~~light/dark theme~~
+  - ~~language~~
   - manual refresh cache
-  - download all image data
-~~- image caching~~
-~~  - icons~~
-~~  - map squares~~
-~~  - avatars~~
-~~- background image assets downloading~~
+  - ~~download all image data~~
+- ~~image caching~~
+    - ~~icons~~
+    - ~~map squares~~
+    - ~~avatars~~
+- ~~background image assets downloading~~
 - UI/UX for background downloading
   - build a button to trigger downloading
   - the button should confirm the action
   - while downloading, the button should change to "cancel download"
   - while downloading, have a loading indicator
   - if the "cancel download" button is clicked, confirm the action, and stop the background download
+- settings UI/UX
 - pannable, zoomable canvas for map display
 - list items of a specific type
 - export data from search results
