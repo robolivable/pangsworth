@@ -44,10 +44,9 @@ EquipmentSet.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={BattleGear}
         {...this.props}
-      >
-        <SvgIcon component={BattleGear} />
-      </PangNavigationItem>
+      />
     )
   }
 

@@ -17,6 +17,7 @@
 */
 import React from 'react'
 import clsx from 'clsx'
+import { SvgIcon } from '@material-ui/core'
 import { makeStyles, styled } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
@@ -105,9 +106,15 @@ export function PangReactiveDrawer (props) {
   )
 }
 
+export class PangIcon extends React.Component {
+  render () {
+    return (
+      <SvgIcon viewBox='0 0 500 476.6' {...this.props} />
+    )
+  }
+}
+
 export function PangNavigationItem (props) {
-  const SvgIcon = props.children
-  SvgIcon.props.viewBox = '0 0 500 476.6'
   return (
     <ListItem
       button
@@ -115,7 +122,7 @@ export function PangNavigationItem (props) {
       key={props.name}
       onClick={props._handleNavigationChange(props.onClick)}
     >
-      <ListItemIcon>{SvgIcon}</ListItemIcon>
+      <ListItemIcon><PangIcon component={props.icon} /></ListItemIcon>
       <ListItemText primary={props.name} />
     </ListItem>
   )

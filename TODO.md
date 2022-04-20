@@ -50,7 +50,7 @@
 - Lodestar(s): nested in "world" - wrapper over a player respawn location
 
 - Skill Levels: nested in "skill" containing effects at each level)
-    - Ability(s): nested in "skill level", "bonus" - for containing buff effect values
+  - Ability(s): nested in "skill level", "bonus" - for containing buff effect values
 
 - Location(s): nested in "monster", "npc", "lodestar" - used to pinpoint place on world map, or to draw tiles with coordinates
 - Attack(s): nested in "monster" - monster skills
@@ -58,3 +58,12 @@
 
 - Bonus(es): nested in "equipment sets" - wrapper for "ability" describing the applied effects for set bonuses
 
+#### Release
+- complete README
+- license all source files
+- generate third party licenses
+- add license terms agreement modal for first time use
+- documentation
+  - mocks and previews
+  - guides on features
+  - README references docs

@@ -67,10 +67,9 @@ Settings.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this._getName()}
         onClick={this._handleOnClick}
+        icon={this.Cog}
         {...this.props}
-      >
-        <SvgIcon component={this.Cog} />
-      </PangNavigationItem>
+      />
     )
   }
 

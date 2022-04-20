@@ -44,10 +44,9 @@ Skills.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={EnlightenmentIcon}
         {...this.props}
-      >
-        <SvgIcon component={EnlightenmentIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

@@ -43,10 +43,9 @@ Classes.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={FamilyTreeIcon}
         {...this.props}
-      >
-        <SvgIcon component={FamilyTreeIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

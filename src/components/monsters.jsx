@@ -44,10 +44,9 @@ Monsters.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={MimicChestIcon}
         {...this.props}
-      >
-        <SvgIcon component={MimicChestIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

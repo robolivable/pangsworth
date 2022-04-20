@@ -17,10 +17,10 @@
 */
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
-import { SvgIcon } from '@material-ui/core'
+//import { SvgIcon } from '@material-ui/core'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import { PangNavigationItem, PangIcon } from './common'
 import MountainsIcon from '../../static/images/mountains.svg'
 
 export default class World extends BaseComponent {
@@ -48,10 +48,9 @@ World.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={MountainsIcon}
         {...this.props}
-      >
-        <SvgIcon component={MountainsIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

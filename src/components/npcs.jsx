@@ -44,10 +44,9 @@ NPCs.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={BlacksmithIcon}
         {...this.props}
-      >
-        <SvgIcon component={BlacksmithIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

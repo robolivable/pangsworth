@@ -44,10 +44,9 @@ Items.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={BagIcon}
         {...this.props}
-      >
-        <SvgIcon component={BagIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 

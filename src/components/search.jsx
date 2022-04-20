@@ -43,10 +43,9 @@ Search.Button = class extends BaseComponent {
       <PangNavigationItem
         name={this.displayName}
         onClick={this._handleOnClick}
+        icon={SearchIcon}
         {...this.props}
-      >
-        <SvgIcon component={SearchIcon} />
-      </PangNavigationItem>
+      />
     )
   }
 
