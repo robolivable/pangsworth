@@ -55,6 +55,10 @@
   - mocks and previews
   - guides on features
   - README references docs
+- Add Pangsworth metadata
+  - Artwork
+    - Extension UI Icons
+  - Tidy up manifest.json
 - Define release deployment process
 - Open source all code
 
