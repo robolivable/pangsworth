@@ -1,11 +1,4 @@
-#### Bugs
-- ~~Cache miss issue~~
-- Cache miss for live API updates within the version check threshold (need a manual button)
-- Offline mode throws errors
-  - Identify when the app is running offline
-  - Gracefully handle offline mode
-
-#### Features for pangsworth
+#### MVP Features for pangsworth
 - ~~settings~~
   - ~~light/dark theme~~
   - ~~language~~
@@ -17,36 +10,33 @@
     - ~~avatars~~
 - ~~background image assets downloading~~
 - UI/UX for background downloading
-  - build a button to trigger downloading
-  - the button should confirm the action
-  - while downloading, the button should change to "cancel download"
+  - Add a checkbox to enable background image caching on start
+  - The checkbox should enable a cache refresh button
+  - If the cache refresh button is pressed, it will trigger a refresh of the image cache
+  - If the image cache was never downloaded, it will begin downloading
+  - while downloading, the button text should change to "cancel refresh"
   - while downloading, have a loading indicator
-  - if the "cancel download" button is clicked, confirm the action, and stop the background download
+  - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
 - settings UI/UX
-- pannable, zoomable canvas for map display
+  - dark/light mode
+  - image pre-fetch caching enable/disable
+  - choose display language
 - list items of a specific type
-- export data from search results
-- copy in-game link to clipboard
-- search history saved in search bar
-  - group history by date
+  - filter on item types
 - search as you type
 - nested data types in lists
 - search results data list (less data focused)
   - include icon in each row, button to export, button to copy item id to clipboard
 - lists are all virtualized (performance lists)
 - data focused views for game data
+  - Have a single item inspector view for each tab
   - sortable tables for data
-- tool tips look nice
-- alerting for ETL
-  - exporting data
-  - copying to clipboard
+- ~~tool tips look nice~~
 - breadcrumbs for tracking location in extension
   - interact with router, use colapsed breadcrumb system
   - user should be able to click through infinitely long chains of item references
-- Graph to plot mob experience gained per level (on a monster view)
-- Support Firefox
 
-#### Data models needed
+#### Data models needed for MVP
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map
 - Lodestar(s): nested in "world" - wrapper over a player respawn location
 - Skill Levels: nested in "skill" containing effects at each level)
@@ -56,7 +46,7 @@
 - Spawn(s): nested in "monster" - monster spawn locations, used to draw areas on map for spawn areas
 - Bonus(es): nested in "equipment sets" - wrapper for "ability" describing the applied effects for set bonuses
 
-#### Release
+#### Release requirements
 - complete README
 - license all source files
 - generate third party licenses
@@ -65,3 +55,22 @@
   - mocks and previews
   - guides on features
   - README references docs
+
+#### Bugs
+- ~~Cache miss issue~~
+- Cache miss for live API updates within the version check threshold (need a manual button)
+- Offline mode throws errors
+  - Identify when the app is running offline
+  - Gracefully handle offline mode
+
+#### Features for later
+- pannable, zoomable canvas for map display
+- search history saved in search bar
+  - group history by date
+- export data from search results
+- alerting for ETL
+  - exporting data
+  - copying to clipboard
+- copy in-game link to clipboard
+- Graph to plot mob experience gained per level (on a monster view)
+- Support Firefox
