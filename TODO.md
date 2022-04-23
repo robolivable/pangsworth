@@ -55,6 +55,8 @@
   - mocks and previews
   - guides on features
   - README references docs
+- Define release deployment process
+- Open source all code
 
 #### Bugs
 - ~~Cache miss issue~~
@@ -74,3 +76,4 @@
 - copy in-game link to clipboard
 - Graph to plot mob experience gained per level (on a monster view)
 - Support Firefox
+- Chrome extension store?
