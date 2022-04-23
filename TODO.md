@@ -79,5 +79,6 @@
   - copying to clipboard
 - copy in-game link to clipboard
 - Graph to plot mob experience gained per level (on a monster view)
+- Accessibility features (keyboard-only usage)
 - Support Firefox
 - Chrome extension store?
