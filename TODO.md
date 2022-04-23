@@ -44,6 +44,7 @@
   - interact with router, use colapsed breadcrumb system
   - user should be able to click through infinitely long chains of item references
 - Graph to plot mob experience gained per level (on a monster view)
+- Support Firefox
 
 #### Data models needed
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map

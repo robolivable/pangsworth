@@ -18,8 +18,6 @@
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
 
-import { SvgIcon } from '@material-ui/core'
-
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import BattleGear from '../../static/images/battle-gear.svg'
@@ -43,6 +41,7 @@ EquipmentSet.Button = class extends BaseComponent {
     return (
       <PangNavigationItem
         name={this.displayName}
+        title={this.displayName}
         onClick={this._handleOnClick}
         icon={BattleGear}
         {...this.props}
@@ -55,4 +54,4 @@ EquipmentSet.Button = class extends BaseComponent {
   }
 }
 
-EquipmentSet.NAVIGATION = 'equipmentSet'
+EquipmentSet.ROUTE = 'Equipment Set'

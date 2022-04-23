@@ -1,12 +1,17 @@
 const { GalaResource } = require('./gala')
 const { getGameObjectsByTypeName } = require('./game-objects')
 const { Settings } = require('./settings')
+const { Breadcrumbs } = require('./breadcrumbs')
 
 const config = require('./config')
 const Search = require('./search')
 
+const storageSetCacheLoading = value => chrome.storage.local.set({
+  [config.STORAGE_VALUE_KEYS.local.cacheLoading]: value
+})
+
 class Context {
-  constructor () {
+  constructor (defaultRoute) {
     this.gameData = {}
     const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
       .filter(o => o.hydrate).map(o => o.name)
@@ -16,14 +21,21 @@ class Context {
       this.gameData[name] = new GameObjectCollection()
     }
     this.settings = new Settings()
+    this.breadcrumbs = Breadcrumbs.fromRoute(defaultRoute)
     this.initialized = false
   }
+
+  get currentNavigation () { return this.breadcrumbs.current.navigation }
 
   async _initStartup () {
     if (this.settings.get(config.SETTINGS_VALUE_KEYS.backgroundImageLoading)) {
       await chrome.runtime.sendMessage({
         type: config.MESSAGE_VALUE_KEYS.preloadImages
       })
+    }
+    const breadcrumbs = this.settings.get(config.STORAGE_VALUE_KEYS.sync.breadcrumbs)
+    if (breadcrumbs) {
+      this.breadcrumbs = Breadcrumbs.fromJSON(breadcrumbs)
     }
     // add additional checks here
   }
@@ -32,9 +44,7 @@ class Context {
     if (this.initialized) {
       return
     }
-    await chrome.storage.local.set({
-      [config.STORAGE_VALUE_KEYS.cacheLoading]: true
-    })
+    await storageSetCacheLoading(true)
     try {
       await this.settings.fetch()
       await GalaResource.hydrateMainCacheObjects()
@@ -48,9 +58,7 @@ class Context {
     } catch (error) {
       console.error('error initializing pang context', { error })
     }
-    await chrome.storage.local.set({
-      [config.STORAGE_VALUE_KEYS.cacheLoading]: false
-    })
+    await storageSetCacheLoading(false)
   }
 
   get Settings () { return this.settings }

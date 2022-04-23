@@ -28,23 +28,38 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import Tooltip from '@material-ui/core/Tooltip'
+
+const { localize } = require('../i18n')
+const config = require('../clients/config')
 
 const drawerWidth = 240
+
+export const getDarkTheme = props =>
+  !props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.darkTheme)
+
+export const DARK_CONTRAST_COLOR = '255 255 255'
+export const LIGHT_CONTRAST_COLOR = '50 50 50'
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
     flexShrink: 0,
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    backgroundColor: 'rgba(0 0 0 / 0%)',
+    borderColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 30%)`
   },
   drawerOpen: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
     width: drawerWidth,
     overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
-    })
+    }),
+    borderColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 30%)`
   },
   drawerClose: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -53,7 +68,14 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(5) + 1,
     [theme.breakpoints.up('xs')]: {
       width: theme.spacing(7) + 1
-    }
+    },
+    borderColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 30%)`
+  },
+  textColors: {
+    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 90%)`
+  },
+  dividerColors: {
+    backgroundColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 30%)`
   }
 }))
 
@@ -64,7 +86,7 @@ const NavigationFooterDiv = styled('div')(() => ({
 }))
 
 export function PangReactiveDrawer (props) {
-  const classes = useStyles()
+  const classes = useStyles(props)
   const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
@@ -89,16 +111,26 @@ export function PangReactiveDrawer (props) {
         })
       }}
     >
-      <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-        {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-      </IconButton>
-      <Divider />
-      <List>
+      <Tooltip title={open
+        ? localize(props.PangContext, 'drawer:button', 'collapse')
+        : localize(props.PangContext, 'drawer:button', 'expand')}
+      >
+        <IconButton
+          onClick={open ? handleDrawerClose : handleDrawerOpen}
+          className={classes.textColors}
+        >
+          {!open
+            ? <ChevronRightIcon className={classes.textColors} />
+            : <ChevronLeftIcon className={classes.textColors} />}
+        </IconButton>
+      </Tooltip>
+      <Divider className={classes.dividerColors} />
+      <List className={classes.textColors}>
         {props.items}
       </List>
-      <NavigationFooterDiv>
-        <Divider />
-        <List>
+      <NavigationFooterDiv className={classes.textColors}>
+        <Divider className={classes.dividerColors} />
+        <List className={classes.textColors}>
           {props.settingsItem}
         </List>
       </NavigationFooterDiv>
@@ -106,24 +138,27 @@ export function PangReactiveDrawer (props) {
   )
 }
 
-export class PangIcon extends React.Component {
-  render () {
-    return (
-      <SvgIcon viewBox='0 0 500 476.6' {...this.props} />
-    )
-  }
+export function PangIcon (props) {
+  return <SvgIcon viewBox='0 0 500 476.6' {...props} />
 }
 
 export function PangNavigationItem (props) {
+  const classes = useStyles(props)
   return (
-    <ListItem
-      button
-      title={props.name}
-      key={props.name}
-      onClick={props._handleNavigationChange(props.onClick)}
-    >
-      <ListItemIcon><PangIcon component={props.icon} /></ListItemIcon>
-      <ListItemText primary={props.name} />
-    </ListItem>
+    <Tooltip title={props.title}>
+      <div>
+        <ListItem
+          button
+          key={props.name}
+          onClick={props._handleRoute(props.onClick)}
+          className={classes.textColors}
+        >
+          <ListItemIcon className={classes.textColors}>
+            <PangIcon component={props.icon} className={classes.textColors} />
+          </ListItemIcon>
+          <ListItemText primary={props.name} />
+        </ListItem>
+      </div>
+    </Tooltip>
   )
 }

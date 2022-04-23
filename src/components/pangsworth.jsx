@@ -16,67 +16,135 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from 'react'
-import { styled } from '@material-ui/core/styles'
+import { makeStyles, styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
+import Link from '@material-ui/core/Link'
 
 import BaseComponent from './base-component'
-import Navigation from './index'
-import { PangReactiveDrawer } from './common'
+import Routes from './index'
+import {
+  PangReactiveDrawer,
+  getDarkTheme,
+  DARK_CONTRAST_COLOR,
+  LIGHT_CONTRAST_COLOR
+} from './common'
 
 import Context from '../clients/context'
 
-const RootDiv = styled('div')(() => ({
-  display: 'flex'
+const BREADCRUMBS_MAX_ITEMS = 5
+
+const RootDiv = styled('div')(props => ({
+  display: 'flex',
+  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+}))
+
+const MainDiv = styled('div')(() => ({}))
+
+const HeaderBreadcrumbs = styled('div')(({ theme }) => ({
+  display: 'flex',
+  padding: theme.spacing(1),
+  position: 'fixed',
+  zIndex: '1',
+  overflowX: 'auto',
+  backdropFilter: 'blur(5px)'
 }))
 
 const Main = styled('main')(({ theme }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3)
+  display: 'flex',
+  padding: theme.spacing(3),
+  paddingTop: theme.spacing(6),
+  backdropFilter: 'blur(2px)'
+}))
+
+const pangStyles = makeStyles({
+  textColor: {
+    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+  },
+  bgImage: {
+    minHeight: '-webkit-fill-available',
+    minWidth: '-webkit-fill-available',
+    backgroundImage: props => `url('images/background-${getDarkTheme(props) ? 'dark' : 'light'}.jpg')`,
+    position: 'fixed'
+  }
+})
+
+const BGImage = props => {
+  const PangStyledClasses = pangStyles(props)
+  return <div className={PangStyledClasses.bgImage} />
+}
+
+const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
+  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
 }))
 
 export default class Pangsworth extends BaseComponent {
   constructor (...args) {
     super(...args)
-    this._handleNavigationChange = this._handleNavigationChange.bind(this)
-    this.PangContext = new Context()
-    this.PangContext.initialize()
+    this._handleRouteChange = this._handleRouteChange.bind(this)
+    this.PangContext = new Context(Routes.default)
     this.state = {
-      navigation: Navigation.default
+      route: this.PangContext.currentNavigation.route
     }
   }
 
+  async componentDidMount () {
+    await this.PangContext.initialize()
+  }
+
   render () {
-    const items = Object.values(Navigation).map(
-      Pangponent => ([Pangponent.Button, Pangponent.NAVIGATION])
+    const items = Object.values(Routes).map(
+      Pangponent => ([Pangponent.Button, Pangponent.ROUTE])
     )
     return (
-      <RootDiv>
+      <RootDiv PangContext={this.PangContext}>
         <CssBaseline />
+        <BGImage PangContext={this.PangContext} />
         <PangReactiveDrawer
-          items={items.map(([Pangponent, navigation]) => (
+          PangContext={this.PangContext}
+          items={items.map(([Pangponent, route]) => (
             <Pangponent
-              key={navigation}
-              _handleNavigationChange={this._handleNavigationChange(navigation)}
+              key={route}
+              _handleRoute={this._handleRouteChange(route)}
               PangContext={this.PangContext}
             />
           ))}
-          settingsItem={React.createElement(Navigation.settings.Button, {
-            _handleNavigationChange: this._handleNavigationChange(
-              Navigation.settings.NAVIGATION
+          settingsItem={React.createElement(Routes.settings.Button, {
+            _handleRoute: this._handleRouteChange(
+              Routes.settings.ROUTE
             ),
             PangContext: this.PangContext
           })}
         />
-        <Main>
-          {React.createElement(Navigation[this.state.navigation], {})}
-        </Main>
+        <MainDiv PangContext={this.PangContext}>
+          <HeaderBreadcrumbs PangContext={this.PangContext}>
+            <PangBreadcrumbs
+              PangContext={this.PangContext}
+              maxItems={BREADCRUMBS_MAX_ITEMS}
+              aria-label='breadcrumb'
+            >
+              {Array.from(this.PangContext.breadcrumbs.iter()).map(crumb => (
+                <Link key={crumb.navigation.route} underline='hover' color='inherit'>
+                  {crumb.navigation.route}
+                </Link>
+              ))}
+            </PangBreadcrumbs>
+          </HeaderBreadcrumbs>
+          <Main PangContext={this.PangContext}>
+            {React.createElement(
+              Routes[this.state.route],
+              { PangContext: this.PangContext }
+            )}
+          </Main>
+        </MainDiv>
       </RootDiv>
     )
   }
 
-  _handleNavigationChange (navigation) {
+  _handleRouteChange (route) {
     return (fn) => (e) => {
-      this.setState({ navigation })
+      this.setState({ route })
+      this.PangContext.breadcrumbs.resetWith(route)
       if (typeof fn !== 'function') {
         return
       }

@@ -188,5 +188,41 @@
       "sw": "",
       "th": ""
     }
+  },
+  "drawer:button": {
+    "collapse": {
+      "en": "Collapse",
+      "br": "Fechar",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
+    },
+    "expand": {
+      "en": "Expand",
+      "br": "Abrir",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
+    }
   }
 }

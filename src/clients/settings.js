@@ -17,9 +17,9 @@ class Settings {
 
   async fetch () {
     const result = await chrome.storage.sync.get([
-      config.STORAGE_VALUE_KEYS.userSettings
+      config.STORAGE_VALUE_KEYS.sync.userSettings
     ])
-    const props = result[config.STORAGE_VALUE_KEYS.userSettings]
+    const props = result[config.STORAGE_VALUE_KEYS.sync.userSettings]
     this.props = Object.assign({}, this.props, props || {})
     const localization = await i18nUtils.getLocalization()
     this.localization = localization || this.localization
@@ -27,7 +27,7 @@ class Settings {
 
   async persist () {
     await chrome.storage.sync.set({
-      [config.STORAGE_VALUE_KEYS.userSettings]: this.props
+      [config.STORAGE_VALUE_KEYS.sync.userSettings]: this.props
     })
     await i18nUtils.setLocalization(this.localization)
   }

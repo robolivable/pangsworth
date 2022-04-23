@@ -61,8 +61,8 @@ const config = {
     filename: '[name].js'
   },
   plugins: [],
-  resolve: { extensions: ['.js', '.jsx'] },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  resolve: { extensions: ['.js', '.jsx'] }
 }
 
 if (process.env.NODE_ENV === 'production') {

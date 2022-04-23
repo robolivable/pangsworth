@@ -224,9 +224,14 @@ const exportDefault = {
     retryOn: [503]
   },
   STORAGE_VALUE_KEYS: {
-    cacheLoading: 'CACHE_LOADING',
-    imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING',
-    userSettings: 'USER_SETTINGS'
+    local: {
+      cacheLoading: 'CACHE_LOADING', // UI message channel
+      imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING'
+    },
+    sync: {
+      userSettings: 'USER_SETTINGS',
+      breadcrumbs: 'BREADCRUMBS'
+    }
   },
   MESSAGE_VALUE_KEYS: {
     preloadImages: 'PRELOAD_IMAGES',

@@ -17,7 +17,6 @@
 */
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
-import { SvgIcon } from '@material-ui/core'
 
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
@@ -42,6 +41,7 @@ Search.Button = class extends BaseComponent {
     return (
       <PangNavigationItem
         name={this.displayName}
+        title={this.displayName}
         onClick={this._handleOnClick}
         icon={SearchIcon}
         {...this.props}
@@ -54,4 +54,4 @@ Search.Button = class extends BaseComponent {
   }
 }
 
-Search.NAVIGATION = 'search'
+Search.ROUTE = 'Search'

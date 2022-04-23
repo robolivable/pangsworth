@@ -17,7 +17,6 @@
 */
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
-import { SvgIcon } from '@material-ui/core'
 
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
@@ -52,13 +51,13 @@ Settings.Button = class extends BaseComponent {
   }
 
   async _getFirstLoadingState () {
-    const result = await chrome.storage.local.get([config.STORAGE_VALUE_KEYS.cacheLoading])
-    this.setState({ loading: result[config.STORAGE_VALUE_KEYS.cacheLoading] })
+    const result = await chrome.storage.local.get([config.STORAGE_VALUE_KEYS.local.cacheLoading])
+    this.setState({ loading: result[config.STORAGE_VALUE_KEYS.local.cacheLoading] })
   }
 
   _handleLoadingListener (changes) {
     this.setState({
-      loading: !!changes[config.STORAGE_VALUE_KEYS.cacheLoading]?.newValue
+      loading: !!changes[config.STORAGE_VALUE_KEYS.local.cacheLoading]?.newValue
     })
   }
 
@@ -66,6 +65,7 @@ Settings.Button = class extends BaseComponent {
     return (
       <PangNavigationItem
         name={this._getName()}
+        title={this._getTitle()}
         onClick={this._handleOnClick}
         icon={this.Cog}
         {...this.props}
@@ -74,11 +74,15 @@ Settings.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {
-    console.log('settings, yay!', this.props)
+    console.log('settings, yay!', { props: this.props })
   }
 
   _getName () {
-    return this.state.loading ? LOADING_TOOLTIP_MSG : this.displayName
+    return this.displayName
+  }
+
+  _getTitle () {
+    return this.state.loading ? LOADING_TOOLTIP_MSG : this._getName()
   }
 
   Cog (props) {
@@ -106,4 +110,4 @@ const Rotation = props => {
   )
 }
 
-Settings.NAVIGATION = 'settings'
+Settings.ROUTE = 'Settings'

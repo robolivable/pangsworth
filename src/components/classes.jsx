@@ -17,7 +17,6 @@
 */
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
-import { SvgIcon } from '@material-ui/core'
 
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
@@ -42,6 +41,7 @@ Classes.Button = class extends BaseComponent {
     return (
       <PangNavigationItem
         name={this.displayName}
+        title={this.displayName}
         onClick={this._handleOnClick}
         icon={FamilyTreeIcon}
         {...this.props}
@@ -54,4 +54,4 @@ Classes.Button = class extends BaseComponent {
   }
 }
 
-Classes.NAVIGATION = 'classes'
+Classes.ROUTE = 'Classes'

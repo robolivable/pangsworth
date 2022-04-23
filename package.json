@@ -5,8 +5,8 @@
   "author": "https://github.com/robolivable",
   "license": "GPL-3.0",
   "scripts": {
-    "build": "webpack --mode development",
-    "build-dev": "webpack watch --no-color --mode production",
+    "build": "webpack",
+    "build-dev": "webpack --mode development",
     "build-release": "NODE_ENV=production npm run build",
     "jshint": "standard",
     "postinstall": "npm run build-release",

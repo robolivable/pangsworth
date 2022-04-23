@@ -18,8 +18,6 @@
 /* eslint-disable react/jsx-handler-names */
 import React from 'react'
 
-import { SvgIcon } from '@material-ui/core'
-
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import BlacksmithIcon from '../../static/images/blacksmith.svg'
@@ -43,6 +41,7 @@ NPCs.Button = class extends BaseComponent {
     return (
       <PangNavigationItem
         name={this.displayName}
+        title={this.displayName}
         onClick={this._handleOnClick}
         icon={BlacksmithIcon}
         {...this.props}
@@ -55,4 +54,4 @@ NPCs.Button = class extends BaseComponent {
   }
 }
 
-NPCs.NAVIGATION = 'npcs'
+NPCs.ROUTE = 'NPCs'

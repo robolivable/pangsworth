@@ -25,20 +25,24 @@ import Skills from './skills'
 import NPCs from './npcs'
 import Settings from './settings'
 
-const Navigation = {
-  [Search.NAVIGATION]: Search,
-  [World.NAVIGATION]: World,
-  [Monsters.NAVIGATION]: Monsters,
-  [Items.NAVIGATION]: Items,
-  [EquipmentSet.NAVIGATION]: EquipmentSet,
-  [Classes.NAVIGATION]: Classes,
-  [Skills.NAVIGATION]: Skills,
-  [NPCs.NAVIGATION]: NPCs
+const Routes = {
+  [Search.ROUTE]: Search,
+  [World.ROUTE]: World,
+  [Monsters.ROUTE]: Monsters,
+  [Items.ROUTE]: Items,
+  [EquipmentSet.ROUTE]: EquipmentSet,
+  [Classes.ROUTE]: Classes,
+  [Skills.ROUTE]: Skills,
+  [NPCs.ROUTE]: NPCs
 }
-Object.defineProperty(Navigation, 'default', { get: () => Search.NAVIGATION })
+
+// NOTE: defining default prop differently to avoid module.exports conflicts
+Object.defineProperty(Routes, 'default', { get: () => Search.ROUTE })
 
 // NOTE: settings component exported differently to bypass dynamic
 // loading
-Object.defineProperty(Navigation, 'settings', { get: () => Settings })
+Object.defineProperty(Routes, Settings.ROUTE, { get: () => Settings })
+// NOTE: HACK: we access this route through code in lowercase
+Object.defineProperty(Routes, 'settings', { get: () => Settings })
 
-export default Navigation
+export default Routes
