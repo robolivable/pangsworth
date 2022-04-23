@@ -19,18 +19,48 @@
 import React from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import {
+  PangNavigationItem,
+  getDarkTheme,
+  DARK_CONTRAST_COLOR,
+  LIGHT_CONTRAST_COLOR
+} from './common'
 import CogIconPath from '../../static/images/cog.svg'
+
+import { makeStyles } from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
 
 import * as config from '../clients/config'
 
 const LOADING_TOOLTIP_MSG = 'Indexing Flyff data...'
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: theme.spacing(1),
+      width: theme.spacing(16),
+      height: theme.spacing(16)
+    },
+    backgroundColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 70%)`
+  }
+}))
+
+const SettingsPaper = () => {
+  const classes = useStyles()
+  return (
+    <div className={classes.root}>
+      <Paper elevation={2}>
+        TEST
+      </Paper>
+    </div>
+  )
+}
+
 export default class Settings extends BaseComponent {
   render () {
-    return (
-      <div>TODO Settings</div>
-    )
+    return <SettingsPaper PangContext={this.props.PangContext} />
   }
 }
 

@@ -36,7 +36,7 @@ const config = require('../clients/config')
 const drawerWidth = 240
 
 export const getDarkTheme = props =>
-  !props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.darkTheme)
+  props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.darkTheme)
 
 export const DARK_CONTRAST_COLOR = '255 255 255'
 export const LIGHT_CONTRAST_COLOR = '50 50 50'

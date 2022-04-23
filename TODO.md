@@ -79,6 +79,10 @@
   - copying to clipboard
 - copy in-game link to clipboard
 - Graph to plot mob experience gained per level (on a monster view)
+- Upgrade to MUI 5.0
 - Accessibility features (keyboard-only usage)
 - Support Firefox
 - Chrome extension store?
+- Plugin framework
+  - Allow embedding contribution from others
+  - Is there a safe way to allow requests to external origins other than Sniegu?
