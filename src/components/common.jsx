@@ -37,6 +37,12 @@ const drawerWidth = 240
 
 export const getDarkTheme = props =>
   props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.darkTheme)
+export const setDarkTheme = (props, value) =>
+  props.PangContext.settings.set(config.SETTINGS_VALUE_KEYS.darkTheme, value)
+export const getBackgroundImageLoading = props =>
+  props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.backgroundImageLoading)
+export const setBackgroundImageLoading = (props, value) =>
+  props.PangContext.settings.set(config.SETTINGS_VALUE_KEYS.backgroundImageLoading, value)
 
 export const DARK_CONTRAST_COLOR = '255 255 255'
 export const LIGHT_CONTRAST_COLOR = '50 50 50'

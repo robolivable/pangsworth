@@ -5,13 +5,19 @@ const { Breadcrumbs } = require('./breadcrumbs')
 
 const config = require('./config')
 const Search = require('./search')
+const EventEmitter = require('events')
 
 const storageSetCacheLoading = value => chrome.storage.local.set({
   [config.STORAGE_VALUE_KEYS.local.cacheLoading]: value
 })
 
-class Context {
-  constructor (defaultRoute) {
+const BuiltinEvents = {
+  ASK_RERENDER: 'askRerender'
+}
+
+class Context extends EventEmitter {
+  constructor (defaultRoute, ...args) {
+    super(...args)
     this.gameData = {}
     const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
       .filter(o => o.hydrate).map(o => o.name)
@@ -61,7 +67,17 @@ class Context {
     await storageSetCacheLoading(false)
   }
 
+  askRerender () { this.emit(BuiltinEvents.ASK_RERENDER) }
+
   get Settings () { return this.settings }
+
+  async fetchSettings () {
+    await this.settings.fetch()
+  }
+
+  async saveSettings () {
+    await this.settings.persist()
+  }
 
   get Classes () {
     return this.gameData[config.API_RESOURCE_TYPES.classes.name]
@@ -107,6 +123,8 @@ class Context {
     return this.gameData[config.API_RESOURCE_TYPES.achievements.name]
   }
 }
+
+Context.ASK_RERENDER = BuiltinEvents.ASK_RERENDER
 
 module.exports = Context
 module.exports.default = Context

@@ -26,10 +26,18 @@ const batch = async (aIn, f, size = config.API_ID_FETCH_BATCH_SIZE) => {
 
 const rollDice = (max, min = 0) => Math.floor(Math.random() * (max - min) + min)
 
+const prettyPrintSeconds = seconds => {
+  const tHours = Math.floor(seconds / 3600) + ''
+  const tMinutes = Math.floor(seconds % 3600 / 60) + ''
+  const tSeconds = Math.floor(seconds % 3600 % 60) + ''
+  return `${tHours.padStart(2, '0')}:${tMinutes.padStart(2, '0')}:${tSeconds.padStart(2, '0')}`
+}
+
 module.exports = {
   stripArrayDuplicates,
   isObject,
   isArrayOfObjects,
   batch,
-  rollDice
+  rollDice,
+  prettyPrintSeconds
 }

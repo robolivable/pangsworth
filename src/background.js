@@ -27,6 +27,7 @@ const getRetryBackoffMS = retry =>
   ((config.BG_IMG_PRELOAD.backoffExp * retry) ** 2) *
     utils.rollDice(config.BG_IMG_PRELOAD.backoffVarianceSec) *
       config.BG_IMG_PRELOAD.backoffMs
+
 const preloadRetry = async (limiter, src, retries = 0) => {
   if (retries > config.BG_IMG_PRELOAD.maxRetry) {
     return
@@ -100,13 +101,17 @@ const preloadImages = async () => {
   }
 }
 
+let preloadImageLock = false
 const messageHandler = async (request, sender, respond) => {
   switch (request.type) {
     case config.MESSAGE_VALUE_KEYS.preloadImages:
-      preloadImages()
+      if (preloadImageLock) {
+        console.warn('ignoring redundant request to preload images')
+        break
+      }
+      preloadImageLock = true
+      preloadImages().then(() => { preloadImageLock = false })
       break
-    default:
-      console.warn('unhandled message type', { request, sender })
   }
   respond() // NOTE: this is to suppress console errors (chromium bug #1304272)
 }

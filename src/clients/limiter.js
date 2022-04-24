@@ -1,14 +1,15 @@
 const EventEmitter = require('events')
 const JSQueue = require('./js-queue')
+const utils = require('./utils')
 
 const RATES = { millisecond: 1, second: 1000 }
 const QUEUE_EVENT = 'enqueue'
 
 class Limiter extends EventEmitter {
-  constructor (rate, time, ...args) {
+  constructor (rate, timeMs, ...args) {
     super(...args)
     this.rate = rate
-    this.time = time
+    this.timeMs = timeMs
     this.queue = new JSQueue()
     this.on(QUEUE_EVENT, this.proc)
     this.metric = 0
@@ -17,13 +18,13 @@ class Limiter extends EventEmitter {
   }
 
   get progress () {
-    return `${Math.round(this.queue.length / this.metric * 100)}%`
+    return 100 - Math.round(this.queue.length / this.metric * 100)
   }
 
   get timeRemaining () {
-    const d = new Date()
-    d.setSeconds(this.time / this.rate / RATES.second * this.queue.length)
-    return `${d.toISOString().substr(11, 8)}`
+    const remainingSeconds =
+      ((this.timeMs / this.rate) * this.queue.length) / RATES.second
+    return utils.prettyPrintSeconds(remainingSeconds)
   }
 
   get done () {
@@ -52,7 +53,7 @@ class Limiter extends EventEmitter {
       const promiseFn = this.queue.dequeue()
       const startedAt = Date.now()
       promiseFn()
-      const delay = this.time / this.rate
+      const delay = this.timeMs / this.rate
       const wait = Math.max(0, delay - (Date.now() - startedAt))
       // eslint-disable-next-line
       await new Promise(r => setTimeout(r, wait))

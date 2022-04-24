@@ -22,13 +22,26 @@ import BaseComponent from './base-component'
 import {
   PangNavigationItem,
   getDarkTheme,
+  setDarkTheme,
+  getBackgroundImageLoading,
+  setBackgroundImageLoading,
   DARK_CONTRAST_COLOR,
   LIGHT_CONTRAST_COLOR
 } from './common'
 import CogIconPath from '../../static/images/cog.svg'
 
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
+import Grow from '@material-ui/core/Grow'
+import Typography from '@material-ui/core/Typography'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import Button from '@material-ui/core/Button'
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
+import Box from '@material-ui/core/Box'
+import CircularProgress from '@material-ui/core/CircularProgress'
+
+import { grey } from '@material-ui/core/colors'
 
 import * as config from '../clients/config'
 
@@ -36,31 +49,224 @@ const LOADING_TOOLTIP_MSG = 'Indexing Flyff data...'
 
 const useStyles = makeStyles(theme => ({
   root: {
+    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
     display: 'flex',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(1),
-      width: theme.spacing(16),
-      height: theme.spacing(16)
-    },
-    backgroundColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 70%)`
+    flexDirection: 'column'
+  },
+  settingsLeftPad: {
+    paddingLeft: theme.spacing(1)
+  },
+  settingsEnableDarkTheme: {
+    backgroundColor: props => `rgba(${getDarkTheme(props) ? LIGHT_CONTRAST_COLOR : DARK_CONTRAST_COLOR} / 50%)`,
+    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+  },
+  appearanceSettings: {
+    flexGrow: '1',
+    marginBottom: theme.spacing(2)
+  },
+  dataSettings: {
+    flexGrow: '1'
+  },
+  prefetchButton: {
+    margin: theme.spacing(1)
   }
 }))
 
-const SettingsPaper = () => {
-  const classes = useStyles()
+const GreyCheckbox = withStyles({
+  root: {
+    color: grey[400],
+    '&$checked': {
+      color: grey[600]
+    }
+  },
+  checked: {}
+})(props => <Checkbox color='default' {...props} />)
+
+const AppearanceSettings = props => {
+  const classes = useStyles(props)
+  const [state, setState] = React.useState({
+    darkModeEnabled: getDarkTheme(props)
+  })
+  const handleDarkModeSettingUpdate = async e => {
+    setDarkTheme(props, e.target.checked)
+    await props.PangContext.saveSettings()
+    setState({ ...state, darkModeEnabled: getDarkTheme(props) })
+    props.PangContext.askRerender()
+  }
+  return (
+    <Grow in>
+      <Paper
+        elevation={2}
+        className={`${classes.appearanceSettings} ${classes.settingsLeftPad} ${classes.settingsEnableDarkTheme}`}
+        PangContext={props.PangContext}
+      >
+        <Typography variant='subtitle1' gutterBottom>Appearance</Typography>
+        <FormControlLabel
+          control={
+            <GreyCheckbox
+              checked={state.darkModeEnabled}
+              onChange={handleDarkModeSettingUpdate}
+            />
+          }
+          label='Dark Theme'
+        />
+      </Paper>
+    </Grow>
+  )
+}
+
+const DataSettings = props => {
+  const classes = useStyles(props)
+  const [state, setState] = React.useState({
+    showBackgroundImageLoadConfirm: false,
+    isBackgroundImageLoading: false,
+    isBackgroundImageDone: false,
+    backgroundLoadingProgress: 0,
+    backgroundLoadingTimeRemaining: '00:00:00',
+    backgroundImageLoading: getBackgroundImageLoading(props)
+  })
+  const handleBackgroundImageLoadingSettingUpdate = async e => {
+    setBackgroundImageLoading(props, e.target.checked)
+    await props.PangContext.saveSettings()
+    setState({
+      ...state,
+      backgroundImageLoading: getBackgroundImageLoading(props)
+    })
+  }
+
+  React.useEffect(() => {
+    if (state.isBackgroundImageDone) {
+      return
+    }
+    chrome.runtime.onMessage.addListener(({ type, limiter }, _, respond) => {
+      if (type !== config.MESSAGE_VALUE_KEYS.preloadImagesProgress) {
+        return
+      }
+      setState({
+        ...state,
+        backgroundLoadingProgress: limiter.progress,
+        backgroundLoadingTimeRemaining: limiter.timeRemaining,
+        isBackgroundImageLoading: !limiter.done,
+        isBackgroundImageDone: limiter.done
+      })
+      respond()
+    })
+  }, [state.isBackgroundImageLoading])
+
+  const refreshCacheButtonOnclickHandler = () => {
+    setState({
+      ...state,
+      showBackgroundImageLoadConfirm: !state.showBackgroundImageLoadConfirm
+    })
+  }
+
+  const downloadButtonOnclickHandler = async e => {
+    await chrome.runtime.sendMessage({
+      type: config.MESSAGE_VALUE_KEYS.preloadImages
+    })
+    setState({
+      ...state,
+      showBackgroundImageLoadConfirm: !state.showBackgroundImageLoadConfirm
+    })
+  }
+
+  const confirmButton = () => (
+    <Button
+      variant='contained'
+      color='default'
+      className={classes.prefetchButton}
+      onClick={downloadButtonOnclickHandler}
+    >
+      Confirm download?
+    </Button>
+  )
+  const refreshImageCacheButton = state => (
+    <Button
+      variant='contained'
+      color='default'
+      className={classes.prefetchButton}
+      startIcon={<CloudDownloadIcon />}
+      onClick={refreshCacheButtonOnclickHandler}
+      disabled={state.isBackgroundImageLoading || state.backgroundImageLoading}
+    >
+      Download image cache
+    </Button>
+  )
+
+  const progressIndicator = state => (
+    <Box position='relative' display='inline-flex'>
+      <CircularProgress
+        variant='determinate'
+        value={state.backgroundLoadingProgress}
+        color='inherit'
+      />
+      <Box
+        top={0}
+        bottom={0}
+        left={0}
+        right={0}
+        position='absolute'
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+      >
+        <Typography variant='caption' component='div' color='textSecondary'>
+          {`${state.backgroundLoadingProgress}%`}
+        </Typography>
+      </Box>
+    </Box>
+  )
+
+  const progressTimeRemaining = state => (
+    <Typography variant='caption' component='div' color='textSecondary'>
+      {state.backgroundLoadingTimeRemaining}
+    </Typography>
+  )
+
+  return (
+    <Grow in style={{ transformOrigin: '0 0 0' }} {...{ timeout: 250 }}>
+      <Paper
+        elevation={2}
+        PangContext={props.PangContext}
+        className={`${classes.dataSettings} ${classes.settingsLeftPad} ${classes.settingsEnableDarkTheme}`}
+      >
+        <Typography variant='subtitle1' gutterBottom>Data</Typography>
+        <FormControlLabel
+          control={
+            <GreyCheckbox
+              checked={state.backgroundImageLoading}
+              onChange={handleBackgroundImageLoadingSettingUpdate}
+            />
+          }
+          label='Prefetch images on start'
+        />
+        {state.showBackgroundImageLoadConfirm
+          ? confirmButton()
+          : refreshImageCacheButton(state)}
+        {state.isBackgroundImageLoading
+          ? progressIndicator(state)
+          : null}
+        {state.isBackgroundImageLoading
+          ? progressTimeRemaining(state)
+          : null}
+      </Paper>
+    </Grow>
+  )
+}
+
+const SettingsContainer = props => {
+  const classes = useStyles(props)
   return (
     <div className={classes.root}>
-      <Paper elevation={2}>
-        TEST
-      </Paper>
+      <AppearanceSettings {...props} />
+      <DataSettings {...props} />
     </div>
   )
 }
 
 export default class Settings extends BaseComponent {
   render () {
-    return <SettingsPaper PangContext={this.props.PangContext} />
+    return <SettingsContainer PangContext={this.props.PangContext} />
   }
 }
 
@@ -81,8 +287,12 @@ Settings.Button = class extends BaseComponent {
   }
 
   async _getFirstLoadingState () {
-    const result = await chrome.storage.local.get([config.STORAGE_VALUE_KEYS.local.cacheLoading])
-    this.setState({ loading: result[config.STORAGE_VALUE_KEYS.local.cacheLoading] })
+    const result = await chrome.storage.local.get([
+      config.STORAGE_VALUE_KEYS.local.cacheLoading
+    ])
+    this.setState({
+      loading: result[config.STORAGE_VALUE_KEYS.local.cacheLoading]
+    })
   }
 
   _handleLoadingListener (changes) {

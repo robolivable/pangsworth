@@ -39,7 +39,18 @@ const RootDiv = styled('div')(props => ({
   color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
 }))
 
-const MainDiv = styled('div')(() => ({}))
+const MainDiv = styled('div')(() => ({
+  width: '-webkit-fill-available',
+  height: '-webkit-fill-available'
+}))
+
+const Main = styled('main')(({ theme }) => ({
+  padding: theme.spacing(3),
+  paddingTop: theme.spacing(6),
+  backdropFilter: 'blur(2px)',
+  width: '-webkit-fill-available',
+  height: '-webkit-fill-available'
+}))
 
 const HeaderBreadcrumbs = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -48,13 +59,6 @@ const HeaderBreadcrumbs = styled('div')(({ theme }) => ({
   zIndex: '1',
   overflowX: 'auto',
   backdropFilter: 'blur(5px)'
-}))
-
-const Main = styled('main')(({ theme }) => ({
-  display: 'flex',
-  padding: theme.spacing(3),
-  paddingTop: theme.spacing(6),
-  backdropFilter: 'blur(2px)'
 }))
 
 const pangStyles = makeStyles({
@@ -79,13 +83,19 @@ const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
 }))
 
 export default class Pangsworth extends BaseComponent {
-  constructor (...args) {
-    super(...args)
+  constructor (props, ...args) {
+    super(props, ...args)
     this._handleRouteChange = this._handleRouteChange.bind(this)
-    this.PangContext = new Context(Routes.default)
+    this.rerenderParent = this.rerenderParent.bind(this)
+    this.PangContext = props.PangContext
+    this.PangContext.on(Context.ASK_RERENDER, this.rerenderParent)
     this.state = {
       route: this.PangContext.currentNavigation.route
     }
+  }
+
+  rerenderParent () {
+    this.forceUpdate()
   }
 
   async componentDidMount () {

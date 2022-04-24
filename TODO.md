@@ -9,18 +9,13 @@
     - ~~map squares~~
     - ~~avatars~~
 - ~~background image assets downloading~~
-- UI/UX for background downloading
-  - Add a checkbox to enable background image caching on start
-  - The checkbox should enable a cache refresh button
-  - If the cache refresh button is pressed, it will trigger a refresh of the image cache
-  - If the image cache was never downloaded, it will begin downloading
-  - while downloading, the button text should change to "cancel refresh"
-  - while downloading, have a loading indicator
-  - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
-- settings UI/UX
-  - dark/light mode
-  - image pre-fetch caching enable/disable
-  - choose display language
+- ~~UI/UX for background downloading~~
+  - ~~Add a checkbox to enable background image caching on start~~
+  - ~~If the cache refresh button is pressed, it will trigger a refresh of the image cache~~
+  - ~~If the image cache was never downloaded, it will begin downloading~~
+- ~~settings UI/UX~~
+  - ~~dark/light mode~~
+  - ~~image pre-fetch caching enable/disable~~
 - list items of a specific type
   - filter on item types
 - search as you type
@@ -68,8 +63,19 @@
 - Offline mode throws errors
   - Identify when the app is running offline
   - Gracefully handle offline mode
+- Settings UX
+  - position of progress elements are not aligned properly when downloading
+  - progress is not shown for background prefetch on start
+  - it is possible to click the download button fast enough to trigger two ongoing fetches
 
 #### Features for later
+- UI/UX for background downloading
+  - The checkbox should enable a cache refresh button
+  - while downloading, the button text should change to "cancel refresh"
+  - while downloading, have a loading indicator
+  - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
+- settings UI/UX
+  - choose display language
 - pannable, zoomable canvas for map display
 - search history saved in search bar
   - group history by date
