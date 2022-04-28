@@ -2,7 +2,7 @@
 - ~~settings~~
   - ~~light/dark theme~~
   - ~~language~~
-  - manual refresh cache
+  - ~~manual refresh cache~~
   - ~~download all image data~~
 - ~~image caching~~
     - ~~icons~~
@@ -30,6 +30,10 @@
 - breadcrumbs for tracking location in extension
   - interact with router, use colapsed breadcrumb system
   - user should be able to click through infinitely long chains of item references
+- about modal on first time use
+  - describe usage terms (license)
+  - mention contribution process
+- Display appropriate copyright for tool assets (images)
 
 #### Data models needed for MVP
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map
@@ -56,6 +60,10 @@
   - Tidy up manifest.json
 - Define release deployment process
 - Open source all code
+- Support for all WebExtension API compatible browsers
+  - Firefox
+  - Opera
+  - Safari
 
 #### Bugs
 - ~~Cache miss issue~~
@@ -63,17 +71,18 @@
 - Offline mode throws errors
   - Identify when the app is running offline
   - Gracefully handle offline mode
-- Settings UX
-  - position of progress elements are not aligned properly when downloading
-  - progress is not shown for background prefetch on start
-  - it is possible to click the download button fast enough to trigger two ongoing fetches
+- ~~Settings UX~~
+  - ~~position of progress elements are not aligned properly when downloading~~
+  - ~~progress is not shown for background prefetch on start~~
+  - ~~it is possible to click the download button fast enough to trigger two ongoing fetches~~
 
 #### Features for later
+- Full localization of all magic text
 - UI/UX for background downloading
-  - The checkbox should enable a cache refresh button
   - while downloading, the button text should change to "cancel refresh"
-  - while downloading, have a loading indicator
   - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
+  - "verify" symbol/icon for showing how recent the cache is
+  - display the last time the cache was downloaded
 - settings UI/UX
   - choose display language
 - pannable, zoomable canvas for map display
@@ -87,7 +96,6 @@
 - Graph to plot mob experience gained per level (on a monster view)
 - Upgrade to MUI 5.0
 - Accessibility features (keyboard-only usage)
-- Support Firefox
 - Chrome extension store?
 - Plugin framework
   - Allow embedding contribution from others
