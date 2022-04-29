@@ -71,7 +71,7 @@ const notifyProgress = async limiter => {
       type: config.MESSAGE_VALUE_KEYS.preloadImagesProgress,
       limiter: limiter.toJSON()
     })
-  } catch (_) {/* NOOP */}
+  } catch (_) { /* NOOP */ }
 }
 
 const preloadImages = async (forceFetch, limiter) => {
@@ -100,13 +100,13 @@ const messageHandler = (request, _, respond) => {
   ;(async () => {
     if (preloadImageRequestLock) {
       console.warn('service worker is preloading images')
-      throw 'noop'
+      throw new Error('noop')
     }
     preloadImageRequestLock = true
   })().then(async () => {
     if (preloadImageLock) {
       console.warn('service worker is preloading images')
-      throw 'noop'
+      throw new Error('noop')
     }
     const limiter = new Limiter(
       config.API_REQUEST_RATE_SEC,
@@ -120,7 +120,7 @@ const messageHandler = (request, _, respond) => {
       if (!limiter.done) {
         return
       }
-      if (!!count) { // NOTE: only notify on actual downloads
+      if (count) { // NOTE: only notify on actual downloads
         await chrome.runtime.sendMessage({
           type: config.MESSAGE_VALUE_KEYS.preloadImagesCompleted,
           limiter
@@ -131,7 +131,7 @@ const messageHandler = (request, _, respond) => {
     await preloadImages(request.forceFetch, limiter)
     preloadImageRequestLock = false
   }).catch(error => {
-    if (error !== 'noop') {
+    if (error.message !== 'noop') {
       console.error(error)
     }
   })
