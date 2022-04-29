@@ -19,12 +19,41 @@
 <html>
 
 <body>
+  <noscript>JavaScript is disabled. :^(</noscript>
   <!-- Fonts to support Material Design -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
   <!-- Icons to support Material Design -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
   <link rel="stylesheet" href="popup.css" />
-  <div id="root"></div>
+  <head>
+    <style media="screen" type="type/css">
+      html {
+        min-height: 20px;
+        min-width: 20px;
+      }
+      .loader {
+        border: 5px solid #dddddd;
+        border-radius: 50%;
+        border-top: 5px solid #505050;
+        width: 31px;
+        height: 31px;
+        -webkit-animation: spin 1s linear infinite; /* Safari */
+        animation: spin 1s linear infinite;
+      }
+      /* Safari */
+      @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <div id="root">
+    <div id="placeholder" class="loader"></div>
+  </div>
   <script src="../build/app.js"></script>
   <script src="popup.js"></script>
 </body>

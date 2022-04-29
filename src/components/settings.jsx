@@ -49,7 +49,8 @@ const LOADING_TOOLTIP_MSG = 'Indexing Flyff data...'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+    color: props =>
+      `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
     display: 'flex',
     flexDirection: 'column'
   },
@@ -57,8 +58,10 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(1)
   },
   settingsEnableDarkTheme: {
-    backgroundColor: props => `rgba(${getDarkTheme(props) ? LIGHT_CONTRAST_COLOR : DARK_CONTRAST_COLOR} / 50%)`,
-    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+    backgroundColor: props =>
+      `rgba(${getDarkTheme(props) ? LIGHT_CONTRAST_COLOR : DARK_CONTRAST_COLOR} / 50%)`,
+    color: props =>
+      `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
   },
   appearanceSettings: {
     flexGrow: '1',
@@ -69,6 +72,9 @@ const useStyles = makeStyles(theme => ({
   },
   prefetchButton: {
     margin: theme.spacing(1)
+  },
+  disabledPrefetchButton: {
+    color: 'inherit !important'
   }
 }))
 
@@ -90,7 +96,10 @@ const AppearanceSettings = props => {
   const handleDarkModeSettingUpdate = async e => {
     setDarkTheme(props, e.target.checked)
     await props.PangContext.saveSettings()
-    setState({ ...state, darkModeEnabled: getDarkTheme(props) })
+    setState(prevState => ({
+      ...prevState,
+      darkModeEnabled: getDarkTheme(props)
+    }))
     props.PangContext.askRerender()
   }
   return (
@@ -119,55 +128,73 @@ const DataSettings = props => {
   const classes = useStyles(props)
   const [state, setState] = React.useState({
     showBackgroundImageLoadConfirm: false,
-    isBackgroundImageLoading: false,
+    isBackgroundImageLoading: !!props.PangContext.isBackgroundImageLoading,
     isBackgroundImageDone: false,
     backgroundLoadingProgress: 0,
     backgroundLoadingTimeRemaining: '00:00:00',
-    backgroundImageLoading: getBackgroundImageLoading(props)
+    settingBackgroundImageLoading: getBackgroundImageLoading(props),
+    disableBackgroundImageLoadConfirm: false
   })
   const handleBackgroundImageLoadingSettingUpdate = async e => {
     setBackgroundImageLoading(props, e.target.checked)
     await props.PangContext.saveSettings()
-    setState({
-      ...state,
-      backgroundImageLoading: getBackgroundImageLoading(props)
-    })
+    setState(prevState => ({
+      ...prevState,
+      settingBackgroundImageLoading: getBackgroundImageLoading(props)
+    }))
   }
 
   React.useEffect(() => {
-    if (state.isBackgroundImageDone) {
-      return
-    }
-    chrome.runtime.onMessage.addListener(({ type, limiter }, _, respond) => {
-      if (type !== config.MESSAGE_VALUE_KEYS.preloadImagesProgress) {
+    props.PangContext.isBackgroundImageLoading = state.isBackgroundImageLoading
+    const preloadImagesListener = ({ type, limiter }, _, respond) => {
+      if (
+        type !== config.MESSAGE_VALUE_KEYS.preloadImagesProgress &&
+        type !== config.MESSAGE_VALUE_KEYS.preloadImagesCompleted
+      ) {
         return
       }
-      setState({
-        ...state,
+      setState(prevState => ({
+        ...prevState,
         backgroundLoadingProgress: limiter.progress,
         backgroundLoadingTimeRemaining: limiter.timeRemaining,
         isBackgroundImageLoading: !limiter.done,
         isBackgroundImageDone: limiter.done
-      })
+      }))
+      if (type === config.MESSAGE_VALUE_KEYS.preloadImagesCompleted) {
+        chrome.runtime.onMessage.removeListener(preloadImagesListener)
+      }
+      chrome.runtime.sendMessage({ type: config.MESSAGE_VALUE_KEYS.heartbeat })
       respond()
-    })
+    }
+    chrome.runtime.onMessage.addListener(preloadImagesListener)
   }, [state.isBackgroundImageLoading])
 
   const refreshCacheButtonOnclickHandler = () => {
-    setState({
-      ...state,
+    setState(prevState => ({
+      ...prevState,
       showBackgroundImageLoadConfirm: !state.showBackgroundImageLoadConfirm
-    })
+    }))
   }
 
   const downloadButtonOnclickHandler = async e => {
+    const lastImageCacheCompletedAt =
+      await props.PangContext.getLastCacheDownloadCompletedAt()
+    const cacheMissDelta = Date.now() - lastImageCacheCompletedAt
+    const forceFetch =
+      cacheMissDelta > config.BG_IMG_PRELOAD.manualCacheDownloadCheckExpireMs
     await chrome.runtime.sendMessage({
-      type: config.MESSAGE_VALUE_KEYS.preloadImages
+      type: config.MESSAGE_VALUE_KEYS.preloadImages,
+      forceFetch
     })
-    setState({
-      ...state,
-      showBackgroundImageLoadConfirm: !state.showBackgroundImageLoadConfirm
-    })
+    setState(prevState => ({
+      ...prevState,
+      disableBackgroundImageLoadConfirm: true // double click prevent
+    }))
+    setTimeout(() => setState(prevState => ({
+      ...prevState,
+      showBackgroundImageLoadConfirm: !state.showBackgroundImageLoadConfirm,
+      disableBackgroundImageLoadConfirm: false
+    })), config.BG_IMG_PRELOAD.progressTickMs * 2)
   }
 
   const confirmButton = () => (
@@ -176,20 +203,9 @@ const DataSettings = props => {
       color='default'
       className={classes.prefetchButton}
       onClick={downloadButtonOnclickHandler}
+      disabled={state.disableBackgroundImageLoadConfirm}
     >
       Confirm download?
-    </Button>
-  )
-  const refreshImageCacheButton = state => (
-    <Button
-      variant='contained'
-      color='default'
-      className={classes.prefetchButton}
-      startIcon={<CloudDownloadIcon />}
-      onClick={refreshCacheButtonOnclickHandler}
-      disabled={state.isBackgroundImageLoading || state.backgroundImageLoading}
-    >
-      Download image cache
     </Button>
   )
 
@@ -210,17 +226,36 @@ const DataSettings = props => {
         alignItems='center'
         justifyContent='center'
       >
-        <Typography variant='caption' component='div' color='textSecondary'>
+        <Typography variant='caption' component='div' color='inherit'>
           {`${state.backgroundLoadingProgress}%`}
         </Typography>
       </Box>
     </Box>
   )
 
-  const progressTimeRemaining = state => (
-    <Typography variant='caption' component='div' color='textSecondary'>
-      {state.backgroundLoadingTimeRemaining}
-    </Typography>
+  const refreshImageCacheButton = state => (
+    <Button
+      variant='contained'
+      color='default'
+      className={classes.prefetchButton}
+      classes={{ disabled: classes.disabledPrefetchButton }}
+      startIcon={
+        state.isBackgroundImageLoading
+          ? progressIndicator(state)
+          : <CloudDownloadIcon />
+      }
+      onClick={refreshCacheButtonOnclickHandler}
+      disabled={
+        state.isBackgroundImageLoading ||
+        state.settingBackgroundImageLoading
+      }
+    >
+      {
+        state.isBackgroundImageLoading
+          ? `Downloading... (Est. time remaining: ${state.backgroundLoadingTimeRemaining})`
+          : 'Download image cache'
+      }
+    </Button>
   )
 
   return (
@@ -234,7 +269,7 @@ const DataSettings = props => {
         <FormControlLabel
           control={
             <GreyCheckbox
-              checked={state.backgroundImageLoading}
+              checked={state.settingBackgroundImageLoading}
               onChange={handleBackgroundImageLoadingSettingUpdate}
             />
           }
@@ -243,12 +278,6 @@ const DataSettings = props => {
         {state.showBackgroundImageLoadConfirm
           ? confirmButton()
           : refreshImageCacheButton(state)}
-        {state.isBackgroundImageLoading
-          ? progressIndicator(state)
-          : null}
-        {state.isBackgroundImageLoading
-          ? progressTimeRemaining(state)
-          : null}
       </Paper>
     </Grow>
   )
@@ -313,9 +342,7 @@ Settings.Button = class extends BaseComponent {
     )
   }
 
-  _handleOnClick () {
-    console.log('settings, yay!', { props: this.props })
-  }
+  _handleOnClick () {}
 
   _getName () {
     return this.displayName

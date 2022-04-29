@@ -95,12 +95,8 @@ export function PangReactiveDrawer (props) {
   const classes = useStyles(props)
   const [open, setOpen] = React.useState(false)
 
-  const handleDrawerOpen = () => {
-    setOpen(true)
-  }
-
-  const handleDrawerClose = () => {
-    setOpen(false)
+  const handleDrawer = () => {
+    setOpen(!open)
   }
 
   return (
@@ -122,7 +118,7 @@ export function PangReactiveDrawer (props) {
         : localize(props.PangContext, 'drawer:button', 'expand')}
       >
         <IconButton
-          onClick={open ? handleDrawerClose : handleDrawerOpen}
+          onClick={handleDrawer}
           className={classes.textColors}
         >
           {!open

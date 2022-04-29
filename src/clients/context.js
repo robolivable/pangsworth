@@ -11,6 +11,22 @@ const storageSetCacheLoading = value => chrome.storage.local.set({
   [config.STORAGE_VALUE_KEYS.local.cacheLoading]: value
 })
 
+const storageSetCacheCompletedAt = value => chrome.storage.local.set({
+  [config.STORAGE_VALUE_KEYS.local.imageCacheCompletedAt]: value
+})
+
+const storageGetCacheCompletedAt = async () => {
+  const result = await chrome.storage.local.get([
+    config.STORAGE_VALUE_KEYS.local.imageCacheCompletedAt
+  ])
+  return result[config.STORAGE_VALUE_KEYS.local.imageCacheCompletedAt] || 0
+}
+
+const cacheStale = (lastCheck, expiresAt) => {
+  const cacheMissDelta = Date.now() - lastCheck
+  return cacheMissDelta > expiresAt
+}
+
 const BuiltinEvents = {
   ASK_RERENDER: 'askRerender'
 }
@@ -34,9 +50,21 @@ class Context extends EventEmitter {
   get currentNavigation () { return this.breadcrumbs.current.navigation }
 
   async _initStartup () {
+    chrome.runtime.onMessage.addListener(({ type, limiter }, _, respond) => {
+      if (type !== config.MESSAGE_VALUE_KEYS.preloadImagesCompleted) {
+        return
+      }
+      storageSetCacheCompletedAt(Date.now())
+      respond()
+    })
     if (this.settings.get(config.SETTINGS_VALUE_KEYS.backgroundImageLoading)) {
+      const lastImageCacheCompletedAt = await storageGetCacheCompletedAt()
       await chrome.runtime.sendMessage({
-        type: config.MESSAGE_VALUE_KEYS.preloadImages
+        type: config.MESSAGE_VALUE_KEYS.preloadImages,
+        forceFetch: cacheStale(
+          lastImageCacheCompletedAt,
+          config.BG_IMG_PRELOAD.autoCacheDownloadCheckExpireMs
+        )
       })
     }
     const breadcrumbs = this.settings.get(config.STORAGE_VALUE_KEYS.sync.breadcrumbs)
@@ -77,6 +105,10 @@ class Context extends EventEmitter {
 
   async saveSettings () {
     await this.settings.persist()
+  }
+
+  async getLastCacheDownloadCompletedAt () {
+    return storageGetCacheCompletedAt()
   }
 
   get Classes () {

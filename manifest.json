@@ -13,7 +13,8 @@
   },
   "background": {
     "service_worker": "build/background.js",
-    "type": "module"
+    "type": "module",
+    "persistent": true
   },
   "permissions": [
     "storage"

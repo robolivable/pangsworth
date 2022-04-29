@@ -19,7 +19,7 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 const { getGameObjectsByTypeName } = require('./clients/game-objects')
-const { Limiter, RATES } = require('./clients/limiter')
+const { Limiter, RATES, Events } = require('./clients/limiter')
 const config = require('./clients/config')
 const utils = require('./clients/utils')
 
@@ -28,7 +28,7 @@ const getRetryBackoffMS = retry =>
     utils.rollDice(config.BG_IMG_PRELOAD.backoffVarianceSec) *
       config.BG_IMG_PRELOAD.backoffMs
 
-const preloadRetry = async (limiter, src, retries = 0) => {
+const preloadRetry = async (limiter, src, force = false, retries = 0) => {
   if (retries > config.BG_IMG_PRELOAD.maxRetry) {
     return
   }
@@ -38,7 +38,7 @@ const preloadRetry = async (limiter, src, retries = 0) => {
   }
   const c = await caches.open(config.CACHE_NAME_IMAGES)
   const skip = !!(await c.match(src))
-  if (skip) {
+  if (skip && !force) {
     return
   }
   limiter.load(async () => {
@@ -48,16 +48,16 @@ const preloadRetry = async (limiter, src, retries = 0) => {
       if (error.name !== 'TypeError') {
         throw error
       }
-      await preloadRetry(limiter, src, retries + 1)
+      await preloadRetry(limiter, src, force, retries + 1)
     }
   })
 }
 
-const preloadCollection = async (collection, limiter) => {
+const preloadCollection = async (collection, limiter, force = false) => {
   try {
     for (const object of collection.iter()) {
       for (const src of object.images()) {
-        preloadRetry(limiter, src)
+        preloadRetry(limiter, src, force)
       }
     }
   } catch (error) {
@@ -65,26 +65,16 @@ const preloadCollection = async (collection, limiter) => {
   }
 }
 
-const progressNotifier = async limiter => {
-  while (!limiter.started) {
-    // eslint-disable-next-line
-    await new Promise(r => setTimeout(r, config.BG_IMG_PRELOAD.progressTickMs))
-  }
-  while (!limiter.done) {
+const notifyProgress = async limiter => {
+  try {
     await chrome.runtime.sendMessage({
       type: config.MESSAGE_VALUE_KEYS.preloadImagesProgress,
       limiter: limiter.toJSON()
     })
-    // eslint-disable-next-line
-    await new Promise(r => setTimeout(r, config.BG_IMG_PRELOAD.progressTickMs))
-  }
-  await chrome.runtime.sendMessage({
-    type: config.MESSAGE_VALUE_KEYS.preloadImagesProgress,
-    limiter: limiter.toJSON()
-  })
+  } catch (_) {/* NOOP */}
 }
 
-const preloadImages = async () => {
+const preloadImages = async (forceFetch, limiter) => {
   const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
     .filter(o => o.hydrate).map(o => o.name)
   const collectionFetches = []
@@ -94,26 +84,69 @@ const preloadImages = async () => {
     collectionFetches.push(c.fetch())
   }
   const fetched = await Promise.all(collectionFetches)
-  const limiter = new Limiter(config.API_REQUEST_RATE_SEC, RATES.second)
-  progressNotifier(limiter)
   for (const collection of fetched) {
-    await preloadCollection(collection, limiter)
+    await preloadCollection(collection, limiter, forceFetch)
   }
 }
 
 let preloadImageLock = false
-const messageHandler = async (request, sender, respond) => {
-  switch (request.type) {
-    case config.MESSAGE_VALUE_KEYS.preloadImages:
-      if (preloadImageLock) {
-        console.warn('ignoring redundant request to preload images')
-        break
-      }
-      preloadImageLock = true
-      preloadImages().then(() => { preloadImageLock = false })
-      break
+let preloadImageRequestLock = false
+const messageHandler = (request, _, respond) => {
+  if (request.type !== config.MESSAGE_VALUE_KEYS.preloadImages) {
+    respond()
+    return
   }
+  // NOTE: we can't block the call to respond()
+  ;(async () => {
+    if (preloadImageRequestLock) {
+      console.warn('service worker is preloading images')
+      throw 'noop'
+    }
+    preloadImageRequestLock = true
+  })().then(async () => {
+    if (preloadImageLock) {
+      console.warn('service worker is preloading images')
+      throw 'noop'
+    }
+    const limiter = new Limiter(
+      config.API_REQUEST_RATE_SEC,
+      RATES.second,
+      notifyProgress
+    )
+    limiter.on(Events.LOADING_STARTED, async count => {
+      preloadImageLock = true
+    })
+    limiter.on(Events.LOADING_DONE, async count => {
+      if (!limiter.done) {
+        return
+      }
+      if (!!count) { // NOTE: only notify on actual downloads
+        await chrome.runtime.sendMessage({
+          type: config.MESSAGE_VALUE_KEYS.preloadImagesCompleted,
+          limiter
+        })
+      }
+      preloadImageLock = false
+    })
+    await preloadImages(request.forceFetch, limiter)
+    preloadImageRequestLock = false
+  }).catch(error => {
+    if (error !== 'noop') {
+      console.error(error)
+    }
+  })
   respond() // NOTE: this is to suppress console errors (chromium bug #1304272)
 }
 
+let heartbeat = false
+const keepAlive = async ({ type }, _, respond) => {
+  if (type !== config.MESSAGE_VALUE_KEYS.heartbeat) {
+    respond()
+    return
+  }
+  heartbeat = !heartbeat
+  respond()
+}
+
 chrome.runtime.onMessage.addListener(messageHandler)
+chrome.runtime.onMessage.addListener(keepAlive)

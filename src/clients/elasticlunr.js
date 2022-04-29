@@ -35,7 +35,7 @@ class ElasticLunr {
         const payload = JSON.parse(cachedIndex.payload)
         ElasticLunrInstance = elasticlunr.Index.load(payload)
       } catch (_) {
-        console.debug('no index cached, creating new one')
+        console.info('no index cached, creating new one')
         ElasticLunrInstance = elasticlunr()
         ElasticLunrInstance.saveDocument(false) // reduce memory pressure
       }

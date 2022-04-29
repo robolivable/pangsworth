@@ -3,8 +3,8 @@ const config = require('./config')
 const i18nUtils = require('../i18n/utils')
 
 class Settings {
-  constructor () {
-    this.props = config.DEFAULT_SETTINGS
+  constructor (defaults = {}) {
+    this.props = Object.assign({}, config.DEFAULT_SETTINGS, defaults)
     this.localization = i18nUtils.getDefaultLocale()
   }
 

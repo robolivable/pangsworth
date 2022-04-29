@@ -110,6 +110,7 @@ export default class Pangsworth extends BaseComponent {
       <RootDiv PangContext={this.PangContext}>
         <CssBaseline />
         <BGImage PangContext={this.PangContext} />
+
         <PangReactiveDrawer
           PangContext={this.PangContext}
           items={items.map(([Pangponent, route]) => (
@@ -126,6 +127,7 @@ export default class Pangsworth extends BaseComponent {
             PangContext: this.PangContext
           })}
         />
+
         <MainDiv PangContext={this.PangContext}>
           <HeaderBreadcrumbs PangContext={this.PangContext}>
             <PangBreadcrumbs

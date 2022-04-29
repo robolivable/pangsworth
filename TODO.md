@@ -100,3 +100,6 @@
 - Plugin framework
   - Allow embedding contribution from others
   - Is there a safe way to allow requests to external origins other than Sniegu?
+  - Allow cross framework extension
+    - Vue
+- Native app (electron)

@@ -16,10 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const API_BASE_URL = 'https://flyff-api.sniegu.fr'
+const API_REQUEST_RATE_MIN = 300
 const exportDefault = {
   API_ID_FETCH_BATCH_SIZE: 200,
   API_VERSION_CHECK_THRESHOLD_MS: 3600 * 1000,
-  API_REQUEST_RATE_SEC: 5,
+  API_REQUEST_RATE_SEC: API_REQUEST_RATE_MIN / 60,
   API_BASE_URL,
   API_RESOURCE_TYPES: {
     classes: {
@@ -226,7 +227,8 @@ const exportDefault = {
   STORAGE_VALUE_KEYS: {
     local: {
       cacheLoading: 'CACHE_LOADING', // UI message channel
-      imageCacheBackgroundLoading: 'CACHE_BG_IMG_LOADING'
+      imageCacheLoading: 'CACHE_BG_IMG_LOADING',
+      imageCacheCompletedAt: 'CACHE_BG_IMG_COMPLETED_AT'
     },
     sync: {
       userSettings: 'USER_SETTINGS',
@@ -235,14 +237,18 @@ const exportDefault = {
   },
   MESSAGE_VALUE_KEYS: {
     preloadImages: 'PRELOAD_IMAGES',
-    preloadImagesProgress: 'PRELOAD_IMAGES_PROGRESS'
+    preloadImagesProgress: 'PRELOAD_IMAGES_PROGRESS',
+    preloadImagesCompleted: 'PRELOAD_IMAGES_COMPLETED',
+    heartbeat: 'HEARTBEAT'
   },
   BG_IMG_PRELOAD: {
     maxRetry: 10,
     backoffMs: 1000,
     backoffExp: 1.5,
     backoffVarianceSec: 30,
-    progressTickMs: 1000
+    progressTickMs: 1000,
+    autoCacheDownloadCheckExpireMs: 365 * 24 * 3600 * 1000, // expire auto prefetch after 1 year
+    manualCacheDownloadCheckExpireMs: 3600 * 1000
   },
   SETTINGS_VALUE_KEYS: {
     backgroundImageLoading: 'backgroundImageLoading',
@@ -251,6 +257,9 @@ const exportDefault = {
   DEFAULT_SETTINGS: {
     backgroundImageLoading: false,
     darkTheme: false
+  },
+  UI_LIMITS: {
+    notificationDelayMs: 1000
   }
 }
 
