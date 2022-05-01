@@ -107,8 +107,8 @@ export default class Pangsworth extends BaseComponent {
   constructor (props, ...args) {
     super(props, ...args)
     this._handleRouteChange = this._handleRouteChange.bind(this)
-    this._handleRouteDrawerStateToggle = this._handleRouteDrawerStateToggle.bind(this)
-    this._handleDataViewerDrawerStateToggle = this._handleDataViewerDrawerStateToggle.bind(this)
+    this.handleRouteDrawerStateToggle = this.handleRouteDrawerStateToggle.bind(this)
+    this.handleDataViewerDrawerStateToggle = this.handleDataViewerDrawerStateToggle.bind(this)
     this.rerenderParent = this.rerenderParent.bind(this)
     this.PangContext = props.PangContext
     this.PangContext.on(Context.ASK_RERENDER, this.rerenderParent)
@@ -140,7 +140,7 @@ export default class Pangsworth extends BaseComponent {
         <PangRouteDrawer
           PangContext={this.PangContext}
           startState={this.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.routeDrawer)}
-          onDrawerStateToggle={this._handleRouteDrawerStateToggle}
+          onDrawerStateToggle={this.handleRouteDrawerStateToggle}
           items={items.map(([Pangponent, route]) => (
             <Pangponent
               key={route}
@@ -182,7 +182,7 @@ export default class Pangsworth extends BaseComponent {
         <PangDataViewDrawer
           PangContext={this.PangContext}
           startState={this.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer)}
-          onDrawerStateToggle={this._handleDataViewerDrawerStateToggle}
+          onDrawerStateToggle={this.handleDataViewerDrawerStateToggle}
         >
           <DataViewerBreadcrumbs>
             <PangBreadcrumbs
@@ -222,14 +222,14 @@ export default class Pangsworth extends BaseComponent {
     }
   }
 
-  _handleRouteDrawerStateToggle (state) {
+  handleRouteDrawerStateToggle (state) {
     this.PangContext.settings.set(
       config.SETTINGS_VALUE_KEYS.states.routeDrawer, state
     )
     this.PangContext.saveSettings()
   }
 
-  _handleDataViewerDrawerStateToggle (state) {
+  handleDataViewerDrawerStateToggle (state) {
     this.PangContext.settings.set(
       config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer, state
     )
