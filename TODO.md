@@ -24,7 +24,7 @@
   - include icon in each row, button to export, button to copy item id to clipboard
 - lists are all virtualized (performance lists)
 - data focused views for game data
-  - Have a single item inspector view for each tab
+  - ~~Have a single item inspector view for each tab~~
   - sortable tables for data
 - ~~tool tips look nice~~
 - breadcrumbs for tracking location in extension
@@ -34,6 +34,7 @@
   - describe usage terms (license)
   - mention contribution process
 - Display appropriate copyright for tool assets (images)
+- ~~Render state is saved and synced across browsers to user settings~~
 
 #### Data models needed for MVP
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map

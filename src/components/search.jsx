@@ -21,6 +21,7 @@ import React from 'react'
 import BaseComponent from './base-component'
 import { PangNavigationAccordion } from './common'
 import SearchIcon from '../../static/images/magnifying-glass.svg'
+import * as config from '../clients/config'
 
 import World from './world'
 import Classes from './classes'
@@ -52,6 +53,7 @@ Search.Button = class extends BaseComponent {
   constructor (...args) {
     super(...args)
     this._handleOnClick = this._handleOnClick.bind(this)
+    this._handleSearchAccordionStateToggle = this._handleSearchAccordionStateToggle.bind(this)
     this.i18nKey = 'components:search:button'
   }
 
@@ -62,6 +64,8 @@ Search.Button = class extends BaseComponent {
         title={this.displayName}
         onClick={this._handleOnClick}
         icon={SearchIcon}
+        startState={this.props.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.searchAccordion)}
+        onAccordionToggle={this._handleSearchAccordionStateToggle}
         {...this.props}
       >
         {Object.entries(SearchSubRoutes).map(
@@ -76,6 +80,13 @@ Search.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+
+  _handleSearchAccordionStateToggle (state) {
+    this.props.PangContext.settings.set(
+      config.SETTINGS_VALUE_KEYS.states.searchAccordion, state
+    )
+    this.props.PangContext.saveSettings()
+  }
 }
 
 Search.ROUTE = 'Search'

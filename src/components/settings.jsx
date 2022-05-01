@@ -93,6 +93,7 @@ const AppearanceSettings = props => {
   const [state, setState] = React.useState({
     darkModeEnabled: getDarkTheme(props)
   })
+
   const handleDarkModeSettingUpdate = async e => {
     setDarkTheme(props, e.target.checked)
     await props.PangContext.saveSettings()
@@ -102,6 +103,7 @@ const AppearanceSettings = props => {
     }))
     props.PangContext.askRerender()
   }
+
   return (
     <Grow in>
       <Paper

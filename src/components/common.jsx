@@ -33,9 +33,8 @@ import Collapse from '@material-ui/core/Collapse'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab'
-
-const { localize } = require('../i18n')
-const config = require('../clients/config')
+import * as config from '../clients/config'
+import { localize } from '../i18n'
 
 const routeDrawerWidth = 240
 const dataViewDrawerWidth = 370
@@ -172,10 +171,13 @@ const useStyles = makeStyles(theme => ({
 
 export const PangRouteDrawer = props => {
   const classes = useStyles(props)
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(!!props.startState)
 
   const handleRouteDrawer = () => {
     setOpen(!open)
+    if (typeof props.onDrawerStateToggle === 'function') {
+      props.onDrawerStateToggle(!open)
+    }
   }
 
   return (
@@ -247,15 +249,20 @@ export const PangNavigationItem = props => {
 export const PangNavigationAccordion = props => {
   const classes = useStyles(props)
   const [state, setState] = React.useState({
-    openAccordion: false
+    openAccordion: !!props.startState
   })
   const handleItemClick = e => {
     switch (e.detail) {
       case 2:
-        setState(prevState => ({
-          ...prevState,
-          openAccordion: !prevState.openAccordion
-        }))
+        setState(prevState => {
+          if (typeof props.onAccordionToggle === 'function') {
+            props.onAccordionToggle(!prevState.openAccordion)
+          }
+          return {
+            ...prevState,
+            openAccordion: !prevState.openAccordion
+          }
+        })
         break
       default:
         return props._handleRoute(props.onClick)(e)
@@ -264,10 +271,15 @@ export const PangNavigationAccordion = props => {
 
   const handleChevronClick = e => {
     e.stopPropagation()
-    return setState(prevState => ({
-      ...prevState,
-      openAccordion: !prevState.openAccordion
-    }))
+    setState(prevState => {
+      if (typeof props.onAccordionToggle === 'function') {
+        props.onAccordionToggle(!prevState.openAccordion)
+      }
+      return {
+        ...prevState,
+        openAccordion: !prevState.openAccordion
+      }
+    })
   }
 
   return (
@@ -322,12 +334,25 @@ export const PangNavigationAccordionItem = props => {
 
 export const PangDataViewDrawer = props => {
   const classes = useStyles(props)
-  const [open, setOpen] = React.useState(false)
-  const handleDataViewDrawerOpen = () => { setOpen(true) }
+  const [open, setOpen] = React.useState(!!props.startState)
+
+  const onStateToggle = v => {
+    if (typeof props.onDrawerStateToggle === 'function') {
+      props.onDrawerStateToggle(v)
+    }
+  }
+
+  const handleDataViewDrawerOpen = () => {
+    setOpen(true)
+    onStateToggle(true)
+  }
+
   const handleDataViewDrawerClose = e => {
     e.stopPropagation()
     setOpen(false)
+    onStateToggle(false)
   }
+
   return (
     <div>
       {open

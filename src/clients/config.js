@@ -252,7 +252,13 @@ const exportDefault = {
   },
   SETTINGS_VALUE_KEYS: {
     backgroundImageLoading: 'backgroundImageLoading',
-    darkTheme: 'darkTheme'
+    darkTheme: 'darkTheme',
+    states: {
+      routeDrawer: 'stateRouteDrawer',
+      dataViewerDrawer: 'stateDataViewerDrawer',
+      searchAccordion: 'stateSearchAccordion',
+      tabRoute: 'stateTabRoute'
+    }
   },
   DEFAULT_SETTINGS: {
     backgroundImageLoading: false,
