@@ -26,14 +26,19 @@ import NPCs from './npcs'
 import Settings from './settings'
 
 const Routes = {
-  [Search.ROUTE]: Search,
-  [World.ROUTE]: World,
-  [Monsters.ROUTE]: Monsters,
-  [Items.ROUTE]: Items,
-  [EquipmentSet.ROUTE]: EquipmentSet,
-  [Classes.ROUTE]: Classes,
-  [Skills.ROUTE]: Skills,
-  [NPCs.ROUTE]: NPCs
+  [Search.ROUTE]: Search
+}
+
+const SubRoutes = {
+  [Search.ROUTE]: {
+    [World.ROUTE]: World,
+    [Monsters.ROUTE]: Monsters,
+    [Items.ROUTE]: Items,
+    [EquipmentSet.ROUTE]: EquipmentSet,
+    [Classes.ROUTE]: Classes,
+    [Skills.ROUTE]: Skills,
+    [NPCs.ROUTE]: NPCs
+  }
 }
 
 // NOTE: defining default prop differently to avoid module.exports conflicts
@@ -46,3 +51,6 @@ Object.defineProperty(Routes, Settings.ROUTE, { get: () => Settings })
 Object.defineProperty(Routes, 'settings', { get: () => Settings })
 
 export default Routes
+export {
+  SubRoutes
+}

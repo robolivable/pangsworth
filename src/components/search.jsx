@@ -19,8 +19,26 @@
 import React from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import { PangNavigationAccordion } from './common'
 import SearchIcon from '../../static/images/magnifying-glass.svg'
+
+import World from './world'
+import Classes from './classes'
+import Monsters from './monsters'
+import Items from './items'
+import EquipmentSet from './equipment-set'
+import Skills from './skills'
+import NPCs from './npcs'
+
+const SearchSubRoutes = {
+  [World.ROUTE]: World,
+  [Monsters.ROUTE]: Monsters,
+  [Items.ROUTE]: Items,
+  [EquipmentSet.ROUTE]: EquipmentSet,
+  [Classes.ROUTE]: Classes,
+  [Skills.ROUTE]: Skills,
+  [NPCs.ROUTE]: NPCs
+}
 
 export default class Search extends BaseComponent {
   render () {
@@ -39,19 +57,25 @@ Search.Button = class extends BaseComponent {
 
   render () {
     return (
-      <PangNavigationItem
+      <PangNavigationAccordion
         name={this.displayName}
         title={this.displayName}
         onClick={this._handleOnClick}
         icon={SearchIcon}
         {...this.props}
-      />
+      >
+        {Object.entries(SearchSubRoutes).map(
+          ([Route, Pangponent]) => React.createElement(Pangponent.Button, {
+            ...this.props,
+            key: Route,
+            _handleRoute: this.props._handleRouteChangeRef(Route)
+          })
+        )}
+      </PangNavigationAccordion>
     )
   }
 
-  _handleOnClick () {
-    console.log('search, yay!', this.constructor.name)
-  }
+  _handleOnClick () {}
 }
 
 Search.ROUTE = 'Search'

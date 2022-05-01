@@ -19,7 +19,7 @@
 import React from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import { PangNavigationAccordionItem } from './common'
 import MountainsIcon from '../../static/images/mountains.svg'
 
 export default class World extends BaseComponent {
@@ -44,7 +44,7 @@ World.Button = class extends BaseComponent {
 
   render () {
     return (
-      <PangNavigationItem
+      <PangNavigationAccordionItem
         name={this.displayName}
         title={this.displayName}
         onClick={this._handleOnClick}

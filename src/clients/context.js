@@ -43,11 +43,15 @@ class Context extends EventEmitter {
       this.gameData[name] = new GameObjectCollection()
     }
     this.settings = new Settings()
-    this.breadcrumbs = Breadcrumbs.fromRoute(defaultRoute)
     this.initialized = false
   }
 
-  get currentNavigation () { return this.breadcrumbs.current.navigation }
+  get currentNavigation () {
+    if (!this.breadcrumbs) {
+      return
+    }
+    return this.breadcrumbs.current.navigation
+  }
 
   async _initStartup () {
     chrome.runtime.onMessage.addListener(({ type, limiter }, _, respond) => {
@@ -67,7 +71,9 @@ class Context extends EventEmitter {
         )
       })
     }
-    const breadcrumbs = this.settings.get(config.STORAGE_VALUE_KEYS.sync.breadcrumbs)
+    const breadcrumbs = this.settings.get(
+      config.STORAGE_VALUE_KEYS.sync.breadcrumbs
+    )
     if (breadcrumbs) {
       this.breadcrumbs = Breadcrumbs.fromJSON(breadcrumbs)
     }

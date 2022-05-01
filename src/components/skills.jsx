@@ -19,7 +19,7 @@
 import React from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import { PangNavigationAccordionItem } from './common'
 import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 
 export default class Skills extends BaseComponent {
@@ -39,7 +39,7 @@ Skills.Button = class extends BaseComponent {
 
   render () {
     return (
-      <PangNavigationItem
+      <PangNavigationAccordionItem
         name={this.displayName}
         title={this.displayName}
         onClick={this._handleOnClick}

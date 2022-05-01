@@ -21,13 +21,12 @@ import 'regenerator-runtime/runtime'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Pangsworth from './components/pangsworth'
-import Routes from './components/index'
 import Context from './clients/context'
 
 const HTML_MIN_HEIGHT = '600px'
 const HTML_MIN_WIDTH = '740px'
 
-const PangContext = new Context(Routes.default)
+const PangContext = new Context()
 PangContext.fetchSettings().then(() => {
   document.documentElement.style.minHeight = HTML_MIN_HEIGHT
   document.documentElement.style.minWidth = HTML_MIN_WIDTH

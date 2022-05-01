@@ -189,7 +189,7 @@
       "th": ""
     }
   },
-  "drawer:button": {
+  "routeDrawer:button": {
     "collapse": {
       "en": "Collapse",
       "br": "Fechar",

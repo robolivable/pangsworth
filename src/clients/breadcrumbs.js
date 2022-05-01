@@ -1,15 +1,23 @@
 class Navigation {
-  constructor (route, key = '') {
+  constructor (route, key = '', name = '') {
     this.route = route
     this.key = key
+    this.name = name || route
   }
+
+  get id () { return `${this.route}:${this.key}` }
+  toString () { return this.name }
+  get serialized () { return this.toJSON() }
 
   toJSON () {
     return {
       route: this.route,
-      key: this.key
+      key: this.key,
+      name: this.name
     }
   }
+
+  static fromJSON (j) { return new Navigation(j.route, j.key, j.name) }
 }
 
 class Crumb {
@@ -18,6 +26,8 @@ class Crumb {
     this.next = null
     this.prev = prev
   }
+
+  get id () { return this.navigation.id }
 }
 
 class Breadcrumbs {
@@ -25,6 +35,8 @@ class Breadcrumbs {
     this.head = new Crumb(navigation)
     this.current = this.head
   }
+
+  isCurrent (crumb) { return crumb.id === this.current.id }
 
   * iter () {
     let node = this.head
