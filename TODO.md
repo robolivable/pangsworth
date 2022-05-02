@@ -65,6 +65,8 @@
   - Firefox
   - Opera
   - Safari
+- Unit tests
+  - 70% coverage reports
 
 #### Bugs
 - ~~Cache miss issue~~
