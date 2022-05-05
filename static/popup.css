@@ -24,6 +24,7 @@ body {
   --table-theme-header-foreground-color: rgba(50 50 50 / 80%);
   --table-theme-border-color: rgba(50 50 50 / 30%);
   --table-theme-row-border-color: rgba(50 50 50 / 20%);
+  --table-theme-header-column-separator-color: rgba(50 50 50 / 20%);
   --table-theme-row-hover-color: rgba(50 50 50 / 20%);
   --table-theme-modal-overlay-background-color: rgba(30 35 35 / 100%);
   overflow: clip;

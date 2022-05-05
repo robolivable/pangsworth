@@ -64,6 +64,7 @@ export const TABLE_FOREGROUND_COLOR_PROP_NAME = '--table-theme-foreground-color'
 export const TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME = '--table-theme-header-foreground-color'
 export const TABLE_BORDER_COLOR_PROP_NAME = '--table-theme-border-color'
 export const TABLE_ROW_BORDER_COLOR_PROP_NAME = '--table-theme-row-border-color'
+export const TABLE_HEADER_COLUMN_SEPARATOR_COLOR_PROP_NAME = '--table-theme-header-column-separator-color'
 export const TABLE_ROW_HOVER_COLOR_PROP_NAME = '--table-theme-row-hover-color'
 export const TABLE_MODAL_OVERLAY_BACKGROUND_COLOR_PROP_NAME = '--table-theme-modal-overlay-background-color'
 
@@ -82,6 +83,7 @@ export const toggleAGTableDarkMode = darkModeEnabled => {
   setDocumentRootCSSCustomProperty(TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME, `rgba(${color} / 80%)`)
   setDocumentRootCSSCustomProperty(TABLE_BORDER_COLOR_PROP_NAME, `rgba(${color} / 30%)`)
   setDocumentRootCSSCustomProperty(TABLE_ROW_BORDER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
+  setDocumentRootCSSCustomProperty(TABLE_HEADER_COLUMN_SEPARATOR_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_ROW_HOVER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_MODAL_OVERLAY_BACKGROUND_COLOR_PROP_NAME, `rgba(${bgColor} / 100%)`)
 }
