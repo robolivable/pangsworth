@@ -57,6 +57,41 @@ export const setBackgroundImageLoading =
 
 export const DARK_CONTRAST_COLOR = '255 255 255'
 export const LIGHT_CONTRAST_COLOR = '50 50 50'
+export const DARK_CONTRAST_BG_COLOR = '30 35 35'
+export const LIGHT_CONTRAST_BG_COLOR = '255 255 255'
+
+export const TABLE_FOREGROUND_COLOR_PROP_NAME = '--table-theme-foreground-color'
+export const TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME = '--table-theme-header-foreground-color'
+export const TABLE_BORDER_COLOR_PROP_NAME = '--table-theme-border-color'
+export const TABLE_ROW_BORDER_COLOR_PROP_NAME = '--table-theme-row-border-color'
+export const TABLE_ROW_HOVER_COLOR_PROP_NAME = '--table-theme-row-hover-color'
+export const TABLE_MODAL_OVERLAY_BACKGROUND_COLOR_PROP_NAME = '--table-theme-modal-overlay-background-color'
+
+export const setDocumentRootCSSCustomProperty = (customProp, value) => {
+  document.querySelector(':root').style.setProperty(customProp, value)
+}
+
+export const setDocumentElementCSSCustomProperty = (element, customProp, value) => {
+  document.querySelector(element).style.setProperty(customProp, value)
+}
+
+export const toggleAGTableDarkMode = darkModeEnabled => {
+  const color = darkModeEnabled ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
+  const bgColor = darkModeEnabled ? DARK_CONTRAST_BG_COLOR : LIGHT_CONTRAST_BG_COLOR
+  setDocumentRootCSSCustomProperty(TABLE_FOREGROUND_COLOR_PROP_NAME, `rgba(${color} / 80%)`)
+  setDocumentRootCSSCustomProperty(TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME, `rgba(${color} / 80%)`)
+  setDocumentRootCSSCustomProperty(TABLE_BORDER_COLOR_PROP_NAME, `rgba(${color} / 30%)`)
+  setDocumentRootCSSCustomProperty(TABLE_ROW_BORDER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
+  setDocumentRootCSSCustomProperty(TABLE_ROW_HOVER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
+  setDocumentRootCSSCustomProperty(TABLE_MODAL_OVERLAY_BACKGROUND_COLOR_PROP_NAME, `rgba(${bgColor} / 100%)`)
+}
+
+export const fixInactiveScrollbars = () => {
+  console.log('attempting fix')
+  setDocumentElementCSSCustomProperty('html', 'overflow', '')
+  setDocumentElementCSSCustomProperty('html', 'overflow', 'overlay')
+  setDocumentElementCSSCustomProperty('html', 'overflow', '')
+}
 
 const darkThemeForProps = opacity => props => {
   const color =
@@ -74,7 +109,8 @@ const useStyles = makeStyles(theme => ({
   routeDrawerOpen: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
     width: routeDrawerWidth,
-    overflowX: 'hidden',
+    overflowX: 'clip',
+    overflowY: 'auto',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
@@ -87,7 +123,8 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
-    overflowX: 'hidden',
+    overflowX: 'clip',
+    overflowY: 'auto',
     width: theme.spacing(5) + 1,
     [theme.breakpoints.up('xs')]: {
       width: theme.spacing(7) + 1
@@ -149,7 +186,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     right: 0,
-    height: '-webkit-fill-available'
+    top: '50%',
+    bottom: '50%'
   },
   dataViewDrawerOpenedEdgeButton: {
     borderTopLeftRadius: 0,

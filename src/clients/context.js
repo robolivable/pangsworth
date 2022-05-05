@@ -28,7 +28,8 @@ const cacheStale = (lastCheck, expiresAt) => {
 }
 
 const BuiltinEvents = {
-  ASK_RERENDER: 'askRerender'
+  ASK_RERENDER: 'askRerender',
+  INITIALIZE_COMPLETED: 'initializeCompleted'
 }
 
 class Context extends EventEmitter {
@@ -99,6 +100,7 @@ class Context extends EventEmitter {
       console.error('error initializing pang context', { error })
     }
     await storageSetCacheLoading(false)
+    this.emit(BuiltinEvents.INITIALIZE_COMPLETED)
   }
 
   askRerender () { this.emit(BuiltinEvents.ASK_RERENDER) }
@@ -163,6 +165,8 @@ class Context extends EventEmitter {
 }
 
 Context.ASK_RERENDER = BuiltinEvents.ASK_RERENDER
+Context.INITIALIZE_COMPLETED = BuiltinEvents.INITIALIZE_COMPLETED
 
 module.exports = Context
 module.exports.default = Context
+module.exports.BuiltinEvents = BuiltinEvents

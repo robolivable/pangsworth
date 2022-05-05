@@ -26,7 +26,8 @@ import {
   getBackgroundImageLoading,
   setBackgroundImageLoading,
   DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR
+  LIGHT_CONTRAST_COLOR,
+  toggleAGTableDarkMode
 } from './common'
 import CogIconPath from '../../static/images/cog.svg'
 
@@ -52,10 +53,13 @@ const useStyles = makeStyles(theme => ({
     color: props =>
       `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3)
   },
   settingsLeftPad: {
-    paddingLeft: theme.spacing(1)
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   },
   settingsEnableDarkTheme: {
     backgroundColor: props =>
@@ -93,6 +97,10 @@ const AppearanceSettings = props => {
   const [state, setState] = React.useState({
     darkModeEnabled: getDarkTheme(props)
   })
+
+  React.useEffect(() => {
+    toggleAGTableDarkMode(getDarkTheme(props))
+  }, [state.darkModeEnabled])
 
   const handleDarkModeSettingUpdate = async e => {
     setDarkTheme(props, e.target.checked)

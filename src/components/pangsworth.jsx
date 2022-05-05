@@ -29,7 +29,8 @@ import {
   PangDataViewDrawer,
   getDarkTheme,
   DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR
+  LIGHT_CONTRAST_COLOR,
+  toggleAGTableDarkMode
 } from './common'
 
 import Context from '../clients/context'
@@ -48,7 +49,8 @@ const BREADCRUMBS_MAX_ITEMS = 5
 
 const RootDiv = styled('div')(props => ({
   display: 'flex',
-  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+  height: '600px'
 }))
 
 const BGImage = styled('div')(props => ({
@@ -69,6 +71,7 @@ const MainBreadcrumbs = styled('div')(({ theme }) => ({
   position: 'fixed',
   zIndex: '1',
   overflowX: 'auto',
+  overflowY: 'clip',
   backdropFilter: 'blur(5px)'
 }))
 
@@ -77,6 +80,7 @@ const DataViewerBreadcrumbs = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
   zIndex: '999',
   overflowX: 'auto',
+  overflowY: 'clip',
   backdropFilter: 'blur(5px)',
   position: 'fixed',
   width: 'fit-content'
@@ -86,12 +90,16 @@ const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
   color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
 }))
 
-const MainContent = styled('main')(({ theme }) => ({
-  padding: theme.spacing(3),
+const MainContentWrapper = styled('main')(({ theme }) => ({
   paddingTop: theme.spacing(6),
-  backdropFilter: 'blur(2px)',
   width: 'inherit',
-  height: 'inherit'
+  height: 'inherit',
+  marginLeft: '-1px', // NOTE: this is to squeeze main content up against nav bar
+  overflow: 'clip'
+}))
+
+const MainContent = styled('div')(({ theme }) => ({
+  backdropFilter: 'blur(10px)'
 }))
 
 const DataViewerContent = styled('div')(({ theme }) => ({
@@ -100,7 +108,8 @@ const DataViewerContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),
   position: 'fixed',
   height: '-webkit-fill-available',
-  overflowY: 'auto'
+  overflowY: 'auto',
+  overflowX: 'clip'
 }))
 
 export default class Pangsworth extends BaseComponent {
@@ -112,6 +121,7 @@ export default class Pangsworth extends BaseComponent {
     this.rerenderParent = this.rerenderParent.bind(this)
     this.PangContext = props.PangContext
     this.PangContext.on(Context.ASK_RERENDER, this.rerenderParent)
+    toggleAGTableDarkMode(getDarkTheme(props))
     const route = this.PangContext.settings.get(
       config.SETTINGS_VALUE_KEYS.states.tabRoute
     )
@@ -170,13 +180,15 @@ export default class Pangsworth extends BaseComponent {
               </Link>
             </PangBreadcrumbs>
           </MainBreadcrumbs>
-          <MainContent>
-            {React.createElement(
-              // NOTE: Settings is exported as a getter in Routes
-              AllRoutes[this.state.route] || Routes[this.state.route],
-              { PangContext: this.PangContext }
-            )}
-          </MainContent>
+          <MainContentWrapper>
+            <MainContent>
+              {React.createElement(
+                // NOTE: Settings is exported as a getter in Routes
+                AllRoutes[this.state.route] || Routes[this.state.route],
+                { PangContext: this.PangContext }
+              )}
+            </MainContent>
+          </MainContentWrapper>
         </Main>
 
         <PangDataViewDrawer

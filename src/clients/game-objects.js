@@ -223,6 +223,7 @@ class Class extends GameObject {
   }
 
   get icon () { return this.iconStyled() }
+
   iconStyled (style = config.API_RESOURCE_TYPES.classes.iconStyles.messenger) {
     return config.API_RESOURCE_TYPES.classes.api.image(style, this.props.icon)
   }
@@ -303,6 +304,7 @@ class Skill extends GameObject {
   }
 
   get icon () { return this.iconStyled() }
+
   iconStyled (style = config.API_RESOURCE_TYPES.skills.iconStyles.old) {
     return config.API_RESOURCE_TYPES.skills.api.image(style, this.props.icon)
   }
@@ -363,6 +365,7 @@ class PartySkill extends GameObject {
   }
 
   get icon () { return this.iconStyled() }
+
   iconStyled (style = config.API_RESOURCE_TYPES.partySkills.iconStyles.old) {
     return config.API_RESOURCE_TYPES.partySkills.api.image(style, this.props.icon)
   }

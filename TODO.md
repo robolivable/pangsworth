@@ -67,6 +67,7 @@
   - Safari
 - Unit tests
   - 70% coverage reports
+- UI tests
 
 #### Bugs
 - ~~Cache miss issue~~
@@ -106,3 +107,4 @@
   - Allow cross framework extension
     - Vue
 - Native app (electron)
+- asset size on disk stats

@@ -51,6 +51,10 @@ const config = {
         use: ['style-loader', 'css-loader']
       },
       {
+        test: /\.s[ac]ss$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
         test: /\.svg$/,
         use: ['@svgr/webpack']
       }
@@ -62,7 +66,9 @@ const config = {
   },
   plugins: [],
   devtool: 'source-map',
-  resolve: { extensions: ['.js', '.jsx'] }
+  resolve: {
+    extensions: ['.js', '.jsx']
+  }
 }
 
 if (process.env.NODE_ENV === 'production') {

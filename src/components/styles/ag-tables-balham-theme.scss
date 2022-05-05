@@ -1,0 +1,28 @@
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-balham/sass/ag-theme-balham-mixin';
+.ag-theme-balham {
+  @include ag-theme-balham(
+    (
+      background-color: rgba(0 0 0 / 0%),
+      header-background-color: rgba(0 0 0 / 0%),
+      odd-row-background-color: rgba(0 0 0 / 0%),
+      foreground-color: var(--table-theme-foreground-color),
+      header-foreground-color: var(--table-theme-header-foreground-color),
+      border-color: var(--table-theme-border-color),
+      row-border-color: var(--table-theme-row-border-color),
+      row-hover-color: var(--table-theme-row-hover-color),
+      modal-overlay-background-color: var(--table-theme-modal-overlay-background-color),
+      control-panel-background-color: var(--table-theme-modal-overlay-background-color),
+      subheader-toolbar-background-color: var(--table-theme-modal-overlay-background-color),
+    )
+  );
+
+  .ag-menu {
+    background-color: var(--table-theme-modal-overlay-background-color),
+  }
+
+  .ag-popup-child {
+    background-color: var(--table-theme-modal-overlay-background-color),
+  }
+}
+

@@ -150,3 +150,46 @@ const keepAlive = async ({ type }, _, respond) => {
 
 chrome.runtime.onMessage.addListener(messageHandler)
 chrome.runtime.onMessage.addListener(keepAlive)
+
+const cacheRetry = async (src, retries = 0) => {
+  const c = await caches.open(config.CACHE_NAME_IMAGES)
+  const response = await c.match(src)
+  if (response) {
+    return response
+  }
+  if (retries > config.BG_IMG_PRELOAD.maxRetry) {
+    throw new Error('max retries reached caching asset ' + src)
+  }
+  if (retries > 0) {
+    // eslint-disable-next-line
+    await new Promise(r => setTimeout(r, getRetryBackoffMS(retries)))
+  }
+  try {
+    await c.add(src)
+  } catch (error) {
+    if (error.name !== 'TypeError') {
+      throw error
+    }
+  }
+  return cacheRetry(src, retries + 1)
+}
+
+const cacheRequest = async url => {
+  let response
+  try {
+    response = await cacheRetry(url)
+  } catch (error) {
+    console.error(error)
+    response = await fetch(url)
+  }
+  return response
+}
+
+const imageFetchListener = e => {
+  if (!e.request.url.includes('/image/')) {
+    return
+  }
+  e.respondWith(cacheRequest(e.request.url))
+}
+
+self.addEventListener('fetch', imageFetchListener)
