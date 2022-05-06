@@ -142,6 +142,7 @@ export default class Pangsworth extends BaseComponent {
     const items = Object.values(Routes).map(
       Pangponent => ([Pangponent.Button, Pangponent.ROUTE])
     )
+
     return (
       <RootDiv PangContext={this.PangContext}>
         <CssBaseline />
@@ -151,7 +152,14 @@ export default class Pangsworth extends BaseComponent {
           PangContext={this.PangContext}
           startState={this.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.routeDrawer)}
           onDrawerStateToggle={this.handleRouteDrawerStateToggle}
-          items={items.map(([Pangponent, route]) => (
+          settingsItem={React.createElement(Routes.settings.Button, {
+            _handleRoute: this._handleRouteChange(
+              Routes.settings.ROUTE
+            ),
+            PangContext: this.PangContext
+          })}
+        >
+          {items.map(([Pangponent, route]) => (
             <Pangponent
               key={route}
               _handleRoute={this._handleRouteChange(route)}
@@ -159,13 +167,7 @@ export default class Pangsworth extends BaseComponent {
               PangContext={this.PangContext}
             />
           ))}
-          settingsItem={React.createElement(Routes.settings.Button, {
-            _handleRoute: this._handleRouteChange(
-              Routes.settings.ROUTE
-            ),
-            PangContext: this.PangContext
-          })}
-        />
+        </PangRouteDrawer>
 
         <Main>
           <MainBreadcrumbs>

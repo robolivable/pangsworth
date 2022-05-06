@@ -251,7 +251,7 @@ export const PangRouteDrawer = props => {
       <Divider className={classes.dividerColors} />
 
       <List className={`${classes.textColors} ${classes.routeBody}`}>
-        {props.items}
+        {props.children}
       </List>
 
       <Divider className={classes.dividerColors} />
