@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { SvgIcon } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -35,6 +35,11 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab'
 import * as config from '../clients/config'
 import { localize } from '../i18n'
+
+import { AgGridReact } from 'ag-grid-react'
+import 'ag-grid-community/dist/styles/ag-grid.css'
+import 'ag-grid-community/dist/styles/ag-theme-balham.css'
+import './styles/ag-tables-balham-theme.scss'
 
 const routeDrawerWidth = 200
 const dataViewDrawerWidth = 370
@@ -61,11 +66,11 @@ export const DARK_CONTRAST_BG_COLOR = '30 35 35'
 export const LIGHT_CONTRAST_BG_COLOR = '255 255 255'
 
 export const ITEM_RARITY_COLORS = {
-  common: {display: 'Common', color: 'rgba(34 113 177 / 100%)'},
-  rare: {display: 'Rare', color: 'rgba(0 170 0 / 100%)'},
-  uncommon: {display: 'Uncommon', color: 'rgba(128 64 0 / 100%)'},
-  unique: {display: 'Unique', color: 'rgba(210 0 0 / 100%)'},
-  veryrare: {display: 'Very Rare', color: 'rgba(210 0 0 / 100%)'}
+  common: { display: 'Common', color: 'rgba(34 113 177 / 100%)' },
+  rare: { display: 'Rare', color: 'rgba(0 170 0 / 100%)' },
+  uncommon: { display: 'Uncommon', color: 'rgba(128 64 0 / 100%)' },
+  unique: { display: 'Unique', color: 'rgba(210 0 0 / 100%)' },
+  veryrare: { display: 'Very Rare', color: 'rgba(210 0 0 / 100%)' }
 }
 
 export const TABLE_FOREGROUND_COLOR_PROP_NAME = '--table-theme-foreground-color'
@@ -228,6 +233,9 @@ const useStyles = makeStyles(theme => ({
   dataViewDrawerContent: {
     width: '-webkit-fill-available',
     height: '-webkit-fill-available'
+  },
+  agTable: {
+    height: '552px'
   }
 }))
 
@@ -454,6 +462,47 @@ export const PangDataViewDrawer = props => {
           {props.children}
         </div>
       </Drawer>
+    </div>
+  )
+}
+
+export const PangDataGrid = props => {
+  const classes = useStyles(props)
+  // eslint-disable-next-line
+  const { PangContext, rootHeight, onGridReadyTrigger, rowData, ...rest } = props
+
+  const gridRef = useRef()
+  const onGridReady = useCallback(() => {
+    gridRef.current.api.sizeColumnsToFit()
+    if (!rowData.length) {
+      gridRef.current.api.showLoadingOverlay()
+    } else {
+      gridRef.current.api.hideOverlay()
+    }
+    if (typeof onGridReadyTrigger === 'function') {
+      onGridReadyTrigger()
+    }
+  }, [])
+
+  const defaultColDef = useMemo(() => ({
+    flex: 1,
+    minWidth: 40,
+    width: 100,
+    hide: true
+  }), [])
+
+  return (
+    <div className={`ag-theme-balham ${classes.agTable}`} style={rootHeight ? { height: rootHeight } : {}}>
+      <AgGridReact
+        {...rest}
+        rowData={rowData}
+        ref={gridRef}
+        defaultColDef={defaultColDef}
+        onGridReady={onGridReady}
+        suppressRowClickSelection={true}
+        enableCellTextSelection={true}
+        ensureDomOrder={true}
+      />
     </div>
   )
 }

@@ -16,14 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useState } from 'react'
 
 import BaseComponent from './base-component'
 import {
+  PangDataGrid,
   PangNavigationAccordionItem,
-  getDarkTheme,
-  DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR,
   ITEM_RARITY_COLORS
 } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
@@ -33,29 +31,15 @@ import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 
-import { AgGridReact } from 'ag-grid-react'
-import 'ag-grid-community/dist/styles/ag-grid.css'
-import 'ag-grid-community/dist/styles/ag-theme-balham.css'
-import './styles/ag-tables-balham-theme.scss'
-
 const useStyles = makeStyles(theme => ({
-  table: {
-    height: '552px'
-  },
   icons: {
-    backgroundColor: 'rgba(0 0 0 / 0%)',
-  },
-  agTable: {
-    color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
-    backgroundColor: 'rgba(0 0 0 / 0%)',
-    borderColor: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 30%)`,
-    backdropFilter: 'blur(10px)'
+    backgroundColor: 'rgba(0 0 0 / 0%)'
   }
 }))
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
-const ItemsAGTable = props => {
+const ItemsPangDataGrid = props => {
   const classes = useStyles(props)
   const getClassById = classId => {
     if (!classId) {
@@ -109,7 +93,6 @@ const ItemsAGTable = props => {
     )
   })
 
-  const gridRef = useRef()
   const iconCellRenderer = params => (
     <Avatar variant='square' className={classes.icons}>
       <img src={params.value} />
@@ -124,7 +107,7 @@ const ItemsAGTable = props => {
   }
 
   const navigateSingleItem = item => e => {
-    console.log({item, e})
+    console.log({ item, e })
   }
 
   const nameCellRenderer = params => {
@@ -133,8 +116,19 @@ const ItemsAGTable = props => {
       return params.value
     }
     const name = params.value || '[no name]'
-    const style = overrideTypography({color: nameColor, fontSize: '0.675rem'})()
-    const inner = <Typography classes={{root: style.root}} variant='subtitle2' nameColor={nameColor}>{name}</Typography>
+    const style = overrideTypography({
+      color: nameColor,
+      fontSize: '0.675rem'
+    })()
+    const inner = (
+      <Typography
+        classes={{ root: style.root }}
+        variant='subtitle2'
+      >
+        {name}
+      </Typography>
+    )
+
     return (
       <Chip
         size='small'
@@ -158,25 +152,42 @@ const ItemsAGTable = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, hide: false, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 135, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'rarity', width: 75, resizable: true, minWidth: 75, sortable: true, filter: true, hide: false, cellRenderer: rarityCellRenderer, comparator: rarityComparator },
-    { field: 'class', width: 75, resizable: true, sortable: true, filter: true, hide: false },
-    { field: 'category', width: 85, resizable: true, sortable: true, filter: true, hide: false },
-    { field: 'subcategory', width: 100, resizable: true, sortable: true, filter: true, hide: false },
-    { field: 'buyPrice', sortable: true, resizable: true, filter: true },
-    { field: 'sellPrice', sortable: true, resizable: true, filter: true },
-    { field: 'description', resizable: true, filter: true, cellRenderer: descriptionCellRenderer },
+    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
+      filter: true, hide: false },
+    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, hide: false,
+      cellRenderer: iconCellRenderer },
+    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true,
+      filter: true, hide: false,
+        cellRenderer: nameCellRenderer },
+    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55,
+      sortable: true, filter: true, hide: false },
+    { field: 'rarity', width: 75, resizable: true, minWidth: 75,
+      sortable: true, filter: true, hide: false,
+        cellRenderer: rarityCellRenderer,
+          comparator: rarityComparator },
+    { field: 'class', width: 75, resizable: true, sortable: true,
+      filter: true, hide: false },
+    { field: 'category', width: 85, resizable: true, sortable: true,
+      filter: true, hide: false },
+    { field: 'subcategory', width: 100, resizable: true, sortable: true,
+      filter: true, hide: false },
+
+    { field: 'buyPrice', sortable: true, resizable: true,
+      filter: true },
+    { field: 'sellPrice', sortable: true, resizable: true,
+      filter: true },
+    { field: 'description', resizable: true, filter: true,
+      cellRenderer: descriptionCellRenderer },
     { field: 'attackSpeed', sortable: true, resizable: true, filter: true },
     { field: 'attackRange', sortable: true, resizable: true, filter: true },
-    { field: 'additionalSkillDamage', sortable: true, resizable: true, filter: true },
+    { field: 'additionalSkillDamage', sortable: true, resizable: true,
+      filter: true },
     { field: 'consumable', resizable: true, filter: true },
     { field: 'deletable', resizable: true, filter: true },
     { field: 'durationRealTime', resizable: true, filter: true },
     { field: 'element', resizable: true, filter: true },
-    { field: 'guildContribution', sortable: true, resizable: true, filter: true },
+    { field: 'guildContribution', sortable: true, resizable: true,
+      filter: true },
     { field: 'maxAttack', sortable: true, resizable: true, filter: true },
     { field: 'minAttack', sortable: true, resizable: true, filter: true },
     { field: 'maxDefense', sortable: true, resizable: true, filter: true },
@@ -188,47 +199,25 @@ const ItemsAGTable = props => {
     { field: 'stack', sortable: true, resizable: true, filter: true },
     { field: 'tradable', resizable: true, filter: true },
     { field: 'triggerSkill', resizable: true, filter: true },
-    { field: 'triggerSkillProbability', sortable: true, resizable: true, filter: true },
+    { field: 'triggerSkillProbability', sortable: true, resizable: true,
+      filter: true },
     { field: 'transy', resizable: true, filter: true },
     { field: 'twoHanded', resizable: true, filter: true }
   ])
 
-  const defaultColumnDef = useMemo(() => ({
-    flex: 1,
-    minWidth: 40,
-    width: 100,
-    hide: true
-  }), [])
-
-  const onGridReady = useCallback(() => {
-    gridRef.current.api.sizeColumnsToFit()
-    if (!rowData.length) {
-      gridRef.current.api.showLoadingOverlay()
-    } else {
-      gridRef.current.api.hideOverlay()
-    }
-  }, [])
-
   return (
-    <div className={`ag-theme-balham ${classes.table}`}>
-      <AgGridReact
-        ref={gridRef}
-        rowHeight={40}
-        rowData={rowData}
-        defaultColDef={defaultColumnDef}
-        columnDefs={columnDefs}
-        onGridReady={onGridReady}
-        suppressRowClickSelection={true}
-        enableCellTextSelection={true}
-        ensureDomOrder={true}
-      />
-    </div>
+    <PangDataGrid
+      PangContext={props.PangContext}
+      rowHeight={40}
+      rowData={rowData}
+      columnDefs={columnDefs}
+    />
   )
 }
 
 export default class Items extends BaseComponent {
   render () {
-    return <ItemsAGTable PangContext={this.props.PangContext} />
+    return <ItemsPangDataGrid PangContext={this.props.PangContext} />
   }
 }
 

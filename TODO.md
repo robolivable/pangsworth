@@ -26,6 +26,7 @@
   - ~~lists are all virtualized (performance lists)~~
   - ~~Have a single item inspector view for each tab~~
   - ~~sortable tables for data~~
+  - tooltip magnifier for monster images
   - all views completed
 - Single item inspector fully implemented
   - breadcrumbs for tracking location in extension
