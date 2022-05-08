@@ -262,6 +262,17 @@ class Item extends GameObject {
   * images () {
     yield config.API_RESOURCE_TYPES.items.api.image(this.props.icon)
   }
+
+  static get rarityRanks () {
+    // common < uncommon < rare < unique < veryrare
+    return {
+      common: 0, // least
+      uncommon: 1,
+      rare: 2,
+      unique: 3,
+      veryrare: 4
+    }
+  }
 }
 
 class Items extends GameObjectCollection {

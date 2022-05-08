@@ -17,6 +17,14 @@
 */
 body {
   background-color: rgb(0 0 0 / 0%);
+  width: inherit;
+  height: inherit;
+  overflow: hidden;
+}
+
+#root {
+  width: inherit;
+  height: inherit;
 }
 
 :root {

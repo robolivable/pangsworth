@@ -36,7 +36,7 @@ import Fab from '@material-ui/core/Fab'
 import * as config from '../clients/config'
 import { localize } from '../i18n'
 
-const routeDrawerWidth = 240
+const routeDrawerWidth = 200
 const dataViewDrawerWidth = 370
 
 export const getDarkTheme =
@@ -59,6 +59,14 @@ export const DARK_CONTRAST_COLOR = '255 255 255'
 export const LIGHT_CONTRAST_COLOR = '50 50 50'
 export const DARK_CONTRAST_BG_COLOR = '30 35 35'
 export const LIGHT_CONTRAST_BG_COLOR = '255 255 255'
+
+export const ITEM_RARITY_COLORS = {
+  common: {display: 'Common', color: 'rgba(34 113 177 / 100%)'},
+  rare: {display: 'Rare', color: 'rgba(0 170 0 / 100%)'},
+  uncommon: {display: 'Uncommon', color: 'rgba(128 64 0 / 100%)'},
+  unique: {display: 'Unique', color: 'rgba(210 0 0 / 100%)'},
+  veryrare: {display: 'Very Rare', color: 'rgba(210 0 0 / 100%)'}
+}
 
 export const TABLE_FOREGROUND_COLOR_PROP_NAME = '--table-theme-foreground-color'
 export const TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME = '--table-theme-header-foreground-color'
@@ -98,6 +106,12 @@ export const fixInactiveScrollbars = () => {
 const darkThemeForProps = opacity => props => {
   const color =
     getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
+  return `rgba(${color} / ${opacity})`
+}
+
+const darkThemeForBGProps = opacity => props => {
+  const color =
+    getDarkTheme(props) ? DARK_CONTRAST_BG_COLOR : LIGHT_CONTRAST_BG_COLOR
   return `rgba(${color} / ${opacity})`
 }
 
@@ -188,20 +202,28 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     right: 0,
-    top: '50%',
-    bottom: '50%'
+    paddingTop: theme.spacing(0.5)
   },
   dataViewDrawerOpenedEdgeButton: {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     width: 20,
-    height: 80
+    height: 80,
+    backgroundColor: darkThemeForBGProps('50%'),
+    color: darkThemeForProps('50%'),
+    '&:hover': {
+      backgroundColor: 'rgba(100 100 100 / 50%)',
+    }
   },
   dataViewDrawerClosedEdgeButton: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     width: 20,
-    height: 80
+    backgroundColor: darkThemeForBGProps('50%'),
+    color: darkThemeForProps('50%'),
+    '&:hover': {
+      backgroundColor: 'rgba(100 100 100 / 50%)',
+    }
   },
   dataViewDrawerContent: {
     width: '-webkit-fill-available',

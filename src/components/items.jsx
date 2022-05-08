@@ -23,12 +23,15 @@ import {
   PangNavigationAccordionItem,
   getDarkTheme,
   DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR
+  LIGHT_CONTRAST_COLOR,
+  ITEM_RARITY_COLORS
 } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import Avatar from '@material-ui/core/Avatar'
+import Typography from '@material-ui/core/Typography'
+import Chip from '@material-ui/core/Chip'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -40,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     height: '552px'
   },
   icons: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
   },
   agTable: {
     color: props => `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
@@ -49,15 +53,23 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const overrideTypography = root => makeStyles(theme => ({ root }))
+
 const ItemsAGTable = props => {
   const classes = useStyles(props)
+  const getClassById = classId => {
+    if (!classId) {
+      return 'Any'
+    }
+    return props.PangContext.Classes.get(classId).get('name').en // TODO: localize
+  }
   const createRowFromGameObject = go => ({
     additionalSkillDamage: go.get('additionalSkillDamage'),
     attackRange: go.get('attackRange'),
     attackSpeed: go.get('attackSpeed'),
     buyPrice: go.get('buyPrice'),
     category: go.get('category'),
-    class: go.get('class'),
+    class: getClassById(go.get('class')),
     consumable: go.get('consumable'),
     deletable: go.get('deletable'),
     description: go.get('description').en, // TODO: localize
@@ -66,7 +78,7 @@ const ItemsAGTable = props => {
     guildContribution: go.get('guildContribution'),
     icon: go.icon,
     id: go.id,
-    level: go.get('level'),
+    lv: go.get('level'),
     maxAttack: go.get('maxAttack'),
     minAttack: go.get('minAttack'),
     maxDefense: go.get('maxDefense'),
@@ -103,51 +115,98 @@ const ItemsAGTable = props => {
       <img src={params.value} />
     </Avatar>
   )
-  const descriptionCellRenderer = params => params.value || ''
+
+  const descriptionCellRenderer = params => {
+    if (!params.value || params.value === 'null') {
+      return ''
+    }
+    return params.value
+  }
+
+  const navigateSingleItem = item => e => {
+    console.log({item, e})
+  }
+
+  const nameCellRenderer = params => {
+    const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
+    if (!nameColor) {
+      return params.value
+    }
+    const name = params.value || '[no name]'
+    const style = overrideTypography({color: nameColor, fontSize: '0.675rem'})()
+    const inner = <Typography classes={{root: style.root}} variant='subtitle2' nameColor={nameColor}>{name}</Typography>
+    return (
+      <Chip
+        size='small'
+        label={inner}
+        onClick={navigateSingleItem(params.data)}
+      />
+    )
+  }
+
+  const rarityCellRenderer = params => {
+    return ITEM_RARITY_COLORS[params.value].display
+  }
+
+  const rarityComparator = (valueA, valueB) => {
+    const rankA = props.PangContext.ItemRarityRanks[valueA]
+    const rankB = props.PangContext.ItemRarityRanks[valueB]
+    if (rankA === rankB) {
+      return 0
+    }
+    return rankA > rankB ? 1 : -1
+  }
+
   const [columnDefs] = useState([
-    { field: 'id', sortable: true, resizable: true },
-    { field: 'icon', resizable: true, cellRenderer: iconCellRenderer },
-    { field: 'name', sortable: true, resizable: true },
-    { field: 'level', sortable: true, resizable: true },
-    { field: 'description', resizable: true, cellRenderer: descriptionCellRenderer },
-    { field: 'attackSpeed', sortable: true, resizable: true },
-    { field: 'attackRange', sortable: true, resizable: true },
-    { field: 'additionalSkillDamage', sortable: true, resizable: true },
-    { field: 'buyPrice', sortable: true, resizable: true },
-    { field: 'category', resizable: true },
-    { field: 'class', resizable: true },
-    { field: 'consumable', resizable: true },
-    { field: 'deletable', resizable: true },
-    { field: 'durationRealTime', resizable: true },
-    { field: 'element', resizable: true },
-    { field: 'guildContribution', sortable: true, resizable: true },
-    { field: 'maxAttack', sortable: true, resizable: true },
-    { field: 'minAttack', sortable: true, resizable: true },
-    { field: 'maxDefense', sortable: true, resizable: true },
-    { field: 'minDefense', sortable: true, resizable: true },
-    { field: 'premium', resizable: true },
-    { field: 'rarity', resizable: true },
-    { field: 'resourceId', sortable: true, resizable: true },
-    { field: 'sellPrice', sortable: true, resizable: true },
-    { field: 'sex', resizable: true },
-    { field: 'shining', resizable: true },
-    { field: 'stack', sortable: true, resizable: true },
-    { field: 'subcategory', resizable: true },
-    { field: 'tradable', resizable: true },
-    { field: 'triggerSkill', resizable: true },
-    { field: 'triggerSkillProbability', sortable: true, resizable: true },
-    { field: 'transy', resizable: true },
-    { field: 'twoHanded', resizable: true }
+    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
+    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, hide: false, cellRenderer: iconCellRenderer },
+    { field: 'name', width: 135, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
+    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
+    { field: 'rarity', width: 75, resizable: true, minWidth: 75, sortable: true, filter: true, hide: false, cellRenderer: rarityCellRenderer, comparator: rarityComparator },
+    { field: 'class', width: 75, resizable: true, sortable: true, filter: true, hide: false },
+    { field: 'category', width: 85, resizable: true, sortable: true, filter: true, hide: false },
+    { field: 'subcategory', width: 100, resizable: true, sortable: true, filter: true, hide: false },
+    { field: 'buyPrice', sortable: true, resizable: true, filter: true },
+    { field: 'sellPrice', sortable: true, resizable: true, filter: true },
+    { field: 'description', resizable: true, filter: true, cellRenderer: descriptionCellRenderer },
+    { field: 'attackSpeed', sortable: true, resizable: true, filter: true },
+    { field: 'attackRange', sortable: true, resizable: true, filter: true },
+    { field: 'additionalSkillDamage', sortable: true, resizable: true, filter: true },
+    { field: 'consumable', resizable: true, filter: true },
+    { field: 'deletable', resizable: true, filter: true },
+    { field: 'durationRealTime', resizable: true, filter: true },
+    { field: 'element', resizable: true, filter: true },
+    { field: 'guildContribution', sortable: true, resizable: true, filter: true },
+    { field: 'maxAttack', sortable: true, resizable: true, filter: true },
+    { field: 'minAttack', sortable: true, resizable: true, filter: true },
+    { field: 'maxDefense', sortable: true, resizable: true, filter: true },
+    { field: 'minDefense', sortable: true, resizable: true, filter: true },
+    { field: 'premium', resizable: true, filter: true },
+    { field: 'resourceId', sortable: true, resizable: true, filter: true },
+    { field: 'sex', sortable: true, resizable: true, filter: true },
+    { field: 'shining', resizable: true, filter: true },
+    { field: 'stack', sortable: true, resizable: true, filter: true },
+    { field: 'tradable', resizable: true, filter: true },
+    { field: 'triggerSkill', resizable: true, filter: true },
+    { field: 'triggerSkillProbability', sortable: true, resizable: true, filter: true },
+    { field: 'transy', resizable: true, filter: true },
+    { field: 'twoHanded', resizable: true, filter: true }
   ])
 
   const defaultColumnDef = useMemo(() => ({
     flex: 1,
-    minWidth: 100,
-    filter: true
+    minWidth: 40,
+    width: 100,
+    hide: true
   }), [])
 
   const onGridReady = useCallback(() => {
     gridRef.current.api.sizeColumnsToFit()
+    if (!rowData.length) {
+      gridRef.current.api.showLoadingOverlay()
+    } else {
+      gridRef.current.api.hideOverlay()
+    }
   }, [])
 
   return (
@@ -156,9 +215,12 @@ const ItemsAGTable = props => {
         ref={gridRef}
         rowHeight={40}
         rowData={rowData}
-        columnDefs={columnDefs}
         defaultColDef={defaultColumnDef}
+        columnDefs={columnDefs}
         onGridReady={onGridReady}
+        suppressRowClickSelection={true}
+        enableCellTextSelection={true}
+        ensureDomOrder={true}
       />
     </div>
   )

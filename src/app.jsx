@@ -23,13 +23,18 @@ import ReactDOM from 'react-dom'
 import Pangsworth from './components/pangsworth'
 import Context from './clients/context'
 
-const HTML_MIN_HEIGHT = '600px'
-const HTML_MIN_WIDTH = '740px'
+const HTML_HEIGHT = '600px'
+const HTML_WIDTH = '740px'
 
 const PangContext = new Context()
 PangContext.fetchSettings().then(() => {
-  document.documentElement.style.minHeight = HTML_MIN_HEIGHT
-  document.documentElement.style.minWidth = HTML_MIN_WIDTH
+  document.documentElement.style.height = HTML_HEIGHT
+  document.documentElement.style.minHeight = HTML_HEIGHT
+  document.documentElement.style.maxHeight = HTML_HEIGHT
+  document.documentElement.style.width = HTML_WIDTH
+  document.documentElement.style.minWidth = HTML_WIDTH
+  document.documentElement.style.maxWidth = HTML_WIDTH
+  document.documentElement.style.overflow = 'hidden'
   const root = document.querySelector('#root')
   // eslint-disable-next-line
   return ReactDOM.render(<Pangsworth PangContext={PangContext} />, root)

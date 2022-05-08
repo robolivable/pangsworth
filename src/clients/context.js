@@ -1,5 +1,5 @@
 const { GalaResource } = require('./gala')
-const { getGameObjectsByTypeName } = require('./game-objects')
+const { Item, getGameObjectsByTypeName } = require('./game-objects')
 const { Settings } = require('./settings')
 const { Breadcrumbs } = require('./breadcrumbs')
 
@@ -134,6 +134,8 @@ class Context extends EventEmitter {
   get Items () {
     return this.gameData[config.API_RESOURCE_TYPES.items.name]
   }
+
+  get ItemRarityRanks () { return Item.rarityRanks }
 
   get EquipmentSets () {
     return this.gameData[config.API_RESOURCE_TYPES.equipmentSets.name]

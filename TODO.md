@@ -16,25 +16,29 @@
 - ~~settings UI/UX~~
   - ~~dark/light mode~~
   - ~~image pre-fetch caching enable/disable~~
-- list items of a specific type
-  - filter on item types
 - search as you type
 - nested data types in lists
 - search results data list (less data focused)
   - include icon in each row, button to export, button to copy item id to clipboard
-- lists are all virtualized (performance lists)
 - data focused views for game data
+  - ~~list items of a specific type~~
+  - ~~filter on item types~~
+  - ~~lists are all virtualized (performance lists)~~
   - ~~Have a single item inspector view for each tab~~
-  - sortable tables for data
+  - ~~sortable tables for data~~
+  - all views completed
+- Single item inspector fully implemented
+  - breadcrumbs for tracking location in extension
+    - user should be able to click through infinitely long chains of item references
+    - use colapsed breadcrumb system
 - ~~tool tips look nice~~
-- breadcrumbs for tracking location in extension
-  - interact with router, use colapsed breadcrumb system
-  - user should be able to click through infinitely long chains of item references
 - about modal on first time use
   - describe usage terms (license)
   - mention contribution process
 - Display appropriate copyright for tool assets (images)
 - ~~Render state is saved and synced across browsers to user settings~~
+- Skill icon preference toggle
+  - default toggle changes with dark theme
 
 #### Data models needed for MVP
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map
@@ -82,11 +86,6 @@
 
 #### Features for later
 - Full localization of all magic text
-- UI/UX for background downloading
-  - while downloading, the button text should change to "cancel refresh"
-  - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
-  - "verify" symbol/icon for showing how recent the cache is
-  - display the last time the cache was downloaded
 - settings UI/UX
   - choose display language
 - pannable, zoomable canvas for map display
@@ -108,3 +107,15 @@
     - Vue
 - Native app (electron)
 - asset size on disk stats
+- App cache refresh button
+- UI/UX
+  - background downloading
+    - while downloading, the button text should change to "cancel refresh"
+    - if the "cancel refresh" button is clicked, confirm the action, and stop the background download
+    - "verify" symbol/icon for showing how recent the cache is
+    - display the last time the cache was downloaded
+  - Data grid Tables
+    - custom scrollbars
+    - select columns to load
+    - persist filters to user settings
+

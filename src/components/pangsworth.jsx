@@ -50,7 +50,8 @@ const BREADCRUMBS_MAX_ITEMS = 5
 const RootDiv = styled('div')(props => ({
   display: 'flex',
   color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
-  height: '600px'
+  width: 'inherit',
+  height: 'inherit'
 }))
 
 const BGImage = styled('div')(props => ({
@@ -67,7 +68,7 @@ const Main = styled('div')(() => ({
 
 const MainBreadcrumbs = styled('div')(({ theme }) => ({
   display: 'flex',
-  padding: theme.spacing(1),
+  padding: theme.spacing(1.5),
   position: 'fixed',
   zIndex: '1',
   overflowX: 'auto',
@@ -92,14 +93,14 @@ const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
 
 const MainContentWrapper = styled('main')(({ theme }) => ({
   paddingTop: theme.spacing(6),
-  width: 'inherit',
-  height: 'inherit',
-  marginLeft: '-1px', // NOTE: this is to squeeze main content up against nav bar
-  overflow: 'clip'
+  width: '-webkit-fill-available',
+  height: '-webkit-fill-available',
+  marginLeft: '-1px' // NOTE: this is to squeeze main content up against nav bar
 }))
 
 const MainContent = styled('div')(({ theme }) => ({
-  backdropFilter: 'blur(10px)'
+  backdropFilter: 'blur(10px)',
+  height: 'fit-content'
 }))
 
 const DataViewerContent = styled('div')(({ theme }) => ({
@@ -175,11 +176,9 @@ export default class Pangsworth extends BaseComponent {
               PangContext={this.PangContext}
               aria-label='breadcrumb'
             >
-              <Link color='inherit'>
-                <Typography color='inherit'>
-                  {this.state.route}
-                </Typography>
-              </Link>
+              <Typography color='inherit'>
+                {this.state.route}
+              </Typography>
             </PangBreadcrumbs>
           </MainBreadcrumbs>
           <MainContentWrapper>
