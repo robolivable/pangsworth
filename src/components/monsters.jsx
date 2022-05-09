@@ -16,7 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+/* eslint-disable object-property-newline */
+import React, { useState } from 'react'
 
 import BaseComponent from './base-component'
 import { PangDataGrid, PangNavigationAccordionItem } from './common'
@@ -26,7 +27,6 @@ import DeathSkullIcon from '../../static/images/death-skull.svg'
 import FluffyWingIcon from '../../static/images/fluffy-wing.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
-import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'rgba(0 0 0 / 0%)',
     height: '100px',
     width: '100px',
-    objectFit: 'contain' 
+    objectFit: 'contain'
   }
 }))
 
@@ -80,7 +80,7 @@ const MonstersPangDataGrid = props => {
 
   props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, () => {
     setRowDataState(
-      Array.from(props.PangContext.Monsters.iter()).map(createRowFromGameObject) 
+      Array.from(props.PangContext.Monsters.iter()).map(createRowFromGameObject)
     )
   })
 
@@ -140,7 +140,7 @@ const MonstersPangDataGrid = props => {
       filter: true, hide: false, resizable: true },
     { field: 'icon', width: 140, minWidth: 140, maxWidth: 140, hide: false,
       resizable: true, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 250, minWidth: 250, sortable: true, resizable: true,
+    { field: 'name', width: 160, minWidth: 160, sortable: true, resizable: true,
       filter: true, hide: false, cellRenderer: nameCellRenderer },
     { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
       filter: true, resizable: true, hide: false },
