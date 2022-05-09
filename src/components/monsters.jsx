@@ -47,7 +47,7 @@ const MonstersPangDataGrid = props => {
   const createRowFromGameObject = go => ({
     id: go.id,
     icon: go.icon,
-    name: go.get('name').en,
+    name: go.get('name').en, // TODO: localize
     lv: go.get('level'),
     hp: go.get('hp'),
     experience: go.get('experience'),
@@ -139,7 +139,7 @@ const MonstersPangDataGrid = props => {
     { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
       filter: true, hide: false, resizable: true },
     { field: 'icon', width: 140, minWidth: 140, maxWidth: 140, hide: false,
-      resizable: true, cellRenderer: iconCellRenderer },
+      cellRenderer: iconCellRenderer },
     { field: 'name', width: 160, minWidth: 160, sortable: true, resizable: true,
       filter: true, hide: false, cellRenderer: nameCellRenderer },
     { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true,

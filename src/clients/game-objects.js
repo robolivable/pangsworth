@@ -224,7 +224,7 @@ class Class extends GameObject {
 
   get icon () { return this.iconStyled() }
 
-  iconStyled (style = config.API_RESOURCE_TYPES.classes.iconStyles.messenger) {
+  iconStyled (style = config.API_RESOURCE_TYPES.classes.iconStyles.target) {
     return config.API_RESOURCE_TYPES.classes.api.image(style, this.props.icon)
   }
 
@@ -240,6 +240,24 @@ class Classes extends GameObjectCollection {
   constructor () {
     const name = Class.type.name
     super(Class, { name })
+  }
+
+  static get ranks () {
+    return {
+      'Vagrant': 0,
+      'Mercenary': 1,
+      'Assist': 2,
+      'Acrobat': 3,
+      'Magician': 4,
+      'Blade': 5,
+      'Knight': 6,
+      'Billposter': 7,
+      'Ringmaster': 8,
+      'Jester': 9,
+      'Ranger': 10,
+      'Psykeeper': 11,
+      'Elementor': 12
+    }
   }
 }
 
@@ -262,6 +280,13 @@ class Item extends GameObject {
   * images () {
     yield config.API_RESOURCE_TYPES.items.api.image(this.props.icon)
   }
+}
+
+class Items extends GameObjectCollection {
+  constructor () {
+    const name = Item.type.name
+    super(Item, { name })
+  }
 
   static get rarityRanks () {
     // common < uncommon < rare < unique < veryrare
@@ -272,13 +297,6 @@ class Item extends GameObject {
       unique: 3,
       veryrare: 4
     }
-  }
-}
-
-class Items extends GameObjectCollection {
-  constructor () {
-    const name = Item.type.name
-    super(Item, { name })
   }
 }
 

@@ -84,6 +84,9 @@
   - ~~position of progress elements are not aligned properly when downloading~~
   - ~~progress is not shown for background prefetch on start~~
   - ~~it is possible to click the download button fast enough to trigger two ongoing fetches~~
+- UI/UX
+  - Data grids
+    - classes stats calculator UI bug causing trail on slider not to appear unless you increment using the input box
 
 #### Features for later
 - Full localization of all magic text
@@ -119,4 +122,5 @@
     - custom scrollbars
     - select columns to load
     - persist filters to user settings
-
+    - tooltips on all values and images
+    - pretty formatted numbers (comma separation for multiples of 1k)

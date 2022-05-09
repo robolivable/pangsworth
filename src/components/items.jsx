@@ -156,7 +156,7 @@ const ItemsPangDataGrid = props => {
       filter: true, hide: false },
     { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, hide: false,
       cellRenderer: iconCellRenderer },
-    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true,
+    { field: 'name', width: 200, minWidth: 200, sortable: true, resizable: true,
       filter: true, hide: false,
         cellRenderer: nameCellRenderer },
     { field: 'lv', width: 55, minWidth: 55, maxWidth: 55,

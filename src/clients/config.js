@@ -30,8 +30,8 @@ const exportDefault = {
       dataVersionAdded: 1,
       iconStyles: {
         messenger: 'messenger',
-        old_female: 'old_female',
-        old_male: 'old_male',
+        oldFemale: 'old_female',
+        oldMale: 'old_male',
         target: 'target'
       },
       api: {
