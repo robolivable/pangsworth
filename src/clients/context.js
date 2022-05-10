@@ -100,6 +100,7 @@ class Context extends EventEmitter {
       console.error('error initializing pang context', { error })
     }
     await storageSetCacheLoading(false)
+    console.debug({ pangcontext: this })
     this.emit(BuiltinEvents.INITIALIZE_COMPLETED)
   }
 

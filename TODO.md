@@ -38,8 +38,10 @@
   - mention contribution process
 - Display appropriate copyright for tool assets (images)
 - ~~Render state is saved and synced across browsers to user settings~~
-- Skill icon preference toggle
-  - default toggle changes with dark theme
+- ~~Skill icon preference toggle~~
+  - ~~default toggle changes with dark theme~~
+- build continent game objects from worlds
+  - hook up continents to npc list to show in filterable column
 
 #### Data models needed for MVP
 - Continent(s): nested in "world" - contains polygon object can be used to draw shape on map
