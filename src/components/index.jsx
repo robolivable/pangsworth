@@ -24,7 +24,7 @@ import EquipmentSet from './equipment-set'
 import Skills from './skills'
 import NPCs from './npcs'
 import Quests from './quests'
-import Achievements from './Achievements'
+import Achievements from './achievements'
 import Settings from './settings'
 
 const Routes = {
