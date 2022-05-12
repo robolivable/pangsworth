@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { SvgIcon } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -35,6 +35,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab'
 import * as config from '../clients/config'
 import { localize } from '../i18n'
+import PlaceholderIcon from '../../static/images/placeholder.svg'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -166,6 +167,9 @@ const useStyles = makeStyles(theme => ({
   textColors: {
     color: darkThemeForProps('90%')
   },
+  placeholder: {
+    position: 'absolute'
+  },
   dividerColors: {
     backgroundColor: darkThemeForProps('30%')
   },
@@ -217,7 +221,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: darkThemeForBGProps('50%'),
     color: darkThemeForProps('50%'),
     '&:hover': {
-      backgroundColor: 'rgba(100 100 100 / 50%)',
+      backgroundColor: 'rgba(100 100 100 / 50%)'
     }
   },
   dataViewDrawerClosedEdgeButton: {
@@ -227,7 +231,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: darkThemeForBGProps('50%'),
     color: darkThemeForProps('50%'),
     '&:hover': {
-      backgroundColor: 'rgba(100 100 100 / 50%)',
+      backgroundColor: 'rgba(100 100 100 / 50%)'
     }
   },
   dataViewDrawerContent: {
@@ -241,7 +245,7 @@ const useStyles = makeStyles(theme => ({
 
 export const PangRouteDrawer = props => {
   const classes = useStyles(props)
-  const [open, setOpen] = React.useState(!!props.startState)
+  const [open, setOpen] = useState(!!props.startState)
 
   const handleRouteDrawer = () => {
     setOpen(!open)
@@ -318,7 +322,7 @@ export const PangNavigationItem = props => {
 
 export const PangNavigationAccordion = props => {
   const classes = useStyles(props)
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     openAccordion: !!props.startState
   })
   const handleItemClick = e => {
@@ -404,7 +408,7 @@ export const PangNavigationAccordionItem = props => {
 
 export const PangDataViewDrawer = props => {
   const classes = useStyles(props)
-  const [open, setOpen] = React.useState(!!props.startState)
+  const [open, setOpen] = useState(!!props.startState)
 
   const onStateToggle = v => {
     if (typeof props.onDrawerStateToggle === 'function') {
@@ -499,9 +503,46 @@ export const PangDataGrid = props => {
         ref={gridRef}
         defaultColDef={defaultColDef}
         onGridReady={onGridReady}
-        suppressRowClickSelection={true}
-        enableCellTextSelection={true}
-        ensureDomOrder={true}
+        suppressRowClickSelection
+        enableCellTextSelection
+        ensureDomOrder
+      />
+    </div>
+  )
+}
+
+// TODO: solution for broken image loads
+export const PangImg = props => {
+  const classes = useStyles(props)
+  const { onload, onerror, ...rest } = props
+  const [iconVisibility, setIconVisibility] = useState(true)
+  const [imgVisibility, setImgVisibility] = useState(false)
+  const handleOnError = () => {
+    setImgVisibility(false)
+    if (typeof onerror === 'function') {
+      return onerror()
+    }
+  }
+  const handleOnLoad = () => {
+    setIconVisibility(false)
+    setImgVisibility(true)
+    if (typeof onload === 'function') {
+      return onload()
+    }
+  }
+  return (
+    <div>
+      {iconVisibility
+        ? <PangIcon
+            component={PlaceholderIcon}
+            className={`${classes.textColors}`}
+          />
+        : null}
+      <img
+        {...rest}
+        onerror={handleOnError}
+        onload={handleOnLoad}
+        style={imgVisibility ? {} : { display: 'none' }}
       />
     </div>
   )

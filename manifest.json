@@ -3,17 +3,19 @@
   "version": "1.0",
   "manifest_version": 3,
   "action": {
-    "default_icon": {
-      "16": "static/images/icon16.png",
-      "24": "static/images/icon24.png",
-      "32": "static/images/icon32.png"
-    },
     "default_title": "Pangsworth",
     "default_popup": "static/popup.html"
   },
   "background": {
     "service_worker": "build/background.js",
     "type": "module"
+  },
+  "icons": {
+    "16": "static/images/icon16.png",
+    "24": "static/images/icon24.png",
+    "32": "static/images/icon32.png",
+    "48": "static/images/icon48.png",
+    "128": "static/images/icon128.png"
   },
   "permissions": [
     "storage"

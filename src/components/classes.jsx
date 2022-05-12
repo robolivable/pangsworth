@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 
 import BaseComponent from './base-component'
 import {
@@ -27,7 +27,7 @@ import {
   LIGHT_CONTRAST_COLOR
 } from './common'
 import FamilyTreeIcon from '../../static/images/family-tree.svg'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import * as config from '../clients/config'
 import Typography from '@material-ui/core/Typography'
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
       `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
     '&::before': {
       borderBottomColor: props =>
-        `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+        `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
     }
   }
 }))
@@ -83,7 +83,7 @@ const SliderValueLabelComponent = props => {
   const { children, open, value } = props
 
   return (
-    <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
+    <Tooltip open={open} enterTouchDelay={0} placement='top' title={value}>
       {children}
     </Tooltip>
   )
@@ -119,8 +119,9 @@ const StatCalculator = props => {
   ])
   const getLevelMarks = getMarks
   const getStatMarks = useCallback(
-    () => getMarks(0, getMaxStatPointsForLevel(level))
-  , [level])
+    () => getMarks(0, getMaxStatPointsForLevel(level)),
+    [level]
+  )
   const handleLevelSliderChange = (_, value) => setLevel(value)
   const handleLevelInputChange = event => setLevel(Number(event.target.value) || minLevel)
   const handleLevelInputOnBlur = () => {
@@ -141,7 +142,7 @@ const StatCalculator = props => {
     }
     if (stat > maxStat) {
       setStat(maxStat)
-      return
+      return // eslint-disable-line
     }
   }
   const getMaxStatPointsForLevel = lv => (lv - 1) * 2
@@ -285,17 +286,23 @@ const ClassesPangDataGrid = props => {
     )
   })
 
-  const iconCellRenderer = params => (
-    <img className={classes.iconImage} src={params.value} />
-  )
+  const iconCellRenderer = params => {
+    const alt = `Icon for the ${params.data.name} class.`
+    return <img className={classes.iconImage} src={params.value} alt={alt} />
+  }
 
-  const iconMessengerCellRenderer = params => (
-    <div className={classes.iconPixelsWrapper}>
-      <img className={classes.iconPixels} src={params.value.messenger} />
-      <img className={classes.iconPixels} src={params.value.oldFemale} />
-      <img className={classes.iconPixels} src={params.value.oldMale} />
-    </div>
-  )
+  const iconMessengerCellRenderer = params => {
+    const alt1 = `Pixel messenger icon for the ${params.data.name} class.`
+    const alt2 = `Old pixel icon for the feminine ${params.data.name} class.`
+    const alt3 = `Old pixel messenger icon for the masculine ${params.data.name} class.`
+    return (
+      <div className={classes.iconPixelsWrapper}>
+        <img className={classes.iconPixels} src={params.value.messenger} alt={alt1} />
+        <img className={classes.iconPixels} src={params.value.oldFemale} alt={alt2} />
+        <img className={classes.iconPixels} src={params.value.oldMale} alt={alt3} />
+      </div>
+    )
+  }
 
   const navigateSingleItem = item => e => {
     console.log({ item, e })
@@ -326,7 +333,7 @@ const ClassesPangDataGrid = props => {
   const maxHPCellRenderer = params => (
     <StatCalculator
       PangContext={props.PangContext}
-      type={'HP'}
+      type='HP'
       expression={params.value}
       minLevel={params.data.minLevel}
       maxLevel={params.data.maxLevel}
@@ -336,7 +343,7 @@ const ClassesPangDataGrid = props => {
   const maxFPCellRenderer = params => (
     <StatCalculator
       PangContext={props.PangContext}
-      type={'FP'}
+      type='FP'
       expression={params.value}
       minLevel={params.data.minLevel}
       maxLevel={params.data.maxLevel}
@@ -347,7 +354,7 @@ const ClassesPangDataGrid = props => {
     <StatCalculator
       PangContext={props.PangContext}
       expression={params.value}
-      type={'MP'}
+      type='MP'
       minLevel={params.data.minLevel}
       maxLevel={params.data.maxLevel}
       stat={{ name: 'int' }}

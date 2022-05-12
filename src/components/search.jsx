@@ -30,6 +30,8 @@ import Items from './items'
 import EquipmentSet from './equipment-set'
 import Skills from './skills'
 import NPCs from './npcs'
+import Quests from './quests'
+import Achievements from './achievements'
 
 const SearchSubRoutes = {
   [World.ROUTE]: World,
@@ -38,7 +40,9 @@ const SearchSubRoutes = {
   [EquipmentSet.ROUTE]: EquipmentSet,
   [Classes.ROUTE]: Classes,
   [Skills.ROUTE]: Skills,
-  [NPCs.ROUTE]: NPCs
+  [NPCs.ROUTE]: NPCs,
+  [Quests.ROUTE]: Quests,
+  [Achievements.ROUTE]: Achievements
 }
 
 export default class Search extends BaseComponent {

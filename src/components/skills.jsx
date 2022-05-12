@@ -137,12 +137,14 @@ const SkillsPangDataGrid = props => {
       e.target.src = getSrcForStyle(p)(getStyleForThemeMode(!isDarkTheme))
     }
 
+    const alt = `Icon for the ${params.data.name} skill.`
     return (
       <Avatar variant='square' className={classes.icons}>
         <img
           src={params.value}
           onClick={handleOnClick(params)}
           className={classes.iconImg}
+          alt={alt}
         />
       </Avatar>
     )
@@ -156,14 +158,10 @@ const SkillsPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
-      resizable: true, filter: true, hide: false },
-    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, sortable: true,
-      resizable: true, filter: true, cellRenderer: iconCellRenderer, hide: false },
-    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true,
-      filter: true, cellRenderer: nameCellRenderer, hide: false },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
-      resizable: true, filter: true, hide: false },
+    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
+    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, sortable: true, resizable: true, filter: true, cellRenderer: iconCellRenderer, hide: false },
+    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true, filter: true, cellRenderer: nameCellRenderer, hide: false },
+    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
     { field: 'class', width: 75, sortable: true, resizable: true, filter: true, hide: false },
     { field: 'skillPoints', sortable: true, resizable: true, filter: true, hide: false },
     { field: 'target', sortable: true, resizable: true, filter: true, hide: false },
@@ -171,8 +169,7 @@ const SkillsPangDataGrid = props => {
 
     { field: 'combo', sortable: true, resizable: true, filter: true },
     { field: 'debuff', sortable: true, resizable: true, filter: true },
-    { field: 'description', sortable: true, resizable: true, filter: true,
-      cellRenderer: descriptionCellRenderer },
+    { field: 'description', sortable: true, resizable: true, filter: true, cellRenderer: descriptionCellRenderer },
     { field: 'element', sortable: true, resizable: true, filter: true },
     { field: 'flying', sortable: true, resizable: true, filter: true },
     { field: 'magic', sortable: true, resizable: true, filter: true },

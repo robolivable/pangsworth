@@ -178,20 +178,6 @@ const exportDefault = {
       api: {
         get: () => '/language'
       }
-    },
-    places: {
-      name: 'places',
-      cache: true,
-      api: {
-        image: fileName => `${API_BASE_URL}/image/place/${fileName}`
-      }
-    },
-    elements: {
-      name: 'elements',
-      cache: true,
-      api: {
-        image: (style, fileName) => `${API_BASE_URL}/image/element/${style}/${fileName}`
-      }
     }
   },
   CACHE_NAME: 'pangsworth',

@@ -84,9 +84,12 @@ const MonstersPangDataGrid = props => {
     )
   })
 
-  const iconCellRenderer = params => (
-    <img className={classes.icons} src={params.value} />
-  )
+  const iconCellRenderer = params => {
+    const alt = `Icon for the ${params.data.name} monster.`
+    return (
+      <img className={classes.icons} src={params.value} alt={alt} />
+    )
+  }
 
   const navigateSingleItem = item => e => {
     console.log({ item, e })
@@ -136,14 +139,10 @@ const MonstersPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
-      filter: true, hide: false, resizable: true },
-    { field: 'icon', width: 140, minWidth: 140, maxWidth: 140, hide: false,
-      cellRenderer: iconCellRenderer },
-    { field: 'name', width: 160, minWidth: 160, sortable: true, resizable: true,
-      filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true,
-      filter: true, resizable: true, hide: false },
+    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false, resizable: true },
+    { field: 'icon', width: 140, minWidth: 140, maxWidth: 140, hide: false, cellRenderer: iconCellRenderer },
+    { field: 'name', width: 160, minWidth: 160, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
+    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, resizable: true, hide: false },
     { field: 'hp', sortable: true, resizable: true, filter: true, hide: false },
     { field: 'rank', sortable: true, resizable: true, filter: true, hide: false },
     { field: 'flying', resizable: true, filter: true, hide: false },

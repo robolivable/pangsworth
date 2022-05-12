@@ -23,6 +23,8 @@ import Items from './items'
 import EquipmentSet from './equipment-set'
 import Skills from './skills'
 import NPCs from './npcs'
+import Quests from './quests'
+import Achievements from './Achievements'
 import Settings from './settings'
 
 const Routes = {
@@ -37,7 +39,9 @@ const SubRoutes = {
     [EquipmentSet.ROUTE]: EquipmentSet,
     [Classes.ROUTE]: Classes,
     [Skills.ROUTE]: Skills,
-    [NPCs.ROUTE]: NPCs
+    [NPCs.ROUTE]: NPCs,
+    [Quests.ROUTE]: Quests,
+    [Achievements.ROUTE]: Achievements
   }
 }
 

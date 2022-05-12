@@ -17,7 +17,7 @@
   - ~~dark/light mode~~
   - ~~image pre-fetch caching enable/disable~~
 - search as you type
-- nested data types in lists
+- ~~nested data types in lists~~
 - search results data list (less data focused)
   - include icon in each row, button to export, button to copy item id to clipboard
 - data focused views for game data
@@ -40,18 +40,19 @@
 - ~~Render state is saved and synced across browsers to user settings~~
 - ~~Skill icon preference toggle~~
   - ~~default toggle changes with dark theme~~
-- build continent game objects from worlds
+- ~~build continent game objects from worlds~~
   - hook up continents to npc list to show in filterable column
+- Pannable, zoomable canvas for map display using Leaflet
 
-#### Data models needed for MVP
-- Continent(s): nested in "world" - contains polygon object can be used to draw shape on map
-- Lodestar(s): nested in "world" - wrapper over a player respawn location
-- Skill Levels: nested in "skill" containing effects at each level)
-  - Ability(s): nested in "skill level", "bonus" - for containing buff effect values
-- Location(s): nested in "monster", "npc", "lodestar" - used to pinpoint place on world map, or to draw tiles with coordinates
-- Attack(s): nested in "monster" - monster skills
-- Spawn(s): nested in "monster" - monster spawn locations, used to draw areas on map for spawn areas
-- Bonus(es): nested in "equipment sets" - wrapper for "ability" describing the applied effects for set bonuses
+#### ~~Data models needed for MVP~~
+- ~~Continent(s): nested in "world" - contains polygon object can be used to draw shape on map~~
+- ~~Lodestar(s): nested in "world" - wrapper over a player respawn location~~
+- ~~Skill Levels: nested in "skill" containing effects at each level)~~
+  - ~~Ability(s): nested in "skill level", "bonus" - for containing buff effect values~~
+- ~~Location(s): nested in "monster", "npc", "lodestar" - used to pinpoint place on world map, or to draw tiles with coordinates~~
+- ~~Attack(s): nested in "monster" - monster skills~~
+- ~~Spawn(s): nested in "monster" - monster spawn locations, used to draw areas on map for spawn areas~~
+- ~~Bonus(es): nested in "equipment sets" - wrapper for "ability" describing the applied effects for set bonuses~~
 
 #### Release requirements
 - complete README
@@ -64,7 +65,8 @@
   - README references docs
 - Add Pangsworth metadata
   - Artwork
-    - Extension UI Icons
+    - ~~Extension UI Icons~~
+    - All Mascot images
   - Tidy up manifest.json
 - Define release deployment process
 - Open source all code
@@ -91,10 +93,9 @@
     - classes stats calculator UI bug causing trail on slider not to appear unless you increment using the input box
 
 #### Features for later
-- Full localization of all magic text
 - settings UI/UX
   - choose display language
-- pannable, zoomable canvas for map display
+  - Full localization of all magic text
 - search history saved in search bar
   - group history by date
 - export data from search results
@@ -104,7 +105,7 @@
 - copy in-game link to clipboard
 - Graph to plot mob experience gained per level (on a monster view)
 - Upgrade to MUI 5.0
-- Accessibility features (keyboard-only usage)
+- Full Accessibility features (keyboard-only usage)
 - Chrome extension store?
 - Plugin framework
   - Allow embedding contribution from others

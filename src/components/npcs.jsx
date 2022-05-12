@@ -75,8 +75,8 @@ const getIconTypeForMenuType = menu => {
 const useStyles = makeStyles(theme => ({
   icons: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
-    height: '130px',
-    width: '130px',
+    height: '150px',
+    width: '150px',
     objectFit: 'contain'
   },
   iconsWrapper: {
@@ -100,8 +100,8 @@ const NPCsPangDataGrid = props => {
     id: go.id,
     image: go.image,
     name: go.get('name').en, // TODO: localize
-    menus: formatMenus(go.get('menus')),
-    place: formatPlace(go.get('place'))
+    menus: formatMenus(go.get('menus'))
+    //locations: getLocations(go.get('place'))
   })
 
   const [rowData, setRowDataState] = useState(
@@ -114,9 +114,16 @@ const NPCsPangDataGrid = props => {
     )
   })
 
-  const iconCellRenderer = params => (
-    <img className={classes.icons} src={params.value} />
-  )
+  const iconCellRenderer = params => {
+    const alt = `Icon for the ${params.data.name} non-player character.`
+    return (
+      <img
+        className={classes.icons}
+        src={params.value}
+        alt={alt}
+      />
+    )
+  }
 
   const navigateSingleItem = item => e => {
     console.log({ item, e })
@@ -173,18 +180,21 @@ const NPCsPangDataGrid = props => {
     )
   }
 
+  const locationsCellRenderer = params => {
+  }
+
   const [columnDefs] = useState([
     { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'image', width: 130, minWidth: 130, maxWidth: 130, hide: false, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 230, minWidth: 230, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'menus', width: 150, minWidth: 150, maxWidth: 150, hide: false, cellRenderer: menusCellRenderer, filter: true },
-    { field: 'place', width: 100, minWidth: 100, maxWidth: 100, sortable: true, filter: true, hide: false }
+    { field: 'image', width: 175, minWidth: 175, maxWidth: 175, hide: false, cellRenderer: iconCellRenderer },
+    { field: 'name', width: 200, minWidth: 200, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
+    { field: 'menus', width: 120, minWidth: 120, maxWidth: 120, hide: false, cellRenderer: menusCellRenderer, filter: true }
+    //{ field: 'locations', width: 100, minWidth: 100, maxWidth: 100, sortable: true, filter: true, hide: false, cellRenderer: locationsCellRenderer }
   ])
 
   return (
     <PangDataGrid
       PangContext={props.PangContext}
-      rowHeight={130}
+      rowHeight={150}
       rowData={rowData}
       columnDefs={columnDefs}
     />
