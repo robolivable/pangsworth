@@ -17,7 +17,7 @@
 */
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable object-property-newline */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
 import { PangDataGrid, PangNavigationAccordionItem } from './common'
@@ -78,11 +78,16 @@ const MonstersPangDataGrid = props => {
     Array.from(props.PangContext.Monsters.iter()).map(createRowFromGameObject)
   )
 
-  props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, () => {
-    setRowDataState(
+  useEffect(() => {
+    const initializeHandler = () => setRowDataState(
       Array.from(props.PangContext.Monsters.iter()).map(createRowFromGameObject)
     )
-  })
+    props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.INITIALIZE_COMPLETED,
+      initializeHandler
+    )
+  }, [])
 
   const iconCellRenderer = params => {
     const alt = `Icon for the ${params.data.name} monster.`

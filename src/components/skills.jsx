@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
 import {
@@ -82,11 +82,16 @@ const SkillsPangDataGrid = props => {
     Array.from(props.PangContext.Skills.iter()).map(createRowFromGameObject)
   )
 
-  props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, () => {
-    setRowDataState(
+  useEffect(() => {
+    const initializeHandler = () => setRowDataState(
       Array.from(props.PangContext.Skills.iter()).map(createRowFromGameObject)
     )
-  })
+    props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.INITIALIZE_COMPLETED,
+      initializeHandler
+    )
+  }, [])
 
   const navigateSingleItem = item => e => {
     console.log(JSON.stringify({ item }, null, 2))

@@ -252,12 +252,14 @@ const StatCalculator = props => {
 
 const ClassesPangDataGrid = props => {
   const classes = useStyles(props)
+
   const getParentById = parentId => {
     if (!parentId) {
       return 'None'
     }
     return props.PangContext.Classes.get(parentId).get('name').en // TODO: localize
   }
+
   const createRowFromGameObject = go => ({
     id: go.id,
     icon: go.icon,
@@ -280,11 +282,22 @@ const ClassesPangDataGrid = props => {
     Array.from(props.PangContext.Classes.iter()).map(createRowFromGameObject)
   )
 
-  props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, () => {
-    setRowDataState(
+  // NOTE: We useEffect here to make sure we can properly clean up event
+  // listeners. This is boilerplate for all components that depend on
+  // the context initialization. We may be able to reduce this by doing
+  // it as part of the common component, but the issue is that we
+  // currently depend on each child component state (setRowDataState)
+  // for these operations.
+  useEffect(() => {
+    const initializeHandler = () => setRowDataState(
       Array.from(props.PangContext.Classes.iter()).map(createRowFromGameObject)
     )
-  })
+    props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.INITIALIZE_COMPLETED,
+      initializeHandler
+    )
+  }, [])
 
   const iconCellRenderer = params => {
     const alt = `Icon for the ${params.data.name} class.`

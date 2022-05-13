@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
 import {
@@ -41,12 +41,14 @@ const overrideTypography = root => makeStyles(theme => ({ root }))
 
 const ItemsPangDataGrid = props => {
   const classes = useStyles(props)
+
   const getClassById = classId => {
     if (!classId) {
       return 'Any'
     }
     return props.PangContext.Classes.get(classId).get('name').en // TODO: localize
   }
+
   const createRowFromGameObject = go => ({
     additionalSkillDamage: go.get('additionalSkillDamage'),
     attackRange: go.get('attackRange'),
@@ -87,11 +89,16 @@ const ItemsPangDataGrid = props => {
     Array.from(props.PangContext.Items.iter()).map(createRowFromGameObject)
   )
 
-  props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, () => {
-    setRowDataState(
+  useEffect(() => {
+    const initializeHandler = () => setRowDataState(
       Array.from(props.PangContext.Items.iter()).map(createRowFromGameObject)
     )
-  })
+    props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.INITIALIZE_COMPLETED,
+      initializeHandler
+    )
+  }, [])
 
   const iconCellRenderer = params => {
     const alt = `Icon for the ${params.data.name} item.`
