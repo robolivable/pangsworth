@@ -526,6 +526,20 @@ class World extends GameObject {
       yield lodestar
     }
   }
+
+  async hydrate () {
+    const promiseList = []
+    if (this.revivalWorld.isTransparent) {
+      promiseList.push(this.revivalWorld.fetch())
+    }
+    for (const place of this.places()) {
+      promiseList.push(place.hydrate())
+    }
+    for (const lodestar of this.lodestars()) {
+      promiseList.push(lodestar.hydrate())
+    }
+    await Promise.all(promiseList)
+  }
 }
 
 class Worlds extends GameObjectCollection {
@@ -650,6 +664,32 @@ class Monster extends GameObject {
       yield this._summoned[monsterId]
     }
   }
+
+  async hydrate () {
+    const promiseList = []
+    for (const attack of this.attacks()) {
+      promiseList.push(attack.hydrate())
+    }
+    for (const drop of this.drops()) {
+      promiseList.push(drop.hydrate())
+    }
+    promiseList.push(this.location.hydrate())
+    for (const spawn of this.spawns()) {
+      promiseList.push(spawn.hydrate())
+    }
+    if (this.booty.isTransparent) {
+      promiseList.push(this.booty.fetch())
+    }
+    if (this.mineral.isTransparent) {
+      promiseList.push(this.mineral.fetch())
+    }
+    for (const monster of this.summoned()) {
+      if (monster.isTransparent) {
+        promiseList.push(monster.fetch())
+      }
+    }
+    await Promise.all(promiseList)
+  }
 }
 
 class Monsters extends GameObjectCollection {
@@ -695,6 +735,12 @@ class Class extends GameObject {
     }
     this._parentClass = new Class({ id: parentId })
     return this._parentClass
+  }
+
+  async hydrate () {
+    if (this.parentClass.isTransparent) {
+      await this.parentClass.fetch()
+    }
   }
 }
 
@@ -833,6 +879,28 @@ class Item extends GameObject {
     this._location = new Location(this, locationProps)
     return this._location
   }
+
+  async hydrate () {
+    const promiseList = []
+    for (const ability of this.abilities()) {
+      promiseList.push(ability.hydrate())
+    }
+    for (const spawn of this.spawns()) {
+      promiseList.push(spawn.hydrate())
+    }
+    if (this.class.isTransparent) {
+      promiseList.push(this.class.fetch())
+    }
+    if (this.transy.isTransparent) {
+      promiseList.push(this.transy.fetch())
+    }
+    if (this.triggerSkill.isTransparent) {
+      promiseList.push(this.triggerSkill.fetch())
+    }
+    promiseList.push(this.blinkwingTarget.hydrate())
+    promiseList.push(this.location.hydrate())
+    await Promise.all(promiseList)
+  }
 }
 
 class Items extends GameObjectCollection {
@@ -895,16 +963,6 @@ class EquipmentSet extends GameObject {
     }
   }
 
-  async partsHydrated () {
-    const parts = []
-    for (const id of this.get('parts')) {
-      const part = new Item({ id })
-      await part.fetch()
-      parts.push(part)
-    }
-    return parts
-  }
-
   get transy () {
     if (this._transy) {
       return this._transy
@@ -915,6 +973,22 @@ class EquipmentSet extends GameObject {
     }
     this._transy = new EquipmentSet({ id: transyId })
     return this._transy
+  }
+
+  async hydrate () {
+    const promiseList = []
+    for (const part of this.parts()) {
+      if (part.isTransparent) {
+        promiseList.push(part.fetch())
+      }
+    }
+    for (const bonus of this.bonuses()) {
+      promiseList.push(bonus.hydrate())
+    }
+    if (this.transy.isTransparent) {
+      promiseList.push(this.transy.fetch())
+    }
+    await Promise.all(promiseList)
   }
 }
 
@@ -1003,6 +1077,23 @@ class Skill extends GameObject {
       this._levels.push(level)
       yield level
     }
+  }
+
+  async hydrate () {
+    const promiseList = []
+    if (this.class.isTransparent) {
+      promiseList.push(this.class.fetch())
+    }
+    if (this.triggerSkill.isTransparent) {
+      promiseList.push(this.triggerSkill.fetch())
+    }
+    for (const requirement of this.requirements()) {
+      promiseList.push(requirement.hydrate())
+    }
+    for (const level of this.levels()) {
+      promiseList.push(level.hydrate())
+    }
+    await Promise.all(promiseList)
   }
 }
 
@@ -1129,6 +1220,12 @@ class QuestPart extends GameChildObject {
     this._quest = new Quest({ id: questId })
     return this._quest
   }
+
+  async hydrate () {
+    if (this.quest.isTransparent) {
+      await this.quest.fetch()
+    }
+  }
 }
 
 class QuestItem extends GameChildObject {
@@ -1143,6 +1240,12 @@ class QuestItem extends GameChildObject {
     this._item = new Item({ id: itemId })
     return this._item
   }
+
+  async hydrate () {
+    if (this.item.isTransparent) {
+      await this.item.fetch()
+    }
+  }
 }
 
 class QuestMonster extends GameChildObject {
@@ -1156,6 +1259,12 @@ class QuestMonster extends GameChildObject {
     }
     this._monster = new Monster({ id: monsterId })
     return this._monster
+  }
+
+  async hydrate () {
+    if (this.monster.isTransparent) {
+      await this.monster.fetch()
+    }
   }
 }
 
@@ -1335,6 +1444,47 @@ class Quest extends GameObject {
     this._endVisitPlace = new Spawn(this, endVisitPlace)
     return this._endVisitPlace
   }
+
+  async hydrate () {
+    const promiseList = []
+    for (const beginClass of this.beginClasses()) {
+      if (beginClass.isTransparent) {
+        promiseList.push(beginClass.fetch())
+      }
+    }
+    for (const beginQuest of this.beginQuests()) {
+      promiseList.push(beginQuest.hydrate())
+    }
+    for (const beginReceiveItem of this.beginReceiveItems()) {
+      promiseList.push(beginReceiveItem.hydrate())
+    }
+    for (const endNeededItem of this.endNeededItems()) {
+      promiseList.push(endNeededItem.hydrate())
+    }
+    for (const endReceiveItem of this.endReceiveItems()) {
+      promiseList.push(endReceiveItem.hydrate())
+    }
+    for (const endRemoveItem of this.endRemoveItems()) {
+      promiseList.push(endRemoveItem.hydrate())
+    }
+    for (const endKillMonster of this.endKillMonsters()) {
+      promiseList.push(endKillMonster.hydrate())
+    }
+    if (this.parentQuest.isTransparent) {
+      promiseList.push(this.parentQuest.fetch())
+    }
+    if (this.beginNPC.isTransparent) {
+      promiseList.push(this.beginNPC.fetch())
+    }
+    if (this.endNPC.isTransparent) {
+      promiseList.push(this.endNPC.fetch())
+    }
+    if (this.endTalkNPC.isTransparent) {
+      promiseList.push(this.endTalkNPC.fetch())
+    }
+    promiseList.push(this.endVisitPlace.hydrate())
+    await Promise.all(promiseList)
+  }
 }
 
 class Quests extends GameObjectCollection {
@@ -1378,6 +1528,54 @@ class Achievement extends GameObject {
     return config.API_RESOURCE_TYPES.achievements.api.getById(this.id)
   }
 
+  get mainMonster () {
+    if (this._mainMonster) {
+      return this._mainMonster
+    }
+    const mainMonsterId = this.get('mainMonster')
+    if (!mainMonsterId) {
+      return null
+    }
+    this._mainMonster = new Monster({ id: mainMonsterId })
+    return this._mainMonster
+  }
+
+  get mainItem () {
+    if (this._mainItem) {
+      return this._mainItem
+    }
+    const id = this.get('mainItem')
+    if (!id) {
+      return null
+    }
+    this._mainItem = new Item({ id })
+    return this._mainItem
+  }
+
+  get mainSkill () {
+    if (this._mainSkill) {
+      return this._mainSkill
+    }
+    const id = this.get('mainSkill')
+    if (!id) {
+      return null
+    }
+    this._mainSkill = new Skill({ id })
+    return this._mainSkill
+  }
+
+  get mainClass () {
+    if (this._mainClass) {
+      return this._mainClass
+    }
+    const id = this.get('mainClass')
+    if (!id) {
+      return null
+    }
+    this._mainClass = new Class({ id })
+    return this._mainClass
+  }
+
   * levels () {
     if (this._levels) {
       for (const level of this._levels) {
@@ -1391,18 +1589,6 @@ class Achievement extends GameObject {
       this._levels.push(level)
       yield level
     }
-  }
-
-  get mainMonster () {
-    if (this._mainMonster) {
-      return this._mainMonster
-    }
-    const mainMonsterId = this.get('mainMonster')
-    if (!mainMonsterId) {
-      return null
-    }
-    this._mainMonster = new Monster({ id: mainMonsterId })
-    return this._mainMonster
   }
 
   * monsters () {
@@ -1419,18 +1605,6 @@ class Achievement extends GameObject {
     }
   }
 
-  get mainItem () {
-    if (this._mainItem) {
-      return this._mainItem
-    }
-    const id = this.get('mainItem')
-    if (!id) {
-      return null
-    }
-    this._mainItem = new Item({ id })
-    return this._mainItem
-  }
-
   * items () {
     if (!this._items) {
       this._items = {}
@@ -1445,18 +1619,6 @@ class Achievement extends GameObject {
     }
   }
 
-  get mainSkill () {
-    if (this._mainSkill) {
-      return this._mainSkill
-    }
-    const id = this.get('mainSkill')
-    if (!id) {
-      return null
-    }
-    this._mainSkill = new Skill({ id })
-    return this._mainSkill
-  }
-
   * skills () {
     if (!this._skills) {
       this._skills = {}
@@ -1466,21 +1628,9 @@ class Achievement extends GameObject {
         yield this._skills[skillId]
         continue
       }
-      this._skills[skillId] = new Item({ id: skillId })
+      this._skills[skillId] = new Skill({ id: skillId })
       yield this._skills[skillId]
     }
-  }
-
-  get mainClass () {
-    if (this._mainClass) {
-      return this._mainClass
-    }
-    const id = this.get('mainClass')
-    if (!id) {
-      return null
-    }
-    this._mainClass = new Class({ id })
-    return this._mainClass
   }
 
   * classes () {
@@ -1495,6 +1645,46 @@ class Achievement extends GameObject {
       this._classes[classId] = new Class({ id: classId })
       yield this._classes[classId]
     }
+  }
+
+  async hydrate () {
+    const promiseList = []
+    if (this.mainMonster.isTransparent) {
+      promiseList.push(this.mainMonster.fetch())
+    }
+    if (this.mainItem.isTransparent) {
+      promiseList.push(this.mainItem.fetch())
+    }
+    if (this.mainSkill.isTransparent) {
+      promiseList.push(this.mainSkill.fetch())
+    }
+    if (this.mainClass.isTransparent) {
+      promiseList.push(this.mainClass.fetch())
+    }
+    for (const level of this.levels()) {
+      promiseList.push(level.hydrate())
+    }
+    for (const monster of this.monsters()) {
+      if (monster.isTransparent) {
+        promiseList.push(monster.fetch())
+      }
+    }
+    for (const item of this.items()) {
+      if (item.isTransparent) {
+        promiseList.push(item.fetch())
+      }
+    }
+    for (const skill of this.skills()) {
+      if (skill.isTransparent) {
+        promiseList.push(skill.fetch())
+      }
+    }
+    for (const cls of this.classes()) {
+      if (cls.isTransparent) {
+        promiseList.push(cls.fetch())
+      }
+    }
+    await Promise.all(promiseList)
   }
 }
 
