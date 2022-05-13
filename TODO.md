@@ -95,6 +95,10 @@
 #### Miscellaneous
 - ~~Cache miss issue~~
 - Cache miss for live API updates within the version check threshold (need a manual button)
+- Asset cache downloader freezes sometimes
+  - Workaround is just to restart it after closing/re-opening the app
+  - Needs more triage, it may be related to throttled requests if it is downloading while the user uses the app
+  - Additionally, the download logic fails to pick up where it leaves off if it stops this way
 - Offline mode throws errors
   - Identify when the app is running offline
   - Gracefully handle offline mode
@@ -166,6 +170,7 @@
   - Full Accessibility features (keyboard-only usage)
 #### Tech debt
 - Upgrade to MUI 5.0
+- Reduce boilerplate in game object schema module
 #### Enhancements
 - Plugin framework
   - Allow embedding contribution from others
