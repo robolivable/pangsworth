@@ -89,7 +89,6 @@ const overrideStyle = root => makeStyles(theme => ({ root }))
 
 const NPCsPangDataGrid = props => {
   const classes = useStyles(props)
-  const formatPlace = place => place || 'World'
   const formatMenus = menus => {
     if (!menus.length) {
       return []
@@ -101,7 +100,7 @@ const NPCsPangDataGrid = props => {
     image: go.image,
     name: go.get('name').en, // TODO: localize
     menus: formatMenus(go.get('menus'))
-    //locations: getLocations(go.get('place'))
+    // locations: getLocations(go.get('place'))
   })
 
   const [rowData, setRowDataState] = useState(
@@ -185,15 +184,14 @@ const NPCsPangDataGrid = props => {
     )
   }
 
-  const locationsCellRenderer = params => {
-  }
+  // const locationsCellRenderer = params => {}
 
   const [columnDefs] = useState([
     { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
     { field: 'image', width: 175, minWidth: 175, maxWidth: 175, hide: false, cellRenderer: iconCellRenderer },
     { field: 'name', width: 200, minWidth: 200, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
     { field: 'menus', width: 120, minWidth: 120, maxWidth: 120, hide: false, cellRenderer: menusCellRenderer, filter: true }
-    //{ field: 'locations', width: 100, minWidth: 100, maxWidth: 100, sortable: true, filter: true, hide: false, cellRenderer: locationsCellRenderer }
+    // { field: 'locations', width: 100, minWidth: 100, maxWidth: 100, sortable: true, filter: true, hide: false, cellRenderer: locationsCellRenderer }
   ])
 
   return (

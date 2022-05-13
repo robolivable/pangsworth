@@ -372,8 +372,8 @@ export const PangNavigationAccordion = props => {
             <ListItemText primary={props.name} />
             {
               state.openAccordion
-                ? <ExpandLess button onClick={handleChevronClick} />
-                : <ExpandMore button onClick={handleChevronClick} />
+                ? <ExpandLess onClick={handleChevronClick} />
+                : <ExpandMore onClick={handleChevronClick} />
             }
           </ListItem>
         </div>

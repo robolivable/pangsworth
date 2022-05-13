@@ -105,7 +105,7 @@
   - This message is printed from the MUI Slider component on the classes tab. It is currently safe to ignore (active issue in React related to passive event handlers, aka handlers that do not call "preventDefault"), but is spammed a lot (one per each rendered Slider in the table) which is not very nice
 - `[Violation] Forced reflow while executing JavaScript took Nms`
   - Needs triage
-- `Warning: React does not recognize the `PangContext` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `pangcontext` instead. If you accidentally passed it from a parent component, remove it from the DOM element.`
+- `Warning: React does not recognize the 'PangContext' prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase 'pangcontext' instead. If you accidentally passed it from a parent component, remove it from the DOM element.`
   - This is apparently a React warning generated for passing complex props to component children. This is inevitable with the current design due to how PangContext needs to be propagated to all PangPonents. Additional investigation needed here to solutionize a more React-compatible design for this. Regardless, the side effects here does not block the app's functionality, so it should be safe to temporarily ignore.
 - `Uncaught (in promise) Error: This request exceeds the MAX_WRITE_OPERATIONS_PER_MINUTE quota.`
   - This is likely a result of spam clicking the tabs, as each tab click triggers a user settings write operation. A fix here would be to place the operations behind a limiter and process them in queue (like how it's done during asset caching).
