@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import Search from './search'
+import Map from './map'
 import World from './world'
 import Classes from './classes'
 import Monsters from './monsters'
@@ -28,7 +29,8 @@ import Achievements from './achievements'
 import Settings from './settings'
 
 const Routes = {
-  [Search.ROUTE]: Search
+  [Search.ROUTE]: Search,
+  [Map.ROUTE]: Map
 }
 
 const SubRoutes = {

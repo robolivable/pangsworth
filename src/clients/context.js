@@ -1,5 +1,10 @@
 const { GalaResource } = require('./gala')
-const { Classes, Items, getGameObjectsByTypeName } = require('./game-objects')
+const {
+  Classes,
+  Items,
+  EquipmentSets,
+  getGameObjectsByTypeName
+} = require('./game-objects')
 const { Settings } = require('./settings')
 const { Breadcrumbs } = require('./breadcrumbs')
 
@@ -100,7 +105,7 @@ class Context extends EventEmitter {
       console.error('error initializing pang context', { error })
     }
     await storageSetCacheLoading(false)
-    console.debug({ pangcontext: this })
+    console.debug('PangContext Instance =>', this)
     this.emit(BuiltinEvents.INITIALIZE_COMPLETED)
   }
 
@@ -143,6 +148,8 @@ class Context extends EventEmitter {
   get EquipmentSets () {
     return this.gameData[config.API_RESOURCE_TYPES.equipmentSets.name]
   }
+
+  get EquipmentSetParameterTypes () { return EquipmentSets.parameterTypes }
 
   get Skills () {
     return this.gameData[config.API_RESOURCE_TYPES.skills.name]

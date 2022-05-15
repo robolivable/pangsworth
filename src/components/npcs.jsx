@@ -35,6 +35,7 @@ import BankIcon from '../../static/images/bank.svg'
 import ColiseumIcon from '../../static/images/coliseum.svg'
 import FairyWandIcon from '../../static/images/fairy-wand.svg'
 import ChatBubbleIcon from '../../static/images/chat-bubble.svg'
+import MountainsIcon from '../../static/images/mountains.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
@@ -82,6 +83,10 @@ const useStyles = makeStyles(theme => ({
   iconsWrapper: {
     display: 'flex',
     flexFlow: 'wrap'
+  },
+  continentsWrapper: {
+    display: 'flex',
+    flexFlow: 'wrap'
   }
 }))
 
@@ -95,22 +100,42 @@ const NPCsPangDataGrid = props => {
     }
     return menus.join(',')
   }
+
   const createRowFromGameObject = go => ({
     id: go.id,
     image: go.image,
     name: go.get('name').en, // TODO: localize
-    menus: formatMenus(go.get('menus'))
-    // locations: getLocations(go.get('place'))
+    menus: formatMenus(go.get('menus')),
+    locations: JSON.stringify(
+      Array.from(go.locations())
+        .filter(loc => loc.continent || loc.world)
+        .map(loc => ({
+          continent: loc.continent?.get('name').en, // TODO:localize
+          world: loc.world.get('name').en // TODO:localize
+        }))
+    )
   })
 
-  const [rowData, setRowDataState] = useState(
-    Array.from(props.PangContext.NPCs.iter()).map(createRowFromGameObject)
-  )
+  const [rowData, setRowDataState] = useState([])
 
   useEffect(() => {
-    const initializeHandler = () => setRowDataState(
-      Array.from(props.PangContext.NPCs.iter()).map(createRowFromGameObject)
-    )
+    ;(async () => {
+      const data = []
+      for await (const npc of props.PangContext.NPCs.iterHydratedLocations()) {
+        data.push(npc)
+      }
+      setRowDataState(data.map(createRowFromGameObject))
+    })()
+  }, [])
+
+  useEffect(() => {
+    const initializeHandler = async () => {
+      const data = []
+      for await (const npc of props.PangContext.NPCs.iterHydratedLocations()) {
+        data.push(npc)
+      }
+      setRowDataState(data.map(createRowFromGameObject))
+    }
     props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
     return () => props.PangContext.off(
       BuiltinEvents.INITIALIZE_COMPLETED,
@@ -159,7 +184,8 @@ const NPCsPangDataGrid = props => {
   const menusCellRenderer = params => {
     const icons = {}
     const style = overrideStyle({
-      margin: '1px'
+      margin: '1px',
+      fontSize: '0.675rem'
     })()
     const menus = params.value.split(',')
     for (const menu of menus) {
@@ -184,14 +210,91 @@ const NPCsPangDataGrid = props => {
     )
   }
 
-  // const locationsCellRenderer = params => {}
+  const locationsCellRenderer = params => {
+    const style = overrideStyle({
+      margin: '1px',
+      fontSize: '0.675rem'
+    })()
+    const worlds = {}
+    const continents = {}
+    for (const { world, continent } of JSON.parse(params.value)) {
+      if (world) {
+        worlds[world] = true
+      }
+      if (continent) {
+        continents[continent] = true
+      }
+    }
+    return (
+      <div className={classes.continentsWrapper}>
+        {Object.keys(worlds).map((world, key) => (
+          <Chip
+            classes={{ root: style.root }}
+            key={key}
+            size='small'
+            icon={<MountainsIcon />}
+            label={world}
+          />
+        ))}
+        {Object.keys(continents).map((continent, key) => (
+          <Chip
+            classes={{ root: style.root }}
+            key={key}
+            size='small'
+            label={continent}
+          />
+        ))}
+      </div>
+    )
+  }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'image', width: 175, minWidth: 175, maxWidth: 175, hide: false, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 200, minWidth: 200, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'menus', width: 120, minWidth: 120, maxWidth: 120, hide: false, cellRenderer: menusCellRenderer, filter: true }
-    // { field: 'locations', width: 100, minWidth: 100, maxWidth: 100, sortable: true, filter: true, hide: false, cellRenderer: locationsCellRenderer }
+    {
+      field: 'id',
+      hide: false,
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      filter: true,
+      sortable: true
+    },
+    {
+      field: 'image',
+      hide: false,
+      width: 175,
+      minWidth: 175,
+      maxWidth: 175,
+      cellRenderer: iconCellRenderer
+    },
+    {
+      field: 'name',
+      hide: false,
+      width: 200,
+      minWidth: 200,
+      sortable: true,
+      resizable: true,
+      filter: true,
+      cellRenderer: nameCellRenderer
+    },
+    {
+      field: 'locations',
+      hide: false,
+      width: 120,
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      sortable: true,
+      cellRenderer: locationsCellRenderer
+    },
+    {
+      field: 'menus',
+      hide: false,
+      width: 110,
+      minWidth: 110,
+      maxWidth: 110,
+      filter: true,
+      cellRenderer: menusCellRenderer
+    }
   ])
 
   return (

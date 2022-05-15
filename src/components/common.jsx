@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { SvgIcon } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -95,18 +95,11 @@ export const toggleAGTableDarkMode = darkModeEnabled => {
   const bgColor = darkModeEnabled ? DARK_CONTRAST_BG_COLOR : LIGHT_CONTRAST_BG_COLOR
   setDocumentRootCSSCustomProperty(TABLE_FOREGROUND_COLOR_PROP_NAME, `rgba(${color} / 80%)`)
   setDocumentRootCSSCustomProperty(TABLE_HEADER_FOREGROUND_COLOR_PROP_NAME, `rgba(${color} / 80%)`)
-  setDocumentRootCSSCustomProperty(TABLE_BORDER_COLOR_PROP_NAME, `rgba(${color} / 30%)`)
+  setDocumentRootCSSCustomProperty(TABLE_BORDER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_ROW_BORDER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_HEADER_COLUMN_SEPARATOR_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_ROW_HOVER_COLOR_PROP_NAME, `rgba(${color} / 20%)`)
   setDocumentRootCSSCustomProperty(TABLE_MODAL_OVERLAY_BACKGROUND_COLOR_PROP_NAME, `rgba(${bgColor} / 100%)`)
-}
-
-export const fixInactiveScrollbars = () => {
-  console.log('attempting fix')
-  setDocumentElementCSSCustomProperty('html', 'overflow', '')
-  setDocumentElementCSSCustomProperty('html', 'overflow', 'overlay')
-  setDocumentElementCSSCustomProperty('html', 'overflow', '')
 }
 
 const darkThemeForProps = opacity => props => {
@@ -126,7 +119,7 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
     whiteSpace: 'nowrap',
     backgroundColor: 'rgba(0 0 0 / 0%)',
-    borderColor: darkThemeForProps('30%')
+    borderColor: darkThemeForProps('20%')
   },
   routeDrawerOpen: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
@@ -137,7 +130,7 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     }),
-    borderColor: darkThemeForProps('30%')
+    borderColor: darkThemeForProps('20%')
   },
   routeDrawerClose: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
@@ -151,7 +144,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('xs')]: {
       width: theme.spacing(7) + 1
     },
-    borderColor: darkThemeForProps('30%')
+    borderColor: darkThemeForProps('20%')
   },
   routeHeader: {
     flexShrink: 1
@@ -171,7 +164,7 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute'
   },
   dividerColors: {
-    backgroundColor: darkThemeForProps('30%')
+    backgroundColor: darkThemeForProps('20%')
   },
   accordion: {
     paddingTop: theme.spacing(0.5),
@@ -186,14 +179,14 @@ const useStyles = makeStyles(theme => ({
     width: dataViewDrawerWidth,
     flexShrink: 0,
     backgroundColor: 'rgba(0 0 0 / 0%)',
-    borderColor: darkThemeForProps('30%')
+    borderColor: darkThemeForProps('20%')
   },
   dataViewDrawerPaper: {
     zIndex: '0 !important',
     width: dataViewDrawerWidth,
     height: '-webkit-fill-available',
     backgroundColor: 'rgba(0 0 0 / 0%)',
-    borderColor: darkThemeForProps('30%'),
+    borderColor: darkThemeForProps('20%'),
     backdropFilter: 'blur(10px)'
   },
   dataViewDrawerOpenedEdge: {
@@ -473,30 +466,51 @@ export const PangDataViewDrawer = props => {
 export const PangDataGrid = props => {
   const classes = useStyles(props)
   // eslint-disable-next-line
-  const { PangContext, rootHeight, onGridReadyTrigger, rowData, ...rest } = props
+  const {
+    PangContext,
+    rootHeight,
+    onGridReadyTrigger,
+    rowData,
+    ...rest
+  } = props
+
+  const [gridReady, setGridReady] = useState(false)
 
   const gridRef = useRef()
   const onGridReady = useCallback(() => {
     gridRef.current.api.sizeColumnsToFit()
+    if (typeof onGridReadyTrigger === 'function') {
+      onGridReadyTrigger()
+    }
+    setGridReady(true)
+  }, [])
+
+  // NOTE: this effect is a HACK to get around a bug with AG where onGridReady
+  // miss-fires on back-to-back re-renders
+  useEffect(() => {
+    if (!gridReady) {
+      return
+    }
     if (!rowData.length) {
       gridRef.current.api.showLoadingOverlay()
     } else {
       gridRef.current.api.hideOverlay()
     }
-    if (typeof onGridReadyTrigger === 'function') {
-      onGridReadyTrigger()
-    }
-  }, [])
+  }, [gridReady])
 
   const defaultColDef = useMemo(() => ({
     flex: 1,
     minWidth: 40,
     width: 100,
-    hide: true
+    hide: true,
+    resizable: true
   }), [])
 
   return (
-    <div className={`ag-theme-balham ${classes.agTable}`} style={rootHeight ? { height: rootHeight } : {}}>
+    <div
+      className={`ag-theme-balham ${classes.agTable}`}
+      style={rootHeight ? { height: rootHeight } : {}}
+    >
       <AgGridReact
         {...rest}
         rowData={rowData}

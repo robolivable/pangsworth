@@ -16,22 +16,180 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationAccordionItem } from './common'
-import MountainsIcon from '../../static/images/mountains.svg'
+import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import { BuiltinEvents } from '../clients/context'
+import TrophyLaurelIcon from '../../static/images/trophy-laurel.svg'
+import { makeStyles } from '@material-ui/core/styles'
 
-export default class Achievements extends BaseComponent {
-  constructor (...args) {
-    super(...args)
-    this.i18nKey = 'components:achievements'
+const useStyles = makeStyles(theme => ({}))
+
+const AchievementsPangDataGrid = props => {
+  const classes = useStyles(props)
+  const createRowFromGameObject = go => ({
+    id: go.id,
+    name: go.get('name').en, // TODO: localize
+    description: go.get('description').en, // TODO: localize
+    type: go.get('type'),
+    category: go.get('category'),
+    accountWide: go.get('accountWide'),
+    levels: JSON.stringify(Array.from(go.levels()).map(level => ({
+      attackPower: level.get('attackPower'),
+      name: level.get('name')?.en, // TODO: localize
+      value: level.get('value')
+    }))),
+    title: go.title,
+    target: !go.target ? null : JSON.stringify({
+      id: go.target.id,
+      name: go.target.get('name').en, // TODO: localize
+      icon: go.target.image
+    })
+  })
+
+  const [rowData, setRowData] = useState([])
+
+  useEffect(() => {
+    ;(async () => {
+      const data = []
+      for await (const a of props.PangContext.Achievements.iterHydrated()) {
+        data.push(a)
+      }
+      setRowData(data.map(createRowFromGameObject))
+    })()
+  }, [])
+
+  useEffect(() => {
+    const initializeHandler = async () => {
+      const data = []
+      for await (const a of props.PangContext.Achievements.iterHydrated()) {
+        data.push(a)
+      }
+      setRowData(data.map(createRowFromGameObject))
+    }
+    props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.INITIALIZE_COMPLETED,
+      initializeHandler
+    )
+  }, [])
+
+  const navigateSingleItem = item => e => {
+    console.log({ item, e })
   }
 
+  const nameCellRenderer = params => params.value
+  const descriptionCellRenderer = params => params.value
+  const typeCellRenderer = params => params.value
+  const categoryCellRenderer = params => params.value
+  const accountWideCellRenderer = params => params.value
+  const levelsCellRenderer = params => params.value
+  const targetCellRenderer = params => params.value
+
+  const [columnDefs] = useState([
+    {
+      field: 'id',
+      hide: false,
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      filter: true,
+      sortable: true
+    },
+    {
+      field: 'name',
+      hide: false,
+      width: 100,
+      minWidth: 100,
+      filter: true,
+      sortable: true,
+      resizable: true,
+      cellRenderer: nameCellRenderer
+    },
+    {
+      field: 'description',
+      hide: false,
+      width: 100,
+      minWidth: 100,
+      filter: true,
+      sortable: true,
+      resizable: true,
+      cellRenderer: descriptionCellRenderer
+    },
+    {
+      field: 'type',
+      hide: false,
+      width: 85,
+      minWidth: 85,
+      maxWidth: 85,
+      filter: true,
+      sortable: true,
+      cellRenderer: typeCellRenderer
+    },
+    {
+      field: 'category',
+      hide: false,
+      width: 100,
+      minWidth: 100,
+      maxWidth: 100,
+      filter: true,
+      sortable: true,
+      cellRenderer: categoryCellRenderer
+    },
+    {
+      field: 'accountWide',
+      hide: false,
+      width: 100,
+      minWidth: 100,
+      maxWidth: 100,
+      filter: true,
+      //cellRenderer: accountWideCellRenderer
+    },
+    {
+      field: 'levels',
+      hide: false,
+      width: 100,
+      minWidth: 100,
+      maxWidth: 100,
+      filter: true,
+      sortable: true,
+      cellRenderer: levelsCellRenderer
+    },
+    {
+      field: 'title',
+      hide: false,
+      width: 85,
+      minWidth: 85,
+      maxWidth: 85,
+      filter: true,
+      sortable: true
+    },
+    {
+      field: 'target',
+      hide: false,
+      width: 85,
+      minWidth: 85,
+      maxWidth: 85,
+      filter: true,
+      sortable: true,
+      cellRenderer: targetCellRenderer
+    }
+  ])
+
+  return (
+    <PangDataGrid
+      PangContext={props.PangContext}
+      rowHeight={40}
+      rowData={rowData}
+      columnDefs={columnDefs}
+    />
+  )
+}
+
+export default class Achievements extends BaseComponent {
   render () {
-    return (
-      <div>TODO Achievements</div>
-    )
+    return <AchievementsPangDataGrid PangContext={this.props.PangContext} />
   }
 }
 
@@ -48,15 +206,13 @@ Achievements.Button = class extends BaseComponent {
         name={this.displayName}
         title={this.displayName}
         onClick={this._handleOnClick}
-        icon={MountainsIcon}
+        icon={TrophyLaurelIcon}
         {...this.props}
       />
     )
   }
 
-  _handleOnClick () {
-    console.log('achievements, yay!', this.constructor.name)
-  }
+  _handleOnClick () {}
 }
 
 Achievements.ROUTE = 'Achievements'

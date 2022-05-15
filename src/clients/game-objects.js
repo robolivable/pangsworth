@@ -115,6 +115,7 @@ class GameObject {
     return this
   }
 
+  async hydrate () { /* NO-OP: child instance implements */ }
   toJSON () { return this.props }
 }
 
@@ -132,7 +133,8 @@ class GameObjectCollection {
 
   * iter () {
     for (const object of this.collection) {
-      if (Object.prototype.hasOwnProperty(object, 'prototype')) { // eslint-disable-line
+      // eslint-disable-next-line
+      if (Object.prototype.hasOwnProperty(object, 'prototype')) {
         yield object
         continue
       }
@@ -237,7 +239,7 @@ class Location extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.world.isTransparent) {
+    if (this.world && this.world.isTransparent) {
       await this.world.fetch()
     }
     await this.fetchContinent()
@@ -259,7 +261,12 @@ class Place extends GameChildObject {
     return this._location
   }
 
-  async hydrate () { await this.location.hydrate() }
+  async hydrate () {
+    if (!this.location) {
+      return
+    }
+    await this.location.hydrate()
+  }
 }
 
 class Lodestar extends Place {}
@@ -278,7 +285,7 @@ class Ability extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.skill.isTransparent) {
+    if (this.skill && this.skill.isTransparent) {
       await this.skill.fetch()
     }
   }
@@ -329,6 +336,51 @@ class Level extends GameChildObject {
   }
 }
 
+class AchievementItem extends GameChildObject {
+  get item () {
+    if (this._item) {
+      return this._item
+    }
+    const itemId = this.get('item')
+    if (!itemId) {
+      return null
+    }
+    this._item = new Item({ id: itemId })
+    return this._item
+  }
+
+  async hydrate () {
+    if (this.item && this.item.isTransparent) {
+      await this.item.fetch()
+    }
+  }
+}
+
+class AchievementLevel extends GameChildObject {
+  * items () {
+    if (this._items) {
+      for (const item of this._items) {
+        yield item
+      }
+      return
+    }
+    this._items = []
+    for (const i of this.get('items') || []) {
+      const item = new AchievementItem(this, i)
+      this._items.push(item)
+      yield item
+    }
+  }
+
+  async hydrate () {
+    const promiseList = []
+    for (const item of this.items()) {
+      promiseList.push(item.hydrate())
+    }
+    await Promise.all(promiseList)
+  }
+}
+
 class SkillRequirement extends GameChildObject {
   get skill () {
     if (this._skill) {
@@ -343,7 +395,7 @@ class SkillRequirement extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.skill.isTransparent) {
+    if (this.skill && this.skill.isTransparent) {
       await this.skill.fetch()
     }
   }
@@ -362,7 +414,12 @@ class Bonus extends GameChildObject {
     return this._ability
   }
 
-  async hydrate () { await this.ability.hydrate() }
+  async hydrate () {
+    if (!this.ability) {
+      return
+    }
+    await this.ability.hydrate()
+  }
 }
 
 class Attack extends GameChildObject {
@@ -379,7 +436,7 @@ class Attack extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.triggerSkill.isTransparent) {
+    if (this.triggerSkill && this.triggerSkill.isTransparent) {
       await this.triggerSkill.fetch()
     }
   }
@@ -399,7 +456,7 @@ class Drop extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.item.isTransparent) {
+    if (this.item && this.item.isTransparent) {
       await this.item.fetch()
     }
   }
@@ -529,7 +586,7 @@ class World extends GameObject {
 
   async hydrate () {
     const promiseList = []
-    if (this.revivalWorld.isTransparent) {
+    if (this.revivalWorld && this.revivalWorld.isTransparent) {
       promiseList.push(this.revivalWorld.fetch())
     }
     for (const place of this.places()) {
@@ -546,6 +603,21 @@ class Worlds extends GameObjectCollection {
   constructor () {
     const name = World.type.name
     super(World, { name })
+  }
+
+  async * iterHydrated () {
+    if (this._hydrated?.length) {
+      for (const world of this._hydrated) {
+        yield world
+      }
+      return
+    }
+    this._hydrated = []
+    for (const object of this.iter()) {
+      await object.hydrate()
+      this._hydrated.push(object)
+      yield object
+    }
   }
 }
 
@@ -673,14 +745,16 @@ class Monster extends GameObject {
     for (const drop of this.drops()) {
       promiseList.push(drop.hydrate())
     }
-    promiseList.push(this.location.hydrate())
+    if (this.location) {
+      promiseList.push(this.location.hydrate())
+    }
     for (const spawn of this.spawns()) {
       promiseList.push(spawn.hydrate())
     }
-    if (this.booty.isTransparent) {
+    if (this.booty && this.booty.isTransparent) {
       promiseList.push(this.booty.fetch())
     }
-    if (this.mineral.isTransparent) {
+    if (this.mineral && this.mineral.isTransparent) {
       promiseList.push(this.mineral.fetch())
     }
     for (const monster of this.summoned()) {
@@ -738,7 +812,7 @@ class Class extends GameObject {
   }
 
   async hydrate () {
-    if (this.parentClass.isTransparent) {
+    if (this.parentClass && this.parentClass.isTransparent) {
       await this.parentClass.fetch()
     }
   }
@@ -888,17 +962,21 @@ class Item extends GameObject {
     for (const spawn of this.spawns()) {
       promiseList.push(spawn.hydrate())
     }
-    if (this.class.isTransparent) {
+    if (this.class && this.class.isTransparent) {
       promiseList.push(this.class.fetch())
     }
-    if (this.transy.isTransparent) {
+    if (this.transy && this.transy.isTransparent) {
       promiseList.push(this.transy.fetch())
     }
-    if (this.triggerSkill.isTransparent) {
+    if (this.triggerSkill && this.triggerSkill.isTransparent) {
       promiseList.push(this.triggerSkill.fetch())
     }
-    promiseList.push(this.blinkwingTarget.hydrate())
-    promiseList.push(this.location.hydrate())
+    if (this.blinkwingTarget) {
+      promiseList.push(this.blinkwingTarget.hydrate())
+    }
+    if (this.location) {
+      promiseList.push(this.location.hydrate())
+    }
     await Promise.all(promiseList)
   }
 }
@@ -956,7 +1034,7 @@ class EquipmentSet extends GameObject {
       return
     }
     this._bonuses = []
-    for (const b of this.get('bonuses') || []) {
+    for (const b of this.get('bonus') || []) {
       const bonus = new Bonus(this, b)
       this._bonuses.push(bonus)
       yield bonus
@@ -985,7 +1063,7 @@ class EquipmentSet extends GameObject {
     for (const bonus of this.bonuses()) {
       promiseList.push(bonus.hydrate())
     }
-    if (this.transy.isTransparent) {
+    if (this.transy && this.transy.isTransparent) {
       promiseList.push(this.transy.fetch())
     }
     await Promise.all(promiseList)
@@ -996,6 +1074,116 @@ class EquipmentSets extends GameObjectCollection {
   constructor () {
     const name = EquipmentSet.type.name
     super(EquipmentSet, { name })
+  }
+
+  // NOTE: this method high resource pressure
+  async * iterHydrated () {
+    if (this._hydrated?.length) {
+      for (const quest of this._hydrated) {
+        yield quest
+      }
+      return
+    }
+    this._hydrated = []
+    for (const object of this.iter()) {
+      await object.hydrate()
+      this._hydrated.push(object)
+      yield object
+    }
+  }
+
+  static get parameterTypes () {
+    return {
+      str: 'Strength',
+      dex: 'Dexterity',
+      int: 'Intelligence',
+      sta: 'Stamina',
+      speed: 'Speed',
+      attackspeed: 'Attack Speed',
+      attackspeedrate: 'Attack Speed Rate',
+      jumpheight: 'Jump Height',
+      bowrange: 'Bow Range',
+      def: 'Defense',
+      parry: 'Parry',
+      reflectdamage: 'Reflect Damage',
+      rangedblock: 'Ranged Block',
+      meleeblock: 'Melee Block',
+      electricitydefense: 'Electricity Defense',
+      firedefense: 'Fire Defense',
+      winddefense: 'Wind Defense',
+      waterdefense: 'Water Defense',
+      earthdefense: 'Earth Defense',
+      attack: 'Attack',
+      hitrate: 'Hit Rate',
+      magicattack: 'Magic Attack',
+      swordattack: 'Sword Attack',
+      axeattack: 'Ax Attack',
+      knuckleattack: 'Knuckle Attack',
+      yoyoattack: 'Yoyo Attack',
+      bowattack: 'Bow Attack',
+      earthmastery: 'Earth Mastery',
+      firemastery: 'Fire Mastery',
+      watermastery: 'Water Mastery',
+      electricitymastery: 'Electricity Mastery',
+      windmastery: 'Wind Mastery',
+      damage: 'Damage',
+      criticalchance: 'Critical Chance',
+      elementattack: 'Element Attack',
+      skillchance: 'Skill Chance',
+      attribute: 'Attribute',
+      maxhp: 'Maximum HP',
+      maxmp: 'Maximum MP',
+      maxfp: 'Maximum FP',
+      hprecovery: 'HP Recovery',
+      mprecovery: 'MP Recovery',
+      fprecovery: 'FP Recovery',
+      hprecoveryafterkill: 'HP Recovery After Kill',
+      mprecoveryafterkill: 'MP Recovery After Kill',
+      fprecoveryafterkill: 'FP Recovery After Kill',
+      decreasedmpconsumption: 'Decreased MP Consumption',
+      decreasedfpconsumption: 'Decreased FP Consumption',
+      minability: 'Minimum Ability',
+      maxability: 'Maximum Ability',
+      attributeimmunity: 'Attribute Immunity',
+      autohp: 'Auto HP',
+      decreasedcastingtime: 'Decreased Casting Time',
+      criticaldamage: 'Critical Damage',
+      skilldamage: 'Skill Damage',
+      hprestoration: 'HP Restoration',
+      criticalresist: 'Critical Resist',
+      healing: 'Healing',
+      pvpdamagereduction: 'PvP Damage Reduction',
+      magicdefense: 'Magic Defense',
+      pvpdamage: 'PvP Damage',
+      pvedamage: 'PvE Damage',
+      penya: 'Penya',
+      hp: 'HP',
+      mp: 'MP',
+      fp: 'FP',
+      allelementsdefense: 'All Elements Defense',
+      allstats: 'All Stats',
+      attackandmaxhp: 'Attack and Maximum HP',
+      defenseandhitratedecrease: 'Defense and Hit Rate Decrease',
+      cure: 'Cure',
+      movement: 'Movement',
+      allelementsmastery: 'All Elements Mastery',
+      allrecovery: 'All Recovery',
+      allrecoveryafterkill: 'All Recovery After Kill',
+      decreasedfpandmpconsumption: 'Decreased FP and MP Consumption',
+      removealldebuff: 'Remove All Debuff',
+      block: 'Block',
+      removedebuff: 'Removed Buff',
+      damageandstealhp: 'Damage and Steal HP',
+      stealhp: 'Steal HP',
+      explostdecreaseatrevival: 'Experience Lost Decrease At Revival',
+      cheerpoint: 'Cheerpoint',
+      incomingdamage: 'Incoming Damage',
+      spiritstrike: 'Spirit Strike',
+      stealfp: 'Steal FP',
+      exprate: 'Experience Rate',
+      droprate: 'Drop Rate',
+      fprecoveryautoattack: 'FP Recovery Auto Attack'
+    }
   }
 }
 
@@ -1081,10 +1269,10 @@ class Skill extends GameObject {
 
   async hydrate () {
     const promiseList = []
-    if (this.class.isTransparent) {
+    if (this.class && this.class.isTransparent) {
       promiseList.push(this.class.fetch())
     }
-    if (this.triggerSkill.isTransparent) {
+    if (this.triggerSkill && this.triggerSkill.isTransparent) {
       promiseList.push(this.triggerSkill.fetch())
     }
     for (const requirement of this.requirements()) {
@@ -1172,6 +1360,15 @@ class NPCs extends GameObjectCollection {
     const name = NPC.type.name
     super(NPC, { name })
   }
+
+  async * iterHydratedLocations () {
+    for (const object of this.iter()) {
+      for (const loc of object.locations()) {
+        await loc.hydrate()
+      }
+      yield object
+    }
+  }
 }
 
 class PartySkill extends GameObject {
@@ -1222,7 +1419,7 @@ class QuestPart extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.quest.isTransparent) {
+    if (this.quest && this.quest.isTransparent) {
       await this.quest.fetch()
     }
   }
@@ -1242,7 +1439,7 @@ class QuestItem extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.item.isTransparent) {
+    if (this.item && this.item.isTransparent) {
       await this.item.fetch()
     }
   }
@@ -1262,7 +1459,7 @@ class QuestMonster extends GameChildObject {
   }
 
   async hydrate () {
-    if (this.monster.isTransparent) {
+    if (this.monster && this.monster.isTransparent) {
       await this.monster.fetch()
     }
   }
@@ -1470,19 +1667,21 @@ class Quest extends GameObject {
     for (const endKillMonster of this.endKillMonsters()) {
       promiseList.push(endKillMonster.hydrate())
     }
-    if (this.parentQuest.isTransparent) {
+    if (this.parentQuest && this.parentQuest.isTransparent) {
       promiseList.push(this.parentQuest.fetch())
     }
-    if (this.beginNPC.isTransparent) {
+    if (this.beginNPC && this.beginNPC.isTransparent) {
       promiseList.push(this.beginNPC.fetch())
     }
-    if (this.endNPC.isTransparent) {
+    if (this.endNPC && this.endNPC.isTransparent) {
       promiseList.push(this.endNPC.fetch())
     }
-    if (this.endTalkNPC.isTransparent) {
+    if (this.endTalkNPC && this.endTalkNPC.isTransparent) {
       promiseList.push(this.endTalkNPC.fetch())
     }
-    promiseList.push(this.endVisitPlace.hydrate())
+    if (this.endVisitPlace) {
+      promiseList.push(this.endVisitPlace.hydrate())
+    }
     await Promise.all(promiseList)
   }
 }
@@ -1491,6 +1690,29 @@ class Quests extends GameObjectCollection {
   constructor () {
     const name = Quest.type.name
     super(Quest, { name })
+  }
+
+  // NOTE: this method high resource pressure
+  async * iterHydrated () {
+    if (this._hydrated?.length) {
+      for (const quest of this._hydrated) {
+        yield quest
+      }
+      return
+    }
+    this._hydrated = []
+    for (const object of this.iter()) {
+      await object.hydrate()
+      await Promise.all([
+        object.parentQuest?.hydrate(),
+        object.beginNPC?.hydrate(),
+        object.endNPC?.hydrate(),
+        object.endTalkNPC?.hydrate(),
+        ...Array.from(object.beginClasses()).map(cls => cls.hydrate())
+      ])
+      this._hydrated.push(object)
+      yield object
+    }
   }
 }
 
@@ -1585,7 +1807,7 @@ class Achievement extends GameObject {
     }
     this._levels = []
     for (const l of this.get('levels') || []) {
-      const level = new Level(this, l)
+      const level = new AchievementLevel(this, l)
       this._levels.push(level)
       yield level
     }
@@ -1649,16 +1871,16 @@ class Achievement extends GameObject {
 
   async hydrate () {
     const promiseList = []
-    if (this.mainMonster.isTransparent) {
+    if (this.mainMonster && this.mainMonster.isTransparent) {
       promiseList.push(this.mainMonster.fetch())
     }
-    if (this.mainItem.isTransparent) {
+    if (this.mainItem && this.mainItem.isTransparent) {
       promiseList.push(this.mainItem.fetch())
     }
-    if (this.mainSkill.isTransparent) {
+    if (this.mainSkill && this.mainSkill.isTransparent) {
       promiseList.push(this.mainSkill.fetch())
     }
-    if (this.mainClass.isTransparent) {
+    if (this.mainClass && this.mainClass.isTransparent) {
       promiseList.push(this.mainClass.fetch())
     }
     for (const level of this.levels()) {
@@ -1686,12 +1908,59 @@ class Achievement extends GameObject {
     }
     await Promise.all(promiseList)
   }
+
+  get title () {
+    for (const level of this.levels()) {
+      if (!level.get('title')) {
+        continue
+      }
+      return level.get('title').en // TODO: localize
+    }
+    return null
+  }
+
+  get target () {
+    switch (this.get('type')) {
+      case ('killmonster'):
+        return this.mainMonster
+      case ('useitem'):
+        return this.mainItem
+      case ('class'):
+        return this.mainClass
+      case ('useskill'):
+        return this.mainSkill
+      default:
+        return null
+    }
+  }
 }
 
 class Achievements extends GameObjectCollection {
   constructor () {
     const name = Achievement.type.name
     super(Achievement, { name })
+  }
+
+  // NOTE: this method high resource pressure
+  async * iterHydrated () {
+    if (this._hydrated?.length) {
+      for (const achievement of this._hydrated) {
+        yield achievement
+      }
+      return
+    }
+    this._hydrated = []
+    for (const object of this.iter()) {
+      await object.hydrate()
+      await Promise.all([
+        ...Array.from(object.monsters()).map(o => o.hydrate()),
+        ...Array.from(object.items()).map(o => o.hydrate()),
+        ...Array.from(object.classes()).map(o => o.hydrate()),
+        ...Array.from(object.skills()).map(o => o.hydrate())
+      ])
+      this._hydrated.push(object)
+      yield object
+    }
   }
 }
 

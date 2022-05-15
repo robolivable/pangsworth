@@ -37,6 +37,25 @@
       "th": ""
     }
   },
+  "components:map:button": {
+    "displayName": {
+      "en": "Map",
+      "br": "",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
+    }
+  },
   "components:monsters:button": {
     "displayName": {
       "en": "Monsters",
@@ -174,6 +193,44 @@
     "displayName": {
       "en": "Search",
       "br": "Buscar",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
+    }
+  },
+  "components:achievements:button": {
+    "displayName": {
+      "en": "Achievements",
+      "br": "",
+      "fr": "",
+      "kr": "",
+      "ar": "",
+      "cns": "",
+      "de": "",
+      "fi": "",
+      "fil": "",
+      "it": "",
+      "nl": "",
+      "pl": "",
+      "ru": "",
+      "sw": "",
+      "th": ""
+    }
+  },
+  "components:quests:button": {
+    "displayName": {
+      "en": "Quests",
+      "br": "",
       "fr": "",
       "kr": "",
       "ar": "",

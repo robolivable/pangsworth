@@ -52,6 +52,9 @@
 - ~~Build continent game objects from worlds~~
   - Hook up continents to npc list to show in filterable column
 - Pannable, zoomable canvas for map display using Leaflet
+- Data grid view caching system
+  - All row data should be cached once generated for faster load times after first time usage
+  - Persist cache in user sync settings
 
 ### Release Requirements
 #### Prerequisites
@@ -92,6 +95,8 @@
   - ~~It is possible to click the download button fast enough to trigger two ongoing fetches~~
 - Data grids
   - Classes stats calculator UI bug causing trail on slider not to appear unless you increment using the input box
+- Data load times
+  - Quests data hydration takes significant time
 #### Miscellaneous
 - ~~Cache miss issue~~
 - Cache miss for live API updates within the version check threshold (need a manual button)
@@ -164,13 +169,19 @@
   - Data grid Tables
     - Custom scrollbars
     - Select columns to load
+    - Extensive filter options
+      - Filterable enum lists for types, numbers, and binary values
     - Persist filters to user settings
     - Tooltips on all values and images
     - Pretty formatted numbers (comma separation for multiples of 1k)
+    - Prettier loading overlay
   - Full Accessibility features (keyboard-only usage)
 #### Tech debt
 - Upgrade to MUI 5.0
-- Reduce boilerplate in game object schema module
+- Reduce boilerplate
+  - Game object schema module
+  - Data tabs involving data grid
+- Reduce memory footprint wherever possible
 #### Enhancements
 - Plugin framework
   - Allow embedding contribution from others
