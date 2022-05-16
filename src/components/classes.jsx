@@ -66,11 +66,17 @@ const useStyles = makeStyles(theme => ({
   statCalculatorInput: {
     width: 36,
     fontSize: '0.725rem',
-    color: props =>
-      `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+    color: props => {
+      const themeColor =
+        getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
+      return `rgba(${themeColor} / 80%)`
+    },
     '&::before': {
-      borderBottomColor: props =>
-        `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+      borderBottomColor: props => {
+        const themeColor =
+          getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
+        return `rgba(${themeColor} / 80%)`
+      }
     }
   }
 }))
@@ -123,7 +129,8 @@ const StatCalculator = props => {
     [level]
   )
   const handleLevelSliderChange = (_, value) => setLevel(value)
-  const handleLevelInputChange = event => setLevel(Number(event.target.value) || minLevel)
+  const handleLevelInputChange =
+    event => setLevel(Number(event.target.value) || minLevel)
   const handleLevelInputOnBlur = () => {
     if (!level || level < minLevel) {
       setLevel(minLevel)
@@ -133,7 +140,8 @@ const StatCalculator = props => {
     }
   }
   const handleStatSliderChange = (_, value) => setStat(value)
-  const handleStatInputChange = event => setStat(Number(event.target.value) || 0)
+  const handleStatInputChange =
+    event => setStat(Number(event.target.value) || 0)
   const handleStatInputOnBlur = () => {
     const maxStat = getMaxStatPointsForLevel(level)
     if (!stat || level < 0) {
@@ -147,17 +155,19 @@ const StatCalculator = props => {
   }
   const getMaxStatPointsForLevel = lv => (lv - 1) * 2
 
+  const themeColor =
+    getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
   const sliderStyle = overrideSlider({
     root: {
       padding: '10px 0',
       height: 0,
-      color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+      color: `rgba(${themeColor} / 80%)`,
       marginBottom: 0,
       marginLeft: 10,
       width: '90%'
     },
     markLabel: {
-      color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+      color: `rgba(${themeColor} / 80%)`,
       fontSize: '0.725rem',
       top: '17px'
     }
@@ -185,7 +195,10 @@ const StatCalculator = props => {
         </Grid>
         <Grid classes={{ root: gridSliderStyle.root }} item xs>
           <Slider
-            classes={{ root: sliderStyle.root, markLabel: sliderStyle.markLabel }}
+            classes={{
+              root: sliderStyle.root,
+              markLabel: sliderStyle.markLabel
+            }}
             PangContext={props.PangContext}
             value={level}
             ValueLabelComponent={SliderValueLabelComponent}
@@ -218,7 +231,10 @@ const StatCalculator = props => {
         </Grid>
         <Grid classes={{ root: gridSliderStyle.root }} item xs>
           <Slider
-            classes={{ root: sliderStyle.root, markLabel: sliderStyle.markLabel }}
+            classes={{
+              root: sliderStyle.root,
+              markLabel: sliderStyle.markLabel
+            }}
             PangContext={props.PangContext}
             value={stat}
             ValueLabelComponent={SliderValueLabelComponent}
@@ -257,16 +273,24 @@ const ClassesPangDataGrid = props => {
     if (!parentId) {
       return 'None'
     }
-    return props.PangContext.Classes.get(parentId).get('name').en // TODO: localize
+    return props.PangContext.Classes
+      .get(parentId)
+      .get('name').en // TODO: localize
   }
 
   const createRowFromGameObject = go => ({
     id: go.id,
     icon: go.icon,
     iconMessenger: {
-      messenger: go.iconStyled(config.API_RESOURCE_TYPES.classes.iconStyles.messenger),
-      oldFemale: go.iconStyled(config.API_RESOURCE_TYPES.classes.iconStyles.oldFemale),
-      oldMale: go.iconStyled(config.API_RESOURCE_TYPES.classes.iconStyles.oldMale)
+      messenger: go.iconStyled(
+        config.API_RESOURCE_TYPES.classes.iconStyles.messenger
+      ),
+      oldFemale: go.iconStyled(
+        config.API_RESOURCE_TYPES.classes.iconStyles.oldFemale
+      ),
+      oldMale: go.iconStyled(
+        config.API_RESOURCE_TYPES.classes.iconStyles.oldMale
+      )
     },
     name: go.get('name').en, // TODO: localize
     maxLevel: go.get('maxLevel'),
@@ -307,12 +331,25 @@ const ClassesPangDataGrid = props => {
   const iconMessengerCellRenderer = params => {
     const alt1 = `Pixel messenger icon for the ${params.data.name} class.`
     const alt2 = `Old pixel icon for the feminine ${params.data.name} class.`
-    const alt3 = `Old pixel messenger icon for the masculine ${params.data.name} class.`
+    const alt3 =
+      `Old pixel messenger icon for the masculine ${params.data.name} class.`
     return (
       <div className={classes.iconPixelsWrapper}>
-        <img className={classes.iconPixels} src={params.value.messenger} alt={alt1} />
-        <img className={classes.iconPixels} src={params.value.oldFemale} alt={alt2} />
-        <img className={classes.iconPixels} src={params.value.oldMale} alt={alt3} />
+        <img
+          className={classes.iconPixels}
+          src={params.value.messenger}
+          alt={alt1}
+        />
+        <img
+          className={classes.iconPixels}
+          src={params.value.oldFemale}
+          alt={alt2}
+        />
+        <img
+          className={classes.iconPixels}
+          src={params.value.oldMale}
+          alt={alt3}
+        />
       </div>
     )
   }
@@ -384,17 +421,104 @@ const ClassesPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false, resizable: true },
-    { field: 'icon', width: 90, minWidth: 90, maxWidth: 90, hide: false, cellRenderer: iconCellRenderer, sortable: true, comparator: iconComparator },
-    { field: 'iconMessenger', width: 55, minWidth: 55, maxWidth: 55, hide: false, cellRenderer: iconMessengerCellRenderer },
-    { field: 'name', width: 100, minWidth: 100, sortable: true, filter: true, hide: false, resizable: true, cellRenderer: nameCellRenderer },
-    { field: 'maxHP', width: 210, minWidth: 210, maxWidth: 210, hide: false, cellRenderer: maxHPCellRenderer },
-    { field: 'maxFP', width: 210, minWidth: 210, maxWidth: 210, hide: false, cellRenderer: maxFPCellRenderer },
-    { field: 'maxMP', width: 210, minWidth: 210, maxWidth: 210, hide: false, cellRenderer: maxMPCellRenderer },
-    { field: 'type', width: 100, minWidth: 100, sortable: true, filter: true, hide: false, resizable: true },
-    { field: 'parent', width: 100, minWidth: 100, sortable: true, filter: true, hide: false, resizable: true },
-    { field: 'maxLevel', width: 75, minWidth: 75, maxWidth: 75, sortable: true, filter: true, resizable: true },
-    { field: 'minLevel', width: 75, minWidth: 75, maxWidth: 75, sortable: true, filter: true, resizable: true }
+    {
+      field: 'id',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      sortable: true,
+      filter: true,
+      hide: false,
+      resizable: true
+    },
+    {
+      field: 'icon',
+      width: 90,
+      minWidth: 90,
+      maxWidth: 90,
+      hide: false,
+      cellRenderer: iconCellRenderer,
+      sortable: true,
+      comparator: iconComparator
+    },
+    {
+      field: 'iconMessenger',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      hide: false,
+      cellRenderer: iconMessengerCellRenderer
+    },
+    {
+      field: 'name',
+      width: 100,
+      minWidth: 100,
+      sortable: true,
+      filter: true,
+      hide: false,
+      resizable: true,
+      cellRenderer: nameCellRenderer
+    },
+    {
+      field: 'maxHP',
+      width: 210,
+      minWidth: 210,
+      maxWidth: 210,
+      hide: false,
+      cellRenderer: maxHPCellRenderer
+    },
+    {
+      field: 'maxFP',
+      width: 210,
+      minWidth: 210,
+      maxWidth: 210,
+      hide: false,
+      cellRenderer: maxFPCellRenderer
+    },
+    {
+      field: 'maxMP',
+      width: 210,
+      minWidth: 210,
+      maxWidth: 210,
+      hide: false,
+      cellRenderer: maxMPCellRenderer
+    },
+    {
+      field: 'type',
+      width: 100,
+      minWidth: 100,
+      sortable: true,
+      filter: true,
+      hide: false,
+      resizable: true
+    },
+    {
+      field: 'parent',
+      width: 100,
+      minWidth: 100,
+      sortable: true,
+      filter: true,
+      hide: false,
+      resizable: true
+    },
+    {
+      field: 'maxLevel',
+      width: 75,
+      minWidth: 75,
+      maxWidth: 75,
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'minLevel',
+      width: 75,
+      minWidth: 75,
+      maxWidth: 75,
+      sortable: true,
+      filter: true,
+      resizable: true
+    }
   ])
 
   return (

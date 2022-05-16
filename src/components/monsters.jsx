@@ -144,34 +144,184 @@ const MonstersPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false, resizable: true },
-    { field: 'icon', width: 140, minWidth: 140, maxWidth: 140, hide: false, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 160, minWidth: 160, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, resizable: true, hide: false },
-    { field: 'hp', sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'rank', sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'flying', resizable: true, filter: true, hide: false },
-
-    { field: 'experience', sortable: true, resizable: true, filter: true },
-    { field: 'area', sortable: true, filter: true, resizable: true },
-    { field: 'defense', sortable: true, filter: true, resizable: true },
-    { field: 'dex', sortable: true, filter: true, resizable: true },
-    { field: 'element', sortable: true, filter: true, resizable: true },
-    { field: 'experienceSharing', sortable: true, filter: true, resizable: true },
-    { field: 'hitRate', sortable: true, filter: true, resizable: true },
-    { field: 'resourceId', sortable: true, filter: true, resizable: true },
-    { field: 'int', sortable: true, filter: true, resizable: true },
-    { field: 'magicDefense', sortable: true, filter: true, resizable: true },
-    { field: 'maxAttack', sortable: true, filter: true, resizable: true },
-    { field: 'maxDropGold', sortable: true, filter: true, resizable: true },
-    { field: 'minAttack', sortable: true, filter: true, resizable: true },
-    { field: 'minDropGold', sortable: true, filter: true, resizable: true },
-    { field: 'mp', sortable: true, filter: true, resizable: true },
-    { field: 'parry', sortable: true, filter: true, resizable: true },
-    { field: 'runaway', sortable: true, filter: true, resizable: true },
-    { field: 'speed', sortable: true, filter: true, resizable: true },
-    { field: 'sta', sortable: true, filter: true, resizable: true },
-    { field: 'str', sortable: true, filter: true, resizable: true }
+    {
+      field: 'id',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      sortable: true,
+      filter: true,
+      hide: false,
+      resizable: true
+    },
+    {
+      field: 'icon',
+      width: 140,
+      minWidth: 140,
+      maxWidth: 140,
+      hide: false,
+      cellRenderer: iconCellRenderer
+    },
+    {
+      field: 'name',
+      width: 160,
+      minWidth: 160,
+      sortable: true,
+      resizable: true,
+      filter: true,
+      hide: false,
+      cellRenderer: nameCellRenderer
+    },
+    {
+      field: 'lv',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      sortable: true,
+      filter: true,
+      resizable: true,
+      hide: false
+    },
+    {
+      field: 'hp',
+      sortable: true,
+      resizable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'rank',
+      sortable: true,
+      resizable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'flying',
+      resizable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'experience',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'area',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'defense',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'dex',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'element',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'experienceSharing',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'hitRate',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'resourceId',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'int',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'magicDefense',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'maxAttack',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'maxDropGold',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'minAttack',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'minDropGold',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'mp',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'parry',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'runaway',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'speed',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'sta',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      field: 'str',
+      sortable: true,
+      filter: true,
+      resizable: true
+    }
   ])
 
   return (

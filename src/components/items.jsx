@@ -46,7 +46,9 @@ const ItemsPangDataGrid = props => {
     if (!classId) {
       return 'Any'
     }
-    return props.PangContext.Classes.get(classId).get('name').en // TODO: localize
+    return props.PangContext.Classes
+      .get(classId)
+      .get('name').en // TODO: localize
   }
 
   const createRowFromGameObject = go => ({
@@ -162,40 +164,217 @@ const ItemsPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, hide: false, cellRenderer: iconCellRenderer },
-    { field: 'name', width: 200, minWidth: 200, sortable: true, resizable: true, filter: true, hide: false, cellRenderer: nameCellRenderer },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, filter: true, hide: false },
-    { field: 'rarity', width: 75, resizable: true, minWidth: 75, sortable: true, filter: true, hide: false, cellRenderer: rarityCellRenderer, comparator: rarityComparator },
-    { field: 'class', width: 75, resizable: true, sortable: true, filter: true, hide: false },
-    { field: 'category', width: 85, resizable: true, sortable: true, filter: true, hide: false },
-    { field: 'subcategory', width: 100, resizable: true, sortable: true, filter: true, hide: false },
-
-    { field: 'buyPrice', sortable: true, resizable: true, filter: true },
-    { field: 'sellPrice', sortable: true, resizable: true, filter: true },
-    { field: 'description', resizable: true, filter: true, cellRenderer: descriptionCellRenderer },
-    { field: 'attackSpeed', sortable: true, resizable: true, filter: true },
-    { field: 'attackRange', sortable: true, resizable: true, filter: true },
-    { field: 'additionalSkillDamage', sortable: true, resizable: true, filter: true },
-    { field: 'consumable', resizable: true, filter: true },
-    { field: 'deletable', resizable: true, filter: true },
-    { field: 'durationRealTime', resizable: true, filter: true },
-    { field: 'element', resizable: true, filter: true },
-    { field: 'guildContribution', sortable: true, resizable: true, filter: true },
-    { field: 'maxAttack', sortable: true, resizable: true, filter: true },
-    { field: 'minAttack', sortable: true, resizable: true, filter: true },
-    { field: 'maxDefense', sortable: true, resizable: true, filter: true },
-    { field: 'minDefense', sortable: true, resizable: true, filter: true },
-    { field: 'premium', resizable: true, filter: true },
-    { field: 'resourceId', sortable: true, resizable: true, filter: true },
-    { field: 'sex', sortable: true, resizable: true, filter: true },
-    { field: 'shining', resizable: true, filter: true },
-    { field: 'stack', sortable: true, resizable: true, filter: true },
-    { field: 'tradable', resizable: true, filter: true },
-    { field: 'triggerSkill', resizable: true, filter: true },
-    { field: 'triggerSkillProbability', sortable: true, resizable: true, filter: true },
-    { field: 'transy', resizable: true, filter: true },
-    { field: 'twoHanded', resizable: true, filter: true }
+    {
+      field: 'id',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      sortable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'icon',
+      width: 65,
+      minWidth: 65,
+      maxWidth: 65,
+      hide: false,
+      cellRenderer: iconCellRenderer
+    },
+    {
+      field: 'name',
+      width: 200,
+      minWidth: 200,
+      sortable: true,
+      resizable: true,
+      filter: true,
+      hide: false,
+      cellRenderer: nameCellRenderer
+    },
+    {
+      field: 'lv',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55,
+      sortable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'rarity',
+      width: 75,
+      resizable: true,
+      minWidth: 75,
+      sortable: true,
+      filter: true,
+      hide: false,
+      cellRenderer: rarityCellRenderer,
+      comparator: rarityComparator
+    },
+    {
+      field: 'class',
+      width: 75,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'category',
+      width: 85,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'subcategory',
+      width: 100,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      hide: false
+    },
+    {
+      field: 'buyPrice',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'sellPrice',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'description',
+      resizable: true,
+      filter: true,
+      cellRenderer: descriptionCellRenderer
+    },
+    {
+      field: 'attackSpeed',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'attackRange',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'additionalSkillDamage',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'consumable',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'deletable',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'durationRealTime',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'element',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'guildContribution',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'maxAttack',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'minAttack',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'maxDefense',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'minDefense',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'premium',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'resourceId',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'sex',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'shining',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'stack',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'tradable',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'triggerSkill',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'triggerSkillProbability',
+      sortable: true,
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'transy',
+      resizable: true,
+      filter: true
+    },
+    {
+      field: 'twoHanded',
+      resizable: true,
+      filter: true
+    }
   ])
 
   return (
