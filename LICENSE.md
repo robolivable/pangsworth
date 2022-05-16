@@ -618,4 +618,20 @@ an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
-                     END OF TERMS AND CONDITIONS
+                     END OF TERMS AND CONDITIONS FOR 
+                       GNU GENERAL PUBLIC LICENSE
+
+-------------------------------------------------------------------------------
+
+                BEGIN TERMS AND CONDITIONS FOR GALA LAB CORP
+
+          Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved.
+
+  Permission to use the data and images granted only for information sites and
+tools about the official game. Gala Lab reserves the right to no longer grant
+this permission at any time. Commercial use is strictly prohibited. Use for
+in-game automation and cheating tools, or use in any other video game is
+strictly prohibited. Please contact the developers if you wish to verify that
+your use of this content is in accordance with the copyright.
+
+                END OF TERMS AND CONDITIONS FOR GALA LAB CORP
