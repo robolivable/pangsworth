@@ -302,18 +302,23 @@ const ClassesPangDataGrid = props => {
     parent: getParentById(go.get('parent'))
   })
 
-  const [rowData, setRowDataState] = useState(
-    Array.from(props.PangContext.Classes.iter()).map(createRowFromGameObject)
-  )
+  const [rowData, setRowData] = useState([])
+
+  useEffect(() => {
+    const data = Array.from(
+      props.PangContext.Classes.iter()
+    ).map(createRowFromGameObject)
+    setRowData(data)
+  }, [])
 
   // NOTE: We useEffect here to make sure we can properly clean up event
   // listeners. This is boilerplate for all components that depend on
   // the context initialization. We may be able to reduce this by doing
   // it as part of the common component, but the issue is that we
-  // currently depend on each child component state (setRowDataState)
+  // currently depend on each child component state (setRowData)
   // for these operations.
   useEffect(() => {
-    const initializeHandler = () => setRowDataState(
+    const initializeHandler = () => setRowData(
       Array.from(props.PangContext.Classes.iter()).map(createRowFromGameObject)
     )
     props.PangContext.on(BuiltinEvents.INITIALIZE_COMPLETED, initializeHandler)
@@ -420,6 +425,33 @@ const ClassesPangDataGrid = props => {
     return rankA > rankB ? 1 : -1
   }
 
+  const statNameForStat = stat => {
+    switch (stat) {
+      case 'maxHP':
+      case 'maxFP':
+        return 'sta'
+      case 'maxMP':
+        return 'int'
+      default:
+        return null
+    }
+  }
+
+  const maxStatComparator = stat => (_, __, nodeA, nodeB) => {
+    let exp = nodeA.data[stat]
+    exp = exp.replaceAll('level', nodeA.data.maxLevel)
+    exp = exp.replaceAll(statNameForStat(stat), (nodeA.data.maxLevel - 1) * 2)
+    const valueA = Math.round(mathJSEval(exp))
+    exp = nodeB.data[stat]
+    exp = exp.replaceAll('level', nodeB.data.maxLevel)
+    exp = exp.replaceAll(statNameForStat(stat), (nodeB.data.maxLevel - 1) * 2)
+    const valueB = Math.round(mathJSEval(exp))
+    if (valueA === valueB) {
+      return 0
+    }
+    return valueA > valueB ? 1 : -1
+  }
+
   const [columnDefs] = useState([
     {
       field: 'id',
@@ -465,7 +497,9 @@ const ClassesPangDataGrid = props => {
       minWidth: 210,
       maxWidth: 210,
       hide: false,
-      cellRenderer: maxHPCellRenderer
+      cellRenderer: maxHPCellRenderer,
+      sortable: true,
+      comparator: maxStatComparator('maxHP')
     },
     {
       field: 'maxFP',
@@ -473,7 +507,9 @@ const ClassesPangDataGrid = props => {
       minWidth: 210,
       maxWidth: 210,
       hide: false,
-      cellRenderer: maxFPCellRenderer
+      cellRenderer: maxFPCellRenderer,
+      sortable: true,
+      comparator: maxStatComparator('maxFP')
     },
     {
       field: 'maxMP',
@@ -481,7 +517,9 @@ const ClassesPangDataGrid = props => {
       minWidth: 210,
       maxWidth: 210,
       hide: false,
-      cellRenderer: maxMPCellRenderer
+      cellRenderer: maxMPCellRenderer,
+      sortable: true,
+      comparator: maxStatComparator('maxMP')
     },
     {
       field: 'type',

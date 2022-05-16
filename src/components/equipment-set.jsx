@@ -19,29 +19,117 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangNavigationAccordionItem,
+  ITEM_RARITY_COLORS,
+  getDarkTheme,
+  DARK_CONTRAST_BG_COLOR,
+  LIGHT_CONTRAST_BG_COLOR,
+} from './common'
 import { BuiltinEvents } from '../clients/context'
 import BattleGear from '../../static/images/battle-gear.svg'
 import UpgradeIcon from '../../static/images/upgrade.svg'
 import { makeStyles } from '@material-ui/core/styles'
+import Avatar from '@material-ui/core/Avatar'
+import Typography from '@material-ui/core/Typography'
+import Chip from '@material-ui/core/Chip'
+import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
+import * as config from '../clients/config'
 
-const useStyles = makeStyles(theme => ({}))
+const useStyles = makeStyles(theme => ({
+  setPartsWrapper: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  setPart: {
+    backgroundColor: 'rgba(0 0 0 / 0%)'
+  },
+  bonuses: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  equippedWrapper: {
+    display: 'flex',
+    backgroundColor: props => {
+      const themeColor =
+        getDarkTheme(props) ? DARK_CONTRAST_BG_COLOR : LIGHT_CONTRAST_BG_COLOR
+      return `rgba(${themeColor} / 50%)`
+    },
+    width: '90%',
+    minWidth: 'fit-content',
+    maxWidth: '280px',
+    alignItems: 'center'
+  },
+  equippedCount: {
+    paddingLeft: '10px',
+    paddingRight: '10px'
+  },
+  equipped: {
+    display: 'flex',
+    flexDirection: 'column',
+    paddingTop: '5px',
+    paddingBottom: '5px',
+    paddingLeft: '10px',
+    paddingRight: '10px'
+  },
+  equippedText: {
+    marginTop: '3px',
+    maxWidth: 'fit-content'
+  },
+  classText: {
+    maxWidth: 'fit-content'
+  }
+}))
+
+const overrideStyle = root => makeStyles({ root })
 
 const EquipmentSetPangDataGrid = props => {
   const classes = useStyles(props)
-  const createRowFromGameObject = go => ({
-    id: go.id,
-    parts: JSON.stringify(Array.from(go.parts()).map(part => part.icon)),
-    name: go.get('name').en, // TODO: localize
-    bonuses: JSON.stringify(Array.from(go.bonuses()).map(bonus => ({
-      equipped: bonus.equipped,
-      ability: {
-        parameter: bonus.ability.get('parameter'),
-        add: bonus.ability.get('add'),
-        rate: bonus.ability.get('rate')
-      }
-    })))
-  })
+  const getClassById = classId => {
+    if (!classId) {
+      return null
+    }
+    return props.PangContext.Classes.get(classId)
+  }
+  const getSexByClassId = classId => {
+    if (!classId) {
+      return null
+    }
+    return props.PangContext.Classes.get()
+  }
+  const getIconStyleForSex = sex => {
+    if (sex === 'female') {
+      return config.API_RESOURCE_TYPES.classes.iconStyles.oldFemale
+    }
+    return config.API_RESOURCE_TYPES.classes.iconStyles.oldMale
+  }
+  const createRowFromGameObject = go => {
+    const itemRef = Array.from(go.parts())[0]
+    const cls = getClassById(itemRef?.class.id)
+    const setClassIconStyle = getIconStyleForSex(itemRef?.get('sex'))
+    return ({
+      id: go.id,
+      parts: JSON.stringify(Array.from(go.parts()).map(part => ({
+        src: part.icon,
+        alt: `${go.get('name').en} set piece.` // TODO: localize
+      }))),
+      name: go.get('name').en, // TODO: localize
+      class: cls.get('name').en || null, // TODO: localize
+      classPixelIcon: cls.iconStyled(setClassIconStyle) || null,
+      rarity: itemRef?.get('rarity'),
+      lv: itemRef?.get('level'),
+      bonuses: JSON.stringify(Array.from(go.bonuses()).map(bonus => ({
+        equipped: bonus.get('equipped'),
+        ability: {
+          parameter: bonus.ability.get('parameter'),
+          add: bonus.ability.get('add'),
+          rate: bonus.ability.get('rate')
+        }
+      })))
+    })
+  }
 
   const [rowData, setRowData] = useState([])
 
@@ -74,9 +162,147 @@ const EquipmentSetPangDataGrid = props => {
     console.log({ item, e })
   }
 
-  const partsCellRenderer = params => params.value
-  const nameCellRenderer = params => params.value
-  const bonusesCellRenderer = params => params.value
+  const partsCellRenderer = params => (
+    <div className={classes.setPartsWrapper}>
+      {JSON.parse(params.value).map(({ src, alt }, key) => (
+        <Avatar
+          key={key}
+          variant='square'
+          className={classes.setPart}
+        >
+          <img key={key} src={src} alt={alt} />
+        </Avatar>
+      ))}
+    </div>
+  )
+
+  const nameCellRenderer = params => {
+    const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
+    if (!nameColor) {
+      return params.value
+    }
+    const name = params.value || '[no name]'
+    const style = overrideStyle({
+      color: nameColor,
+      fontSize: '0.675rem'
+    })()
+    const innerLabel = (
+      <Typography
+        classes={{ root: style.root }}
+        variant='subtitle2'
+      >
+        {name}
+      </Typography>
+    )
+    return (
+      <Chip
+        size='small'
+        label={innerLabel}
+        onClick={navigateSingleItem(params.data)}
+      />
+    )
+  }
+
+  const levelCellRenderer = params => {
+    const level = params.value
+    const style = overrideStyle({
+      fontSize: '0.675rem'
+    })()
+    const innerLabel = (
+      <Typography
+        classes={{ root: style.root }}
+        variant='subtitle2'
+      >
+        Lv {level}
+      </Typography>
+    )
+    return (
+      <Chip
+        size='small'
+        label={innerLabel}
+      />
+    )
+  }
+
+  const classCellRenderer = params => {
+    const name = params.value || '[no name]'
+    const style = overrideStyle({
+      fontSize: '0.675rem'
+    })()
+    const innerLabel = (
+      <Typography
+        classes={{ root: style.root }}
+        variant='subtitle2'
+      >
+        {name}
+      </Typography>
+    )
+    return (
+      <Chip
+        className={classes.classText}
+        size='small'
+        icon={<img src={params.data.classPixelIcon} />}
+        label={innerLabel}
+      />
+    )
+  }
+
+  const bonusesCellRenderer = params => {
+    const bonuses = JSON.parse(params.value).reduce((prev, cur) => {
+      if (!prev[cur.equipped]) {
+        prev[cur.equipped] = []
+      }
+      prev[cur.equipped].push(cur.ability)
+      return prev
+    }, {})
+
+    const bonusParameterText = ability => {
+      const parameter =
+        props.PangContext.EquipmentSetParameterTypes[ability.parameter]
+      if (ability.add) {
+        return `${parameter} +${ability.add}${ability.rate ? '%' : ''}`
+      }
+      if (ability.set) {
+        return `${parameter} ${ability.set}${ability.rate ? '%' : ''}`
+      }
+      return ''
+    }
+
+    return (
+      <div className={classes.bonuses}>
+        <Grid
+          container
+          justifyContent='flex-start'
+          alignItems='center'
+          spacing={1}
+        >
+          {Object.entries(bonuses).map(([equipped, abilities], key) => (
+            <Grid key={key} item xs={12}>
+              <Paper
+                className={classes.equippedWrapper}
+                variant='outlined'
+              >
+                <div className={classes.equippedCount}>
+                  {`${equipped}x`}
+                </div>
+                <div className={classes.equipped}>
+                  {abilities.map((ability, key) => (
+                    <Chip
+                      className={classes.equippedText}
+                      key={key}
+                      size='small'
+                      icon={ability.add ? <UpgradeIcon /> : null}
+                      label={bonusParameterText(ability)}
+                    />
+                  ))}
+                </div>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    )
+  }
 
   const [columnDefs] = useState([
     {
@@ -99,19 +325,39 @@ const EquipmentSetPangDataGrid = props => {
     {
       field: 'name',
       hide: false,
-      width: 100,
-      minWidth: 100,
-      maxWidth: 100,
+      width: 105,
+      minWidth: 105,
+      maxWidth: 105,
       filter: true,
       sortable: true,
       resizable: true,
       cellRenderer: nameCellRenderer
     },
     {
+      field: 'class',
+      hide: false,
+      width: 120,
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      sortable: true,
+      cellRenderer: classCellRenderer
+    },
+    {
+      field: 'lv',
+      hide: false,
+      width: 75,
+      minWidth: 75,
+      maxWidth: 75,
+      filter: true,
+      sortable: true,
+      cellRenderer: levelCellRenderer
+    },
+    {
       field: 'bonuses',
       hide: false,
-      width: 100,
-      minWidth: 100,
+      width: 250,
+      minWidth: 280,
       filter: true,
       sortable: true,
       resizable: true,
@@ -122,7 +368,7 @@ const EquipmentSetPangDataGrid = props => {
   return (
     <PangDataGrid
       PangContext={props.PangContext}
-      rowHeight={200}
+      rowHeight={220}
       rowData={rowData}
       columnDefs={columnDefs}
     />
