@@ -243,7 +243,8 @@ const exportDefault = {
       routeDrawer: 'stateRouteDrawer',
       dataViewerDrawer: 'stateDataViewerDrawer',
       searchAccordion: 'stateSearchAccordion',
-      tabRoute: 'stateTabRoute'
+      tabRoute: 'stateTabRoute',
+      mapWorld: 'stateMapWorld'
     }
   },
   DEFAULT_SETTINGS: {
