@@ -63,8 +63,8 @@ See LICENSE.md for terms regarding licensing of this codebase and how you are al
 ### Gala Corp. Copyright Notice
 This project is not directly affiliated with Gala Lab Corp. outside interfacing with the public Flyff Universe game API (https://flyff-api.sniegu.fr/). For disclaimer, this project uses assets downloaded from Gala Lab's APIs for providing useful tools to supplement the Flyff Universe game-play experience. These assets are owned and copyrighted by Gala Lab Corp., see the following official notice for details regarding the fair use of these assets (a copy of this notice is also included at the bottom of LICENSES.md):
 
-<p  align="center">
-**Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved.**
+<p  align="center" style="font-weight: bold;">
+Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved.
 </p>
 Permission to use the data and images granted only for information sites and tools about the official game. Gala Lab reserves the right to no longer grant this permission at any time. Commercial use is strictly prohibited. Use for in-game automation and cheating tools, or use in any other video game is strictly prohibited. Please contact the developers if you wish to verify that your use of this content is in accordance with the copyright.
 

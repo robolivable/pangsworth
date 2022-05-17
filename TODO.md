@@ -58,7 +58,8 @@
 
 ### Release Requirements
 #### Prerequisites
-- Complete README
+- ~~Complete README~~
+  - ~~Include contribution guideline document and contributors~~
 - License all source files
 - Generate third party licenses
   - Need to make sure ever license is viewable from the UI (maybe in about section)
