@@ -1,6 +1,6 @@
 <p align="center">
 ![Sir Pangington Pangsworth](https://github.com/robolivable/pangsworth/blob/master/docs/Pangington.png?raw=true)
-*art by [@Burgerbuan](https://twitter.com/burgerbuan) on Twitter*
+*Sir Pangington Pangsworth mascot art illustrated by [@Burgerbuan](https://twitter.com/burgerbuan) (Twitter handle)*
 </p>
 
 # Pangsworth Info Butler: *At your service anywhere in Madrigal.*
@@ -61,7 +61,7 @@ Pangsworth is built using Web Extension manifest version 3. This manifest versio
 See LICENSE.md for terms regarding licensing of this codebase and how you are allowed to consume and/or extend it properly.
 
 ### Gala Corp. Copyright Notice
-This project uses assets downloaded from Gala Lab's public game APIs for providing useful tools to supplement the Flyff Universe gameplay experience. These assets are owned and copyrighted by Gala Lab Corp., see the following official notice for details regarding the fair use of these assets (a copy of this notice is also included at the bottom of LICENSES.md):
+This project is not directly affiliated with Gala Lab Corp. outside interfacing with the public Flyff Universe game API (https://flyff-api.sniegu.fr/). For disclaimer, this project uses assets downloaded from Gala Lab's APIs for providing useful tools to supplement the Flyff Universe game-play experience. These assets are owned and copyrighted by Gala Lab Corp., see the following official notice for details regarding the fair use of these assets (a copy of this notice is also included at the bottom of LICENSES.md):
 
 <p  align="center">
 **Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved.**
