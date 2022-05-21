@@ -65,6 +65,7 @@ class GameObject {
     return !Object.keys(rest).length
   }
 
+  get icon () {}
   * images () {}
 
   get (key) {
@@ -1303,6 +1304,10 @@ class NPC extends GameObject {
 
   get resourceUri () {
     return config.API_RESOURCE_TYPES.npcs.api.getById(this.id)
+  }
+
+  get icon () {
+    return this.image
   }
 
   get image () {

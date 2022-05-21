@@ -19,7 +19,11 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangContentBackdrop,
+  PangNavigationAccordionItem
+} from './common'
 import { BuiltinEvents } from '../clients/context'
 import BlacksmithIcon from '../../static/images/blacksmith.svg'
 import SwapBagIcon from '../../static/images/swap-bag.svg'
@@ -309,7 +313,11 @@ const NPCsPangDataGrid = props => {
 
 export default class NPCs extends BaseComponent {
   render () {
-    return <NPCsPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <NPCsPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

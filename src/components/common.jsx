@@ -236,6 +236,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const useBackdropStyles = makeStyles(theme => ({
+  contentBackdrop: {
+    backdropFilter: 'blur(10px)'
+  }
+}))
+
 export const PangRouteDrawer = props => {
   const classes = useStyles(props)
   const [open, setOpen] = useState(!!props.startState)
@@ -479,6 +485,7 @@ export const PangDataGrid = props => {
   const gridRef = useRef()
   const onGridReady = useCallback(() => {
     gridRef.current.api.sizeColumnsToFit()
+    gridRef.current.columnApi.autoSizeAllColumns()
     if (typeof onGridReadyTrigger === 'function') {
       onGridReadyTrigger()
     }
@@ -512,10 +519,10 @@ export const PangDataGrid = props => {
       style={rootHeight ? { height: rootHeight } : {}}
     >
       <AgGridReact
+        defaultColDef={defaultColDef}
         {...rest}
         rowData={rowData}
         ref={gridRef}
-        defaultColDef={defaultColDef}
         onGridReady={onGridReady}
         suppressRowClickSelection
         enableCellTextSelection
@@ -560,4 +567,9 @@ export const PangImg = props => {
       />
     </div>
   )
+}
+
+export const PangContentBackdrop = props => {
+  const classes = useBackdropStyles(props)
+  return <div className={classes.contentBackdrop}>{props.children}</div>
 }

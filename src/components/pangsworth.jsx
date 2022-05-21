@@ -99,7 +99,6 @@ const MainContentWrapper = styled('main')(({ theme }) => ({
 }))
 
 const MainContent = styled('div')(({ theme }) => ({
-  backdropFilter: 'blur(10px)',
   height: 'fit-content'
 }))
 

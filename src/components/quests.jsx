@@ -19,7 +19,11 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangContentBackdrop,
+  PangNavigationAccordionItem
+} from './common'
 import { BuiltinEvents } from '../clients/context'
 import * as config from '../clients/config'
 import ScrollQuillIcon from '../../static/images/scroll-quill.svg'
@@ -246,7 +250,11 @@ const QuestsPangDataGrid = props => {
 
 export default class Quests extends BaseComponent {
   render () {
-    return <QuestsPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <QuestsPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

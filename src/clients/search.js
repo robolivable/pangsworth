@@ -57,10 +57,12 @@ class Search {
     if (!SearchInstance) {
       const cache = await Cache.withIndexedDb(config.SEARCH_TABLE)
       const elasticlunr = await ElasticLunr.withCache(cache)
-      elasticlunr.setRef(config.SEARCH_DOCUMENT_REF_NAME)
-      elasticlunr.addField(config.SEARCH_INDEX_SECONDARY)
-      for (const field of Object.keys(config.SEARCH_PRIMARY_INDEXES)) {
-        elasticlunr.addField(field)
+      if (!elasticlunr.fromCache) {
+        elasticlunr.setRef(config.SEARCH_DOCUMENT_REF_NAME)
+        elasticlunr.addField(config.SEARCH_INDEX_SECONDARY)
+        for (const field of Object.keys(config.SEARCH_PRIMARY_INDEXES)) {
+          elasticlunr.addField(field)
+        }
       }
       SearchInstance = new Search(elasticlunr, l10n)
     }

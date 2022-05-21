@@ -19,7 +19,11 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangContentBackdrop,
+  PangNavigationAccordionItem
+} from './common'
 import { BuiltinEvents } from '../clients/context'
 import MountainsIcon from '../../static/images/mountains.svg'
 import CrossedSwordsIcon from '../../static/images/crossed-swords.svg'
@@ -264,7 +268,11 @@ const WorldPangDataGrid = props => {
 
 export default class World extends BaseComponent {
   render () {
-    return <WorldPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <WorldPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

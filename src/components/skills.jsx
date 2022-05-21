@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react'
 import BaseComponent from './base-component'
 import {
   PangDataGrid,
+  PangContentBackdrop,
   PangNavigationAccordionItem,
   getDarkTheme
 } from './common'
@@ -192,7 +193,11 @@ const SkillsPangDataGrid = props => {
 
 export default class Skills extends BaseComponent {
   render () {
-    return <SkillsPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <SkillsPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

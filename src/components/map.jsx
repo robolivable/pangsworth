@@ -15,16 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-/* This code is needed to properly load the images in the Leaflet CSS */
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-})
-
 /* eslint-disable react/jsx-handler-names */
 import React, { useEffect, useState } from 'react'
 
@@ -36,12 +26,22 @@ import { BuiltinEvents } from '../clients/context'
 
 import { MapContainer, TileLayer } from 'react-leaflet'
 
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+/* This code is needed to properly load the images in the Leaflet CSS */
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+})
+
 const DEFAULT_WORLD_ID = 6063
 
 const PangMap = props => {
-  const [worldId, setWorldId] = useState(props.worldId || DEFAULT_WORLD_ID)
+  const [worldId] = useState(props.worldId || DEFAULT_WORLD_ID)
   const world = props.PangContext.Worlds.get(worldId)
-  const [isTransparent, setIsTransparent] = useState(world.isTransparent)
+  const [isTransparent, setIsTransparent] = useState(world.isTransparent) // eslint-disable-line
   useEffect(() => {
     const initializeHandler = () => {
       const w = props.PangContext.Worlds.get(worldId)

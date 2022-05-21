@@ -21,11 +21,12 @@ import React, { useEffect, useState } from 'react'
 import BaseComponent from './base-component'
 import {
   PangDataGrid,
+  PangContentBackdrop,
   PangNavigationAccordionItem,
   ITEM_RARITY_COLORS,
   getDarkTheme,
   DARK_CONTRAST_BG_COLOR,
-  LIGHT_CONTRAST_BG_COLOR,
+  LIGHT_CONTRAST_BG_COLOR
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BattleGear from '../../static/images/battle-gear.svg'
@@ -92,12 +93,6 @@ const EquipmentSetPangDataGrid = props => {
       return null
     }
     return props.PangContext.Classes.get(classId)
-  }
-  const getSexByClassId = classId => {
-    if (!classId) {
-      return null
-    }
-    return props.PangContext.Classes.get()
   }
   const getIconStyleForSex = sex => {
     if (sex === 'female') {
@@ -377,7 +372,11 @@ const EquipmentSetPangDataGrid = props => {
 
 export default class EquipmentSet extends BaseComponent {
   render () {
-    return <EquipmentSetPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <EquipmentSetPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

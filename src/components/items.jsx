@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react'
 import BaseComponent from './base-component'
 import {
   PangDataGrid,
+  PangContentBackdrop,
   PangNavigationAccordionItem,
   ITEM_RARITY_COLORS
 } from './common'
@@ -389,7 +390,11 @@ const ItemsPangDataGrid = props => {
 
 export default class Items extends BaseComponent {
   render () {
-    return <ItemsPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <ItemsPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

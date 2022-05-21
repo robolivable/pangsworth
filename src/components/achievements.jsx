@@ -19,7 +19,11 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangContentBackdrop,
+  PangNavigationAccordionItem
+} from './common'
 import { BuiltinEvents } from '../clients/context'
 import TrophyLaurelIcon from '../../static/images/trophy-laurel.svg'
 import { makeStyles } from '@material-ui/core/styles'
@@ -189,7 +193,11 @@ const AchievementsPangDataGrid = props => {
 
 export default class Achievements extends BaseComponent {
   render () {
-    return <AchievementsPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <AchievementsPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

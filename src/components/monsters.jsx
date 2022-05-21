@@ -20,7 +20,11 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangDataGrid, PangNavigationAccordionItem } from './common'
+import {
+  PangDataGrid,
+  PangContentBackdrop,
+  PangNavigationAccordionItem
+} from './common'
 import MimicChestIcon from '../../static/images/mimic-chest.svg'
 import SpikedDragonHeadIcon from '../../static/images/spiked-dragon-head.svg'
 import DeathSkullIcon from '../../static/images/death-skull.svg'
@@ -336,7 +340,11 @@ const MonstersPangDataGrid = props => {
 
 export default class Monsters extends BaseComponent {
   render () {
-    return <MonstersPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <MonstersPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

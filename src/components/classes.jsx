@@ -22,6 +22,7 @@ import BaseComponent from './base-component'
 import {
   PangDataGrid,
   PangNavigationAccordionItem,
+  PangContentBackdrop,
   getDarkTheme,
   DARK_CONTRAST_COLOR,
   LIGHT_CONTRAST_COLOR
@@ -40,6 +41,9 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { evaluate as mathJSEval } from 'mathjs'
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    backdropFilter: 'blur(10px)'
+  },
   icons: {
     backgroundColor: 'rgba(0 0 0 / 0%)'
   },
@@ -571,7 +575,11 @@ const ClassesPangDataGrid = props => {
 
 export default class Classes extends BaseComponent {
   render () {
-    return <ClassesPangDataGrid PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <ClassesPangDataGrid PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

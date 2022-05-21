@@ -21,6 +21,7 @@ import React from 'react'
 import BaseComponent from './base-component'
 import {
   PangNavigationItem,
+  PangContentBackdrop,
   getDarkTheme,
   setDarkTheme,
   getBackgroundImageLoading,
@@ -305,7 +306,11 @@ const SettingsContainer = props => {
 
 export default class Settings extends BaseComponent {
   render () {
-    return <SettingsContainer PangContext={this.props.PangContext} />
+    return (
+      <PangContentBackdrop>
+        <SettingsContainer PangContext={this.props.PangContext} />
+      </PangContentBackdrop>
+    )
   }
 }
 

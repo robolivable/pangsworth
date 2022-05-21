@@ -110,8 +110,8 @@ class Context extends EventEmitter {
   }
 
   askRerender () { this.emit(BuiltinEvents.ASK_RERENDER) }
-
   get Settings () { return this.settings }
+  textSearch (term) { return this.searchClient.lookup(term) }
 
   async fetchSettings () {
     await this.settings.fetch()
@@ -123,6 +123,14 @@ class Context extends EventEmitter {
 
   async getLastCacheDownloadCompletedAt () {
     return storageGetCacheCompletedAt()
+  }
+
+  * iterAllData () {
+    for (const dataObjectCollection of Object.values(this.gameData)) {
+      for (const dataObject of dataObjectCollection.iter()) {
+        yield dataObject
+      }
+    }
   }
 
   get Classes () {

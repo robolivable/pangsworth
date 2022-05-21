@@ -16,12 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
+import clsx from 'clsx'
 import BaseComponent from './base-component'
-import { PangNavigationAccordion } from './common'
+import {
+  PangDataGrid,
+  PangNavigationAccordion
+} from './common'
 import SearchIcon from '../../static/images/magnifying-glass.svg'
 import * as config from '../clients/config'
+import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid'
+import { makeStyles } from '@material-ui/core/styles'
 
 import World from './world'
 import Classes from './classes'
@@ -45,11 +52,183 @@ const SearchSubRoutes = {
   [Achievements.ROUTE]: Achievements
 }
 
+const useStyles = makeStyles(theme => ({
+  searchBarWrapper: {
+    width: '-webkit-fill-available',
+    alignContent: 'center'
+  },
+  searchBar: {
+    backdropFilter: 'blur(10px)',
+  },
+  searchBarTable: {
+    backdropFilter: 'blur(10px)',
+  },
+  searchBarWidth: {
+    width: '80%',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  searchBarResultsWidth: {
+    width: '-webkit-fill-available',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  searchBarPosition: {
+    top: 300,
+    transition: theme.transitions.create('top', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  searchBarResultsPosition: {
+    top: 0,
+    transition: theme.transitions.create('top', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.shortest
+    })
+  }
+}))
+
+const PangSearchBar = props => <TextField {...props} />
+
+const RESERVED_PROP_NAMES = [
+  '__id',
+  'id',
+  'name',
+  'type',
+  'icon',
+  'image'
+]
+
+const PangResultsTable = props => {
+  const defaultColDef = useMemo(() => ({
+    flex: 1,
+    minWidth: 85,
+    width: 85,
+    hide: false,
+    resizable: true,
+    filter: true,
+    sortable: true
+  }))
+
+  const columnDefs = [
+    { field: 'id' },
+    { field: 'name' },
+    { field: 'type' },
+    { field: 'icon' }
+  ]
+
+  const createRowFromGameObject = go => {
+    const { __id, id, name, type, icon, image, ...rest } = go.props
+    return ({
+      id: go.id,
+      name: go.get('name')?.en, // TODO: localize
+      type: go.type.name,
+      icon: go.icon,
+      [`${go.type.name}Type`]: type,
+      ...rest
+    })
+  }
+
+  const rows = props.results.map(createRowFromGameObject)
+
+  const columnsMap = rows.reduce((prev, cur) => {
+    for (const key in cur) {
+      if (RESERVED_PROP_NAMES.includes(key)) {
+        continue
+      }
+      if (!cur[key]) {
+        continue
+      }
+      prev[key] = cur[key]
+    }
+    return prev
+  }, {})
+
+  for (const key in columnsMap) {
+    columnDefs.push({ field: key })
+  }
+
+  return (
+    <PangDataGrid
+      PangContext={props.PangContext}
+      defaultColDef={defaultColDef}
+      columnDefs={columnDefs}
+      rowData={rows}
+      rowHeight={100}
+    />
+  )
+}
+
+const PangSearch = props => {
+  const classes = useStyles()
+  const [results, setResults] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+    ;(async () => {
+      if (!props.PangContext.initialized) {
+        return
+      }
+      if (!searchTerm) {
+        return
+      }
+      const results = await props.PangContext.textSearch(searchTerm)
+      setResults(results)
+    })()
+  }, [searchTerm])
+
+  const handleSearchBarOnChange = e => {
+    if (!e.target.value) {
+      setSearchTerm('')
+      return
+    }
+    setSearchTerm(e.target.value)
+  }
+
+  return (
+    <Grid
+      className={classes.searchBarWrapper}
+      container
+      direction='column'
+      justifyContent='flex-start'
+      alginItems='center'
+    >
+      <PangSearchBar
+        PangContext={props.PangContext}
+        className={clsx(classes.searchBar, {
+          [classes.searchBarWidth]: !results.length,
+          [classes.searchBarResultsWidth]: !!results.length
+        }, {
+          [classes.searchBarPosition]: !results.length,
+          [classes.searchBarResultsPosition]: !!results.length
+        })}
+        label='Search value'
+        variant='outlined'
+        size={clsx({
+          normal: !results.length,
+          small: !!results.length
+        })}
+        onChange={handleSearchBarOnChange}
+      />
+      {results.length
+        ? <PangResultsTable
+            className={classes.searchBarTable}
+            PangContext={props.PangContext}
+            results={results}
+          />
+        : null}
+    </Grid>
+  )
+}
+
 export default class Search extends BaseComponent {
   render () {
-    return (
-      <div>TODO Search</div>
-    )
+    return <PangSearch PangContext={this.props.PangContext} />
   }
 }
 
