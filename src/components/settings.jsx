@@ -45,7 +45,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { grey } from '@material-ui/core/colors'
 
-import * as config from '../clients/config'
+import * as config from '../config'
 
 const LOADING_TOOLTIP_MSG = 'Indexing Flyff data...'
 

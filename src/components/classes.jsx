@@ -30,7 +30,7 @@ import {
 import FamilyTreeIcon from '../../static/images/family-tree.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
-import * as config from '../clients/config'
+import * as config from '../config'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
@@ -88,6 +88,33 @@ const useStyles = makeStyles(theme => ({
 const overrideTypography = root => makeStyles({ root })
 const overrideSlider = ({ root, markLabel }) => makeStyles({ root, markLabel })
 const overrideGrid = root => makeStyles({ root })
+
+export const nameCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideTypography({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+  return (
+    <Chip
+      size='small'
+      label={innerLabel}
+      onClick={navigateSingleItem(params.data)}
+    />
+  )
+}
+
+export const iconCellRenderer = classes => params => {
+  const alt = `Icon for the ${params.data.name} class.`
+  return <img className={classes.iconImage} src={params.value} alt={alt} />
+}
 
 const SliderValueLabelComponent = props => {
   const { children, open, value } = props
@@ -332,11 +359,6 @@ const ClassesPangDataGrid = props => {
     )
   }, [])
 
-  const iconCellRenderer = params => {
-    const alt = `Icon for the ${params.data.name} class.`
-    return <img className={classes.iconImage} src={params.value} alt={alt} />
-  }
-
   const iconMessengerCellRenderer = params => {
     const alt1 = `Pixel messenger icon for the ${params.data.name} class.`
     const alt2 = `Old pixel icon for the feminine ${params.data.name} class.`
@@ -365,28 +387,6 @@ const ClassesPangDataGrid = props => {
 
   const navigateSingleItem = item => e => {
     console.log({ item, e })
-  }
-
-  const nameCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideTypography({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    return (
-      <Chip
-        size='small'
-        label={innerLabel}
-        onClick={navigateSingleItem(params.data)}
-      />
-    )
   }
 
   const maxHPCellRenderer = params => (
@@ -473,7 +473,7 @@ const ClassesPangDataGrid = props => {
       minWidth: 90,
       maxWidth: 90,
       hide: false,
-      cellRenderer: iconCellRenderer,
+      cellRenderer: iconCellRenderer(classes),
       sortable: true,
       comparator: iconComparator
     },
@@ -493,7 +493,7 @@ const ClassesPangDataGrid = props => {
       filter: true,
       hide: false,
       resizable: true,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'maxHP',
@@ -603,6 +603,12 @@ Classes.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Classes.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW Classes</div>
+  }
 }
 
 Classes.ROUTE = 'Classes'

@@ -16,26 +16,33 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from 'react'
-import { styled } from '@material-ui/core/styles'
+import { makeStyles, styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
+import PlaceholderIcon from '../../static/images/placeholder.svg'
 
 import BaseComponent from './base-component'
 import Routes, { SubRoutes } from './index'
 import {
+  PangIcon,
+  PangDataText,
+  PangNameChip,
+  PangLevelChip,
   PangRouteDrawer,
+  PangDataViewIcon,
   PangDataViewDrawer,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
   getDarkTheme,
-  DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR,
+  colorForTheme,
   toggleAGTableDarkMode
 } from './common'
 
 import Context from '../clients/context'
 
-import * as config from '../clients/config'
+import * as config from '../config'
 
 const AllRoutes = Object.assign(
   {},
@@ -49,7 +56,7 @@ const BREADCRUMBS_MAX_ITEMS = 5
 
 const RootDiv = styled('div')(props => ({
   display: 'flex',
-  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`,
+  color: colorForTheme(props, 80),
   width: 'inherit',
   height: 'inherit'
 }))
@@ -72,8 +79,7 @@ const MainBreadcrumbs = styled('div')(({ theme }) => ({
   position: 'fixed',
   zIndex: '1',
   overflowX: 'auto',
-  overflowY: 'clip',
-  backdropFilter: 'blur(5px)'
+  overflowY: 'clip'
 }))
 
 const DataViewerBreadcrumbs = styled('div')(({ theme }) => ({
@@ -88,7 +94,7 @@ const DataViewerBreadcrumbs = styled('div')(({ theme }) => ({
 }))
 
 const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
-  color: `rgba(${getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR} / 80%)`
+  color: colorForTheme(props, 80)
 }))
 
 const MainContentWrapper = styled('main')(({ theme }) => ({
@@ -102,22 +108,68 @@ const MainContent = styled('div')(({ theme }) => ({
   height: 'fit-content'
 }))
 
-const DataViewerContent = styled('div')(({ theme }) => ({
+const DataViewerContentWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   padding: theme.spacing(3),
   position: 'fixed',
+  width: '-webkit-fill-available',
   height: '-webkit-fill-available',
   overflowY: 'auto',
   overflowX: 'clip'
 }))
 
+const useStyles = makeStyles(theme => ({
+  pangsworthIcon: {
+    width: 170,
+    height: 170,
+    top: 33,
+    left: 188,
+    position: 'absolute',
+    color: props => colorForTheme(props, 50)
+  }
+}))
+
+const DataViewerEmptyView = props => {
+  const classes = useStyles(props)
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={(<PangDataText text={'0'} />)}
+          Name={<PangDataText text={'Pangsworth'} />}
+          Type={<PangDataText text={'Mascot'} />}
+          Level={<PangDataText text={'120'} />}
+          Rarity={<PangDataText text={'Unique'} />}
+          Class={<PangDataText text={'Civilian'} />}
+          {...props}
+        />
+      )}
+      Icon={(
+        <PangIcon
+          component={PlaceholderIcon}
+          className={classes.pangsworthIcon}
+          viewBox='0 0 975 975'
+        />
+      )}
+      {...props}
+    >
+      Test children
+    </DataViewerContentContainer>
+  )
+}
+
+// NOTE: Settings is exported as a getter in Routes
+const getRoutedPangponent = route => AllRoutes[route] || Routes[route]
+
 export default class Pangsworth extends BaseComponent {
   constructor (props, ...args) {
     super(props, ...args)
     this._handleRouteChange = this._handleRouteChange.bind(this)
-    this.handleRouteDrawerStateToggle = this.handleRouteDrawerStateToggle.bind(this)
-    this.handleDataViewerDrawerStateToggle = this.handleDataViewerDrawerStateToggle.bind(this)
+    this.handleRouteDrawerStateToggle =
+      this.handleRouteDrawerStateToggle.bind(this)
+    this.handleDataViewerDrawerStateToggle =
+      this.handleDataViewerDrawerStateToggle.bind(this)
     this.rerenderParent = this.rerenderParent.bind(this)
     this.PangContext = props.PangContext
     this.PangContext.on(Context.ASK_RERENDER, this.rerenderParent)
@@ -150,7 +202,9 @@ export default class Pangsworth extends BaseComponent {
 
         <PangRouteDrawer
           PangContext={this.PangContext}
-          startState={this.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.routeDrawer)}
+          startState={this.PangContext.settings.get(
+            config.SETTINGS_VALUE_KEYS.states.routeDrawer
+          )}
           onDrawerStateToggle={this.handleRouteDrawerStateToggle}
           settingsItem={React.createElement(Routes.settings.Button, {
             _handleRoute: this._handleRouteChange(
@@ -183,8 +237,7 @@ export default class Pangsworth extends BaseComponent {
           <MainContentWrapper>
             <MainContent>
               {React.createElement(
-                // NOTE: Settings is exported as a getter in Routes
-                AllRoutes[this.state.route] || Routes[this.state.route],
+                getRoutedPangponent(this.state.route),
                 { PangContext: this.PangContext }
               )}
             </MainContent>
@@ -193,7 +246,9 @@ export default class Pangsworth extends BaseComponent {
 
         <PangDataViewDrawer
           PangContext={this.PangContext}
-          startState={this.PangContext.settings.get(config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer)}
+          startState={this.PangContext.settings.get(
+            config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer
+          )}
           onDrawerStateToggle={this.handleDataViewerDrawerStateToggle}
         >
           <DataViewerBreadcrumbs>
@@ -202,19 +257,35 @@ export default class Pangsworth extends BaseComponent {
               maxItems={BREADCRUMBS_MAX_ITEMS}
               aria-label='breadcrumb'
             >
-              {Array.from(this.PangContext.breadcrumbs?.iter() || []).map(crumb => (
-                <Link
-                  key={crumb.navigation.id}
-                  crumb={crumb}
-                  color={this.PangContext.breadcrumbs.isCurrent(crumb) ? 'textPrimary' : 'inherit'}
-                  onClick={this.PangContext.breadcrumbs.jumpTo(crumb)}
-                >
-                  {crumb.navigation.name}
-                </Link>
-              ))}
+              <Typography color='inherit'> > </Typography>
+              {Array.from(this.PangContext.breadcrumbs?.iter() || []).map(
+                crumb => (
+                  <Link
+                    key={crumb.navigation.id}
+                    crumb={crumb}
+                    color={this.PangContext.breadcrumbs.isCurrent(crumb)
+                      ? 'textPrimary'
+                      : 'inherit'}
+                    onClick={this.PangContext.breadcrumbs.jumpTo(crumb)}
+                  >
+                    {crumb.navigation.name}
+                  </Link>
+                )
+              )}
             </PangBreadcrumbs>
           </DataViewerBreadcrumbs>
-          <DataViewerContent />
+          <DataViewerContentWrapper>
+            {this.PangContext.currentNavitation
+              ? React.createElement(
+                getRoutedPangponent(
+                  this.PangContext.currentNavigation.route
+                ).SingleView,
+                {
+                  PangContext: this.PangContext,
+                  Key: this.PangContext.currentNavigation.key
+                }
+              ) : <DataViewerEmptyView PangContext={this.PangContext} />}
+          </DataViewerContentWrapper>
         </PangDataViewDrawer>
       </RootDiv>
     )

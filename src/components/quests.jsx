@@ -25,11 +25,13 @@ import {
   PangNavigationAccordionItem
 } from './common'
 import { BuiltinEvents } from '../clients/context'
-import * as config from '../clients/config'
+import * as config from '../config'
 import ScrollQuillIcon from '../../static/images/scroll-quill.svg'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({}))
+
+export const nameCellRenderer = navigateSingleItem => params => params.value
 
 const QuestsPangDataGrid = props => {
   const classes = useStyles(props)
@@ -97,7 +99,10 @@ const QuestsPangDataGrid = props => {
     )
   }, [])
 
-  const nameCellRenderer = params => params.value
+  const navigateSingleItem = item => e => {
+    console.log({ item, e })
+  }
+
   const karmaCellRenderer = params => params.value
   const expCellRenderer = params => params.value
   const itemsCellRenderer = params => params.value
@@ -124,7 +129,7 @@ const QuestsPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'level',
@@ -278,6 +283,12 @@ Quests.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Quests.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW Quests</div>
+  }
 }
 
 Quests.ROUTE = 'Quests'

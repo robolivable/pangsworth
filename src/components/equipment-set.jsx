@@ -37,7 +37,7 @@ import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import * as config from '../clients/config'
+import * as config from '../config'
 
 const useStyles = makeStyles(theme => ({
   setPartsWrapper: {
@@ -85,6 +85,36 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const overrideStyle = root => makeStyles({ root })
+
+/**
+  nameSearchCellRenderer (navigateSingleItem: function): function
+
+  Function to render equipment set names without the specified rarity.
+  This function is used by the search results table to render results
+  containing equipment sets. To reduce complexity around hydration of
+  search results, this method ignores the item rarity color.
+*/
+export const nameSearchCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideStyle({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+  return (
+    <Chip
+      size='small'
+      label={innerLabel}
+      onClick={navigateSingleItem(params.data)}
+    />
+  )
+}
 
 const EquipmentSetPangDataGrid = props => {
   const classes = useStyles(props)
@@ -157,20 +187,6 @@ const EquipmentSetPangDataGrid = props => {
     console.log({ item, e })
   }
 
-  const partsCellRenderer = params => (
-    <div className={classes.setPartsWrapper}>
-      {JSON.parse(params.value).map(({ src, alt }, key) => (
-        <Avatar
-          key={key}
-          variant='square'
-          className={classes.setPart}
-        >
-          <img key={key} src={src} alt={alt} />
-        </Avatar>
-      ))}
-    </div>
-  )
-
   const nameCellRenderer = params => {
     const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
     if (!nameColor) {
@@ -197,6 +213,20 @@ const EquipmentSetPangDataGrid = props => {
       />
     )
   }
+
+  const partsCellRenderer = params => (
+    <div className={classes.setPartsWrapper}>
+      {JSON.parse(params.value).map(({ src, alt }, key) => (
+        <Avatar
+          key={key}
+          variant='square'
+          className={classes.setPart}
+        >
+          <img key={key} src={src} alt={alt} />
+        </Avatar>
+      ))}
+    </div>
+  )
 
   const levelCellRenderer = params => {
     const level = params.value
@@ -400,6 +430,12 @@ EquipmentSet.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+EquipmentSet.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW EquipmentSet</div>
+  }
 }
 
 EquipmentSet.ROUTE = 'Equipment Set'

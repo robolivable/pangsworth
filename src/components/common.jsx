@@ -33,9 +33,14 @@ import Collapse from '@material-ui/core/Collapse'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab'
-import * as config from '../clients/config'
+import * as config from '../config'
+import { BuiltinEvents } from '../clients/context'
 import { localize } from '../i18n'
 import PlaceholderIcon from '../../static/images/placeholder.svg'
+import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import Chip from '@material-ui/core/Chip'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -65,6 +70,22 @@ export const DARK_CONTRAST_COLOR = '255 255 255'
 export const LIGHT_CONTRAST_COLOR = '50 50 50'
 export const DARK_CONTRAST_BG_COLOR = '30 35 35'
 export const LIGHT_CONTRAST_BG_COLOR = '255 255 255'
+
+export const colorForTheme = (props, opacity = 100) => {
+  let theme = LIGHT_CONTRAST_COLOR
+  if (getDarkTheme(props)) {
+    theme = DARK_CONTRAST_COLOR
+  }
+  return `rgba(${theme} / ${opacity}%)`
+}
+
+export const bgColorForTheme = (props, opacity = 100) => {
+  let theme = LIGHT_CONTRAST_BG_COLOR
+  if (getDarkTheme(props)) {
+    theme = DARK_CONTRAST_BG_COLOR
+  }
+  return `rgba(${theme} / ${opacity}%)`
+}
 
 export const ITEM_RARITY_COLORS = {
   common: { display: 'Common', color: 'rgba(34 113 177 / 100%)' },
@@ -182,7 +203,6 @@ const useStyles = makeStyles(theme => ({
     borderColor: darkThemeForProps('20%')
   },
   dataViewDrawerPaper: {
-    zIndex: '0 !important',
     width: dataViewDrawerWidth,
     height: '-webkit-fill-available',
     backgroundColor: 'rgba(0 0 0 / 0%)',
@@ -191,7 +211,7 @@ const useStyles = makeStyles(theme => ({
   },
   dataViewDrawerOpenedEdge: {
     position: 'fixed',
-    zIndex: 999,
+    zIndex: 9999,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'left',
@@ -200,7 +220,7 @@ const useStyles = makeStyles(theme => ({
   },
   dataViewDrawerClosedEdge: {
     position: 'fixed',
-    zIndex: 999,
+    zIndex: 9999,
     display: 'flex',
     alignItems: 'center',
     right: 0,
@@ -211,7 +231,7 @@ const useStyles = makeStyles(theme => ({
     borderBottomLeftRadius: 0,
     width: 20,
     height: 80,
-    backgroundColor: darkThemeForBGProps('50%'),
+    backgroundColor: darkThemeForBGProps('80%'),
     color: darkThemeForProps('50%'),
     '&:hover': {
       backgroundColor: 'rgba(100 100 100 / 50%)'
@@ -221,7 +241,7 @@ const useStyles = makeStyles(theme => ({
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     width: 20,
-    backgroundColor: darkThemeForBGProps('50%'),
+    backgroundColor: darkThemeForBGProps('80%'),
     color: darkThemeForProps('50%'),
     '&:hover': {
       backgroundColor: 'rgba(100 100 100 / 50%)'
@@ -233,6 +253,56 @@ const useStyles = makeStyles(theme => ({
   },
   agTable: {
     height: '552px'
+  },
+  dataViewerGenericComponentWrapper: {
+    flexGrow: 1,
+    height: '100%'
+  },
+  dataViewContentContainerWrapper: {
+    flexGrow: 1,
+    height: '100%'
+  },
+  dataViewContentGenericContainerGrid: {
+    height: '200px',
+    marginBottom: 0
+  },
+  dataViewContentUniqueContainerGrid: {
+    marginTop: 0
+  },
+  dataViewContentGenericGrid: {
+  },
+  dataViewContentGenericSection: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    height: '100%'
+  },
+  dataViewContentIconGridContainer: {
+    flexGrow: 1,
+    height: 'inherit'
+  },
+  dataViewContentIconWrapper: {
+    height: '100%'
+  },
+  dataViewContentIcon: {
+    maxHeight: '175px'
+  },
+  dataViewContentIconCenter: {
+    textAlign: 'center'
+  },
+  dataViewContentIconSection: {
+    padding: theme.spacing(1),
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    height: '100%'
+  },
+  dataViewContentUniqueSection: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    height: '100%'
   }
 }))
 
@@ -395,8 +465,13 @@ export const PangNavigationAccordionItem = props => {
           onClick={props._handleRoute(props.onClick)}
           className={`${classes.textColors} ${classes.accordion}`}
         >
-          <ListItemIcon className={`${classes.textColors} ${classes.accordion}`}>
-            <PangIcon component={props.icon} className={`${classes.textColors} ${classes.accordion}`} />
+          <ListItemIcon
+            className={`${classes.textColors} ${classes.accordion}`}
+          >
+            <PangIcon
+              component={props.icon}
+              className={`${classes.textColors} ${classes.accordion}`}
+            />
           </ListItemIcon>
           <ListItemText primary={props.name} />
         </ListItem>
@@ -425,6 +500,10 @@ export const PangDataViewDrawer = props => {
     setOpen(false)
     onStateToggle(false)
   }
+
+  props.PangContext.on(BuiltinEvents.NAVIGATE_SINGLE_ITEM, () => {
+    setOpen(true)
+  })
 
   return (
     <div>
@@ -474,7 +553,7 @@ export const PangDataGrid = props => {
   // eslint-disable-next-line
   const {
     PangContext,
-    rootHeight,
+    tableStyle,
     onGridReadyTrigger,
     rowData,
     ...rest
@@ -516,7 +595,7 @@ export const PangDataGrid = props => {
   return (
     <div
       className={`ag-theme-balham ${classes.agTable}`}
-      style={rootHeight ? { height: rootHeight } : {}}
+      style={tableStyle ? tableStyle : {}}
     >
       <AgGridReact
         defaultColDef={defaultColDef}
@@ -572,4 +651,185 @@ export const PangImg = props => {
 export const PangContentBackdrop = props => {
   const classes = useBackdropStyles(props)
   return <div className={classes.contentBackdrop}>{props.children}</div>
+}
+
+export const DataViewerContentContainer = props => {
+  const classes = useStyles(props)
+  return (
+    <div className={classes.dataViewContentContainerWrapper}>
+      <Grid
+        container
+        spacing={1}
+        className={classes.dataViewContentGenericContainerGrid}
+      >
+        <Grid item xs={5} className={classes.dataViewContentGenericGrid}>
+          <Paper className={classes.dataViewContentGenericSection}>
+            <Grid
+              container
+              spacing={1}
+            >
+              <Grid item xs={4}>
+                <Grid
+                  container
+                  spacing={2}
+                  direction='column'
+                  alignItems='flex-start'
+                  justifyContent='flex-start'
+                >
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'ID'} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'Name'} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'Type'} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'Level'} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'Rarity'} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <PangDataText bolder text={'Class'} />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={8}>
+                {props.Generic}
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+        <Grid item xs={7}>
+          <Paper className={classes.dataViewContentIconSection}>
+            <Grid
+              container
+              className={classes.dataViewContentIconGridContainer}
+            >
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  direction='row'
+                  alignItems='center'
+                  justifyContent='center'
+                  className={classes.dataViewContentIconWrapper}
+                >
+                  <Grid item xs={12} className={classes.dataViewContentIcon}>
+                    <div className={classes.dataViewContentIconCenter}>
+                      {props.Icon}
+                    </div>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={1}
+        className={classes.dataViewContentUniqueContainerGrid}
+      >
+        <Grid item xs={12}>
+          <Paper className={classes.dataViewContentUniqueSection}>
+            {props.children}
+          </Paper>
+        </Grid>
+      </Grid>
+    </div>
+  )
+}
+
+export const DataViewerGenericComponent = props => {
+  const classes = useStyles(props)
+  return (
+    <Grid
+      container
+      spacing={2}
+      direction='column'
+      justifyContent='flex-start'
+    >
+      <Grid item xs={12}>{props.Id}</Grid>
+      <Grid item xs={12}>{props.Name}</Grid>
+      <Grid item xs={12}>{props.Type}</Grid>
+      <Grid item xs={12}>{props.Level}</Grid>
+      <Grid item xs={12}>{props.Rarity}</Grid>
+      <Grid item xs={12}>{props.Class}</Grid>
+    </Grid>
+  )
+}
+
+const overrideStyle = root => makeStyles({ root })
+
+export const PangDataText = props => {
+  const styleProps = {
+    fontSize: '0.675rem'
+  }
+  if (props.bolder) {
+    styleProps.fontWeight = 'bolder'
+  }
+  const style = overrideStyle(styleProps)()
+  return (
+    <Typography
+      classes={{ root: style.root }}
+    >
+      {props.text}
+    </Typography>
+  )
+}
+
+export const PangNameChip = props => {
+  const name = props.name || '[no name]'
+  const styleProps = {
+    fontSize: '0.675rem'
+  }
+  if (props.rarity) {
+    styleProps.color = ITEM_RARITY_COLORS[props.rarity].color
+  }
+  const style = overrideStyle(styleProps)()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {props.name}
+    </Typography>
+  )
+  return (
+    <Chip
+      size='small'
+      label={innerLabel}
+      icon={props.leftIcon}
+      onDelete={props.rightIcon ? () => {} : null}
+      deleteIcon={props.rightIcon}
+      {...props}
+    />
+  )
+}
+
+export const PangLevelChip = props => {
+  const style = overrideStyle({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+    >
+      Lv {props.level}
+    </Typography>
+  )
+  return (
+    <Chip
+      size='small'
+      label={innerLabel}
+      {...props}
+    />
+  )
+}
+
+export const PangDataViewIcon = props => {
+  const classes = useStyles(props)
+  return <img src={props.src} className={classes.dataViewContentIcon} />
 }

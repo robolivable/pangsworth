@@ -2,7 +2,7 @@ const { getGameObjectsByTypeName } = require('./game-objects')
 const { GalaResource } = require('./gala')
 
 const Cache = require('./cache')
-const config = require('./config')
+const config = require('../config')
 const ElasticLunr = require('./elasticlunr')
 const i18nUtils = require('../i18n/utils')
 

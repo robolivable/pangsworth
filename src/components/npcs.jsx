@@ -78,7 +78,7 @@ const getIconTypeForMenuType = menu => {
 }
 
 const useStyles = makeStyles(theme => ({
-  icons: {
+  npcIcons: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
     height: '150px',
     width: '150px',
@@ -95,6 +95,40 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const overrideStyle = root => makeStyles(theme => ({ root }))
+
+export const nameCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideStyle({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+
+  return (
+    <Chip
+      size='small'
+      label={innerLabel}
+      onClick={navigateSingleItem(params.data)}
+    />
+  )
+}
+
+export const iconCellRenderer = classes => params => {
+  const alt = `Icon for the ${params.data.name} non-player character.`
+  return (
+    <img
+      className={classes.npcIcons}
+      src={params.value}
+      alt={alt}
+    />
+  )
+}
 
 const NPCsPangDataGrid = props => {
   const classes = useStyles(props)
@@ -147,42 +181,8 @@ const NPCsPangDataGrid = props => {
     )
   }, [])
 
-  const iconCellRenderer = params => {
-    const alt = `Icon for the ${params.data.name} non-player character.`
-    return (
-      <img
-        className={classes.icons}
-        src={params.value}
-        alt={alt}
-      />
-    )
-  }
-
   const navigateSingleItem = item => e => {
     console.log({ item, e })
-  }
-
-  const nameCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideStyle({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-
-    return (
-      <Chip
-        size='small'
-        label={innerLabel}
-        onClick={navigateSingleItem(params.data)}
-      />
-    )
   }
 
   const menusCellRenderer = params => {
@@ -268,7 +268,7 @@ const NPCsPangDataGrid = props => {
       width: 175,
       minWidth: 175,
       maxWidth: 175,
-      cellRenderer: iconCellRenderer
+      cellRenderer: iconCellRenderer(classes)
     },
     {
       field: 'name',
@@ -278,7 +278,7 @@ const NPCsPangDataGrid = props => {
       sortable: true,
       resizable: true,
       filter: true,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'locations',
@@ -341,6 +341,12 @@ NPCs.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+NPCs.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW NPCs</div>
+  }
 }
 
 NPCs.ROUTE = 'NPCs'

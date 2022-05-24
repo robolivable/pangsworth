@@ -1,5 +1,5 @@
 const elasticlunr = require('elasticlunr')
-const config = require('./config')
+const config = require('../config')
 
 let ElasticLunrInstance
 

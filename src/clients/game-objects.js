@@ -1,6 +1,6 @@
 const { GalaResource } = require('./gala')
 
-const config = require('./config')
+const config = require('../config')
 const i18nUtils = require('../i18n/utils')
 const JSQueue = require('./js-queue')
 const utils = require('./utils')

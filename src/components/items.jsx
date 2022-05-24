@@ -40,6 +40,43 @@ const useStyles = makeStyles(theme => ({
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
+export const nameCellRenderer = navigateSingleItem => params => {
+  const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
+  if (!nameColor) {
+    return params.value
+  }
+  const name = params.value || '[no name]'
+  const style = overrideTypography({
+    color: nameColor,
+    fontSize: '0.675rem'
+  })()
+  const inner = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+
+  return (
+    <Chip
+      size='small'
+      label={inner}
+      onClick={navigateSingleItem(params.data)}
+    />
+  )
+}
+
+export const iconCellRenderer = classes => params => {
+  const alt = `Icon for the ${params.data.name} item.`
+  return (
+    <Avatar variant='square' className={classes.icons}>
+      <img src={params.value} alt={alt} />
+    </Avatar>
+  )
+}
+
 const ItemsPangDataGrid = props => {
   const classes = useStyles(props)
 
@@ -103,15 +140,6 @@ const ItemsPangDataGrid = props => {
     )
   }, [])
 
-  const iconCellRenderer = params => {
-    const alt = `Icon for the ${params.data.name} item.`
-    return (
-      <Avatar variant='square' className={classes.icons}>
-        <img src={params.value} alt={alt} />
-      </Avatar>
-    )
-  }
-
   const descriptionCellRenderer = params => {
     if (!params.value || params.value === 'null') {
       return ''
@@ -121,34 +149,6 @@ const ItemsPangDataGrid = props => {
 
   const navigateSingleItem = item => e => {
     console.log({ item, e })
-  }
-
-  const nameCellRenderer = params => {
-    const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
-    if (!nameColor) {
-      return params.value
-    }
-    const name = params.value || '[no name]'
-    const style = overrideTypography({
-      color: nameColor,
-      fontSize: '0.675rem'
-    })()
-    const inner = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-
-    return (
-      <Chip
-        size='small'
-        label={inner}
-        onClick={navigateSingleItem(params.data)}
-      />
-    )
   }
 
   const rarityCellRenderer = params => {
@@ -180,7 +180,7 @@ const ItemsPangDataGrid = props => {
       minWidth: 65,
       maxWidth: 65,
       hide: false,
-      cellRenderer: iconCellRenderer
+      cellRenderer: iconCellRenderer(classes)
     },
     {
       field: 'name',
@@ -190,7 +190,7 @@ const ItemsPangDataGrid = props => {
       resizable: true,
       filter: true,
       hide: false,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'lv',
@@ -418,6 +418,12 @@ Items.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Items.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW ITEMS</div>
+  }
 }
 
 Items.ROUTE = 'Items'

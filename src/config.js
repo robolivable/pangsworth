@@ -244,7 +244,8 @@ const exportDefault = {
       dataViewerDrawer: 'stateDataViewerDrawer',
       searchAccordion: 'stateSearchAccordion',
       tabRoute: 'stateTabRoute',
-      mapWorld: 'stateMapWorld'
+      mapWorld: 'stateMapWorld',
+      searchTerm: 'searchTerm'
     }
   },
   DEFAULT_SETTINGS: {

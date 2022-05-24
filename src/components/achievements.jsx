@@ -30,6 +30,8 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({}))
 
+export const nameCellRenderer = navigateSingleItem => params => params.value
+
 const AchievementsPangDataGrid = props => {
   const classes = useStyles(props)
   const createRowFromGameObject = go => ({
@@ -83,7 +85,6 @@ const AchievementsPangDataGrid = props => {
     console.log({ item, e })
   }
 
-  const nameCellRenderer = params => params.value
   const descriptionCellRenderer = params => params.value
   const typeCellRenderer = params => params.value
   const categoryCellRenderer = params => params.value
@@ -109,7 +110,7 @@ const AchievementsPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'description',
@@ -221,6 +222,12 @@ Achievements.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Achievements.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW Achievements</div>
+  }
 }
 
 Achievements.ROUTE = 'Achievements'

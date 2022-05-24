@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const config = require('./config')
+const config = require('../config')
 const idb = require('idb')
 
 const dbMigration = idb.openDB(config.CACHE_NAME, config.CACHE_VERSION, {

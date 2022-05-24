@@ -35,7 +35,7 @@ import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 
 const useStyles = makeStyles(theme => ({
-  icons: {
+  monsterIcons: {
     backgroundColor: 'rgba(0 0 0 / 0%)',
     height: '100px',
     width: '100px',
@@ -44,6 +44,56 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
+
+export const nameCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideTypography({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+  const getRankIcon = rank => {
+    switch (rank) {
+      case 'super':
+        return <SpikedDragonHeadIcon />
+      case 'giant':
+        return <DeathSkullIcon />
+      default:
+        return null
+    }
+  }
+  const getFlyingIcon = flying => {
+    switch (flying) {
+      case 'Yes':
+        return <FluffyWingIcon />
+      default:
+        return null
+    }
+  }
+  return (
+    <Chip
+      icon={getRankIcon(params.data.rank)}
+      size='small'
+      label={innerLabel}
+      onClick={navigateSingleItem(params.data)}
+      onDelete={getFlyingIcon(params.data.flying) ? () => {} : null}
+      deleteIcon={getFlyingIcon(params.data.flying)}
+    />
+  )
+}
+
+export const iconCellRenderer = classes => params => {
+  const alt = `Icon for the ${params.data.name} monster.`
+  return (
+    <img className={classes.monsterIcons} src={params.value} alt={alt} />
+  )
+}
 
 const MonstersPangDataGrid = props => {
   const classes = useStyles(props)
@@ -93,58 +143,8 @@ const MonstersPangDataGrid = props => {
     )
   }, [])
 
-  const iconCellRenderer = params => {
-    const alt = `Icon for the ${params.data.name} monster.`
-    return (
-      <img className={classes.icons} src={params.value} alt={alt} />
-    )
-  }
-
   const navigateSingleItem = item => e => {
     console.log({ item, e })
-  }
-
-  const nameCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideTypography({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    const getRankIcon = rank => {
-      switch (rank) {
-        case 'super':
-          return <SpikedDragonHeadIcon />
-        case 'giant':
-          return <DeathSkullIcon />
-        default:
-          return null
-      }
-    }
-    const getFlyingIcon = flying => {
-      switch (flying) {
-        case 'Yes':
-          return <FluffyWingIcon />
-        default:
-          return null
-      }
-    }
-    return (
-      <Chip
-        icon={getRankIcon(params.data.rank)}
-        size='small'
-        label={innerLabel}
-        onClick={navigateSingleItem(params.data)}
-        onDelete={getFlyingIcon(params.data.flying) ? () => {} : null}
-        deleteIcon={getFlyingIcon(params.data.flying)}
-      />
-    )
   }
 
   const [columnDefs] = useState([
@@ -164,7 +164,7 @@ const MonstersPangDataGrid = props => {
       minWidth: 140,
       maxWidth: 140,
       hide: false,
-      cellRenderer: iconCellRenderer
+      cellRenderer: iconCellRenderer(classes)
     },
     {
       field: 'name',
@@ -174,7 +174,7 @@ const MonstersPangDataGrid = props => {
       resizable: true,
       filter: true,
       hide: false,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'lv',
@@ -368,6 +368,12 @@ Monsters.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Monsters.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW Monsters</div>
+  }
 }
 
 Monsters.ROUTE = 'Monsters'

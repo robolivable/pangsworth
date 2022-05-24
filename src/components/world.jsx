@@ -47,6 +47,29 @@ const useStyles = makeStyles(theme => ({
 
 const overrideStyle = root => makeStyles(theme => ({ root }))
 
+export const nameCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideStyle({
+    fontSize: '0.675rem'
+  })()
+  const innerLabel = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+  return (
+    <Chip
+      classes={{ root: style.root }}
+      size='small'
+      label={innerLabel}
+      onClick={navigateSingleItem(params.data)}
+    />
+  )
+}
+
 const WorldPangDataGrid = props => {
   const classes = useStyles(props)
   const getLodeLocation = lode => {
@@ -112,29 +135,6 @@ const WorldPangDataGrid = props => {
 
   const navigateMap = coordinates => e => {
     console.log({ coordinates, e })
-  }
-
-  const nameCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideStyle({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    return (
-      <Chip
-        classes={{ root: style.root }}
-        size='small'
-        label={innerLabel}
-        onClick={navigateSingleItem(params.data)}
-      />
-    )
   }
 
   const detailsCellRenderer = params => {
@@ -223,13 +223,14 @@ const WorldPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer
+      cellRenderer: nameCellRenderer(navigateSingleItem)
     },
     {
       field: 'details',
       hide: false,
       width: 150,
       minWidth: 150,
+      maxWidth: 150,
       filter: true,
       sortable: true,
       resizable: true,
@@ -296,6 +297,12 @@ World.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+World.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW World</div>
+  }
 }
 
 World.ROUTE = 'World'

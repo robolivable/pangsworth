@@ -29,7 +29,7 @@ import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 import AuraIcon from '../../static/images/aura.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
-import * as config from '../clients/config'
+import * as config from '../config'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
@@ -47,6 +47,70 @@ const useStyles = makeStyles(theme => ({
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
+const nameCellRenderer = navigateSingleItem => params => {
+  const name = params.value || '[no name]'
+  const style = overrideTypography({
+    fontSize: '0.675rem'
+  })()
+  const inner = (
+    <Typography
+      classes={{ root: style.root }}
+      variant='subtitle2'
+    >
+      {name}
+    </Typography>
+  )
+  const getPassiveIcon = passive => {
+    switch (passive) {
+      case 'Yes':
+        return <AuraIcon />
+      default:
+        return null
+    }
+  }
+  return (
+    <Chip
+      size='small'
+      label={inner}
+      onClick={navigateSingleItem(params.data)}
+      onDelete={getPassiveIcon(params.data.passive) ? () => {} : null}
+      deleteIcon={getPassiveIcon(params.data.passive)}
+    />
+  )
+}
+
+const getStyleForThemeMode = isDarkTheme => {
+  return isDarkTheme
+    ? config.API_RESOURCE_TYPES.skills.iconStyles.colored
+    : config.API_RESOURCE_TYPES.skills.iconStyles.old
+}
+
+export const iconCellRenderer = (props, classes) => params => {
+  const getSrcForStyle = p => style =>
+    props.PangContext.Skills.get(p.data.id).iconStyled(style)
+
+  const getDarkThemeFromSrc = src => src.includes(
+    config.API_RESOURCE_TYPES.skills.iconStyles.colored
+  )
+
+  const handleOnClick = p => e => {
+    const isDarkTheme = getDarkThemeFromSrc(e.target.src)
+    e.target.src = getSrcForStyle(p)(getStyleForThemeMode(!isDarkTheme))
+  }
+
+  const alt = `Icon for the ${params.data.name} skill.`
+  return (
+    <Avatar variant='square' className={classes.icons}>
+      <img
+        src={params.value}
+        onClick={handleOnClick(params)}
+        className={classes.iconImg}
+        alt={alt}
+      />
+    </Avatar>
+  )
+}
+
 const SkillsPangDataGrid = props => {
   const classes = useStyles(props)
   const getClassById = classId => {
@@ -56,11 +120,6 @@ const SkillsPangDataGrid = props => {
     return props.PangContext.Classes.get(classId).get('name').en // TODO: localize
   }
   const formatPassive = isPassive => isPassive ? 'Yes' : 'No'
-  const getStyleForThemeMode = isDarkTheme => {
-    return isDarkTheme
-      ? config.API_RESOURCE_TYPES.skills.iconStyles.colored
-      : config.API_RESOURCE_TYPES.skills.iconStyles.old
-  }
   const createRowFromGameObject = go => ({
     id: go.id,
     icon: go.iconStyled(getStyleForThemeMode(getDarkTheme(props))),
@@ -98,64 +157,6 @@ const SkillsPangDataGrid = props => {
     console.log(JSON.stringify({ item }, null, 2))
   }
 
-  const nameCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideTypography({
-      fontSize: '0.675rem'
-    })()
-    const inner = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    const getPassiveIcon = passive => {
-      switch (passive) {
-        case 'Yes':
-          return <AuraIcon />
-        default:
-          return null
-      }
-    }
-    return (
-      <Chip
-        size='small'
-        label={inner}
-        onClick={navigateSingleItem(params.data)}
-        onDelete={getPassiveIcon(params.data.passive) ? () => {} : null}
-        deleteIcon={getPassiveIcon(params.data.passive)}
-      />
-    )
-  }
-
-  const iconCellRenderer = params => {
-    const getSrcForStyle = p => style =>
-      props.PangContext.Skills.get(p.data.id).iconStyled(style)
-
-    const getDarkThemeFromSrc = src => src.includes(
-      config.API_RESOURCE_TYPES.skills.iconStyles.colored
-    )
-
-    const handleOnClick = p => e => {
-      const isDarkTheme = getDarkThemeFromSrc(e.target.src)
-      e.target.src = getSrcForStyle(p)(getStyleForThemeMode(!isDarkTheme))
-    }
-
-    const alt = `Icon for the ${params.data.name} skill.`
-    return (
-      <Avatar variant='square' className={classes.icons}>
-        <img
-          src={params.value}
-          onClick={handleOnClick(params)}
-          className={classes.iconImg}
-          alt={alt}
-        />
-      </Avatar>
-    )
-  }
-
   const descriptionCellRenderer = params => {
     if (!params.value || params.value === 'null') {
       return ''
@@ -165,8 +166,8 @@ const SkillsPangDataGrid = props => {
 
   const [columnDefs] = useState([
     { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, sortable: true, resizable: true, filter: true, cellRenderer: iconCellRenderer, hide: false },
-    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true, filter: true, cellRenderer: nameCellRenderer, hide: false },
+    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, sortable: true, resizable: true, filter: true, cellRenderer: iconCellRenderer(props, classes), hide: false },
+    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true, filter: true, cellRenderer: nameCellRenderer(navigateSingleItem), hide: false },
     { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
     { field: 'class', width: 75, sortable: true, resizable: true, filter: true, hide: false },
     { field: 'skillPoints', sortable: true, resizable: true, filter: true, hide: false },
@@ -221,6 +222,12 @@ Skills.Button = class extends BaseComponent {
   }
 
   _handleOnClick () {}
+}
+
+Skills.SingleView = class extends BaseComponent {
+  render () {
+    return <div>TODO SINGLE VIEW Skills</div>
+  }
 }
 
 Skills.ROUTE = 'Skills'

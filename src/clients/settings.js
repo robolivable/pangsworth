@@ -1,4 +1,4 @@
-const config = require('./config')
+const config = require('../config')
 
 const i18nUtils = require('../i18n/utils')
 

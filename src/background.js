@@ -20,7 +20,7 @@ import 'regenerator-runtime/runtime'
 
 const { getGameObjectsByTypeName } = require('./clients/game-objects')
 const { Limiter, RATES, Events } = require('./clients/limiter')
-const config = require('./clients/config')
+const config = require('./config')
 const utils = require('./clients/utils')
 
 const getRetryBackoffMS = retry =>

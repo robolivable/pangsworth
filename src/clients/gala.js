@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const config = require('./config')
+const config = require('../config')
 const utils = require('./utils')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-retry')(nodeFetch, config.REQUEST_RETRY_OPTIONS)

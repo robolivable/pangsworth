@@ -8,7 +8,7 @@ const {
 const { Settings } = require('./settings')
 const { Breadcrumbs } = require('./breadcrumbs')
 
-const config = require('./config')
+const config = require('../config')
 const Search = require('./search')
 const EventEmitter = require('events')
 
@@ -34,7 +34,8 @@ const cacheStale = (lastCheck, expiresAt) => {
 
 const BuiltinEvents = {
   ASK_RERENDER: 'askRerender',
-  INITIALIZE_COMPLETED: 'initializeCompleted'
+  INITIALIZE_COMPLETED: 'initializeCompleted',
+  NAVIGATE_SINGLE_ITEM: 'navigateSingleItem'
 }
 
 class Context extends EventEmitter {
@@ -50,6 +51,9 @@ class Context extends EventEmitter {
     }
     this.settings = new Settings()
     this.initialized = false
+    this.localStorage = {
+      search: {}
+    }
   }
 
   get currentNavigation () {
@@ -125,6 +129,18 @@ class Context extends EventEmitter {
     return storageGetCacheCompletedAt()
   }
 
+  keepSearchResults (term, results) {
+    this.localStorage.search.term = term
+    this.localStorage.search.results = results
+  }
+
+  getSearchResults () {
+    return [
+      this.localStorage.search.term || '',
+      this.localStorage.search.results || []
+    ]
+  }
+
   * iterAllData () {
     for (const dataObjectCollection of Object.values(this.gameData)) {
       for (const dataObject of dataObjectCollection.iter()) {
@@ -186,6 +202,7 @@ class Context extends EventEmitter {
 
 Context.ASK_RERENDER = BuiltinEvents.ASK_RERENDER
 Context.INITIALIZE_COMPLETED = BuiltinEvents.INITIALIZE_COMPLETED
+Context.NAVIGATE_SINGLE_ITEM = BuiltinEvents.NAVIGATE_SINGLE_ITEM
 
 module.exports = Context
 module.exports.default = Context

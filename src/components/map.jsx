@@ -21,7 +21,7 @@ import React, { useEffect, useState } from 'react'
 import BaseComponent from './base-component'
 import { PangNavigationItem } from './common'
 import TreasureMapIcon from '../../static/images/treasure-map.svg'
-import * as config from '../clients/config'
+import * as config from '../config'
 import { BuiltinEvents } from '../clients/context'
 
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -41,7 +41,8 @@ const DEFAULT_WORLD_ID = 6063
 const PangMap = props => {
   const [worldId] = useState(props.worldId || DEFAULT_WORLD_ID)
   const world = props.PangContext.Worlds.get(worldId)
-  const [isTransparent, setIsTransparent] = useState(world.isTransparent) // eslint-disable-line
+  // eslint-disable-next-line
+  const [isTransparent, setIsTransparent] = useState(world.isTransparent)
   useEffect(() => {
     const initializeHandler = () => {
       const w = props.PangContext.Worlds.get(worldId)

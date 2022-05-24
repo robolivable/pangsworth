@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const JSQueue = require('./js-queue')
 const utils = require('./utils')
-const config = require('./config')
+const config = require('../config')
 
 const RATES = { millisecond: 1, second: 1000 }
 const EVENT_QUEUE = 'enqueue'
