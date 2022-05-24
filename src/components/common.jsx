@@ -595,7 +595,7 @@ export const PangDataGrid = props => {
   return (
     <div
       className={`ag-theme-balham ${classes.agTable}`}
-      style={tableStyle ? tableStyle : {}}
+      style={tableStyle}
     >
       <AgGridReact
         defaultColDef={defaultColDef}
@@ -677,22 +677,22 @@ export const DataViewerContentContainer = props => {
                   justifyContent='flex-start'
                 >
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'ID'} />
+                    <PangDataText bolder text='ID' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'Name'} />
+                    <PangDataText bolder text='Name' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'Type'} />
+                    <PangDataText bolder text='Type' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'Level'} />
+                    <PangDataText bolder text='Level' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'Rarity'} />
+                    <PangDataText bolder text='Rarity' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text={'Class'} />
+                    <PangDataText bolder text='Class' />
                   </Grid>
                 </Grid>
               </Grid>
@@ -742,24 +742,21 @@ export const DataViewerContentContainer = props => {
   )
 }
 
-export const DataViewerGenericComponent = props => {
-  const classes = useStyles(props)
-  return (
-    <Grid
-      container
-      spacing={2}
-      direction='column'
-      justifyContent='flex-start'
-    >
-      <Grid item xs={12}>{props.Id}</Grid>
-      <Grid item xs={12}>{props.Name}</Grid>
-      <Grid item xs={12}>{props.Type}</Grid>
-      <Grid item xs={12}>{props.Level}</Grid>
-      <Grid item xs={12}>{props.Rarity}</Grid>
-      <Grid item xs={12}>{props.Class}</Grid>
-    </Grid>
-  )
-}
+export const DataViewerGenericComponent = props => (
+  <Grid
+    container
+    spacing={2}
+    direction='column'
+    justifyContent='flex-start'
+  >
+    <Grid item xs={12}>{props.Id}</Grid>
+    <Grid item xs={12}>{props.Name}</Grid>
+    <Grid item xs={12}>{props.Type}</Grid>
+    <Grid item xs={12}>{props.Level}</Grid>
+    <Grid item xs={12}>{props.Rarity}</Grid>
+    <Grid item xs={12}>{props.Class}</Grid>
+  </Grid>
+)
 
 const overrideStyle = root => makeStyles({ root })
 
@@ -794,7 +791,7 @@ export const PangNameChip = props => {
       classes={{ root: style.root }}
       variant='subtitle2'
     >
-      {props.name}
+      {name}
     </Typography>
   )
   return (

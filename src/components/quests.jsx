@@ -27,14 +27,10 @@ import {
 import { BuiltinEvents } from '../clients/context'
 import * as config from '../config'
 import ScrollQuillIcon from '../../static/images/scroll-quill.svg'
-import { makeStyles } from '@material-ui/core/styles'
-
-const useStyles = makeStyles(theme => ({}))
 
 export const nameCellRenderer = navigateSingleItem => params => params.value
 
 const QuestsPangDataGrid = props => {
-  const classes = useStyles(props)
   const createRowFromGameObject = go => ({
     id: go.id,
     name: go.get('name').en, // TODO: localize
@@ -108,8 +104,6 @@ const QuestsPangDataGrid = props => {
   const itemsCellRenderer = params => params.value
   const npcCellRenderer = params => params.value
   const classCellRenderer = params => params.value
-  const repeatableCellRenderer = params => params.value
-  const shareableCellRenderer = params => params.value
 
   const [columnDefs] = useState([
     {
@@ -229,8 +223,7 @@ const QuestsPangDataGrid = props => {
       width: 100,
       minWidth: 100,
       maxWidth: 100,
-      filter: true,
-      //cellRenderer: repeatableCellRenderer
+      filter: true
     },
     {
       field: 'shareable',
@@ -238,8 +231,7 @@ const QuestsPangDataGrid = props => {
       width: 100,
       minWidth: 100,
       maxWidth: 100,
-      filter: true,
-      //cellRenderer: shareableCellRenderer
+      filter: true
     }
   ])
 

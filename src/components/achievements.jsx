@@ -26,14 +26,10 @@ import {
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import TrophyLaurelIcon from '../../static/images/trophy-laurel.svg'
-import { makeStyles } from '@material-ui/core/styles'
-
-const useStyles = makeStyles(theme => ({}))
 
 export const nameCellRenderer = navigateSingleItem => params => params.value
 
 const AchievementsPangDataGrid = props => {
-  const classes = useStyles(props)
   const createRowFromGameObject = go => ({
     id: go.id,
     name: go.get('name').en, // TODO: localize
@@ -47,11 +43,15 @@ const AchievementsPangDataGrid = props => {
       value: level.get('value')
     }))),
     title: go.title,
-    target: !go.target ? null : JSON.stringify({
-      id: go.target.id,
-      name: go.target.get('name').en, // TODO: localize
-      icon: go.target.image
-    })
+    target: !go.target
+      ? null
+      : (
+          JSON.stringify({
+            id: go.target.id,
+            name: go.target.get('name').en, // TODO: localize
+            icon: go.target.image
+          })
+        )
   })
 
   const [rowData, setRowData] = useState([])
@@ -88,7 +88,6 @@ const AchievementsPangDataGrid = props => {
   const descriptionCellRenderer = params => params.value
   const typeCellRenderer = params => params.value
   const categoryCellRenderer = params => params.value
-  const accountWideCellRenderer = params => params.value
   const levelsCellRenderer = params => params.value
   const targetCellRenderer = params => params.value
 
@@ -148,8 +147,7 @@ const AchievementsPangDataGrid = props => {
       width: 100,
       minWidth: 100,
       maxWidth: 100,
-      filter: true,
-      //cellRenderer: accountWideCellRenderer
+      filter: true
     },
     {
       field: 'levels',

@@ -28,10 +28,7 @@ import Routes, { SubRoutes } from './index'
 import {
   PangIcon,
   PangDataText,
-  PangNameChip,
-  PangLevelChip,
   PangRouteDrawer,
-  PangDataViewIcon,
   PangDataViewDrawer,
   DataViewerContentContainer,
   DataViewerGenericComponent,
@@ -136,12 +133,12 @@ const DataViewerEmptyView = props => {
     <DataViewerContentContainer
       Generic={(
         <DataViewerGenericComponent
-          Id={(<PangDataText text={'0'} />)}
-          Name={<PangDataText text={'Pangsworth'} />}
-          Type={<PangDataText text={'Mascot'} />}
-          Level={<PangDataText text={'120'} />}
-          Rarity={<PangDataText text={'Unique'} />}
-          Class={<PangDataText text={'Civilian'} />}
+          Id={(<PangDataText text='0' />)}
+          Name={<PangDataText text='Pangsworth' />}
+          Type={<PangDataText text='Mascot' />}
+          Level={<PangDataText text='120' />}
+          Rarity={<PangDataText text='Unique' />}
+          Class={<PangDataText text='Civilian' />}
           {...props}
         />
       )}
@@ -257,7 +254,7 @@ export default class Pangsworth extends BaseComponent {
               maxItems={BREADCRUMBS_MAX_ITEMS}
               aria-label='breadcrumb'
             >
-              <Typography color='inherit'> > </Typography>
+              <Typography color='inherit'> {'>'} </Typography>
               {Array.from(this.PangContext.breadcrumbs?.iter() || []).map(
                 crumb => (
                   <Link
@@ -276,15 +273,18 @@ export default class Pangsworth extends BaseComponent {
           </DataViewerBreadcrumbs>
           <DataViewerContentWrapper>
             {this.PangContext.currentNavitation
-              ? React.createElement(
-                getRoutedPangponent(
-                  this.PangContext.currentNavigation.route
-                ).SingleView,
-                {
-                  PangContext: this.PangContext,
-                  Key: this.PangContext.currentNavigation.key
-                }
-              ) : <DataViewerEmptyView PangContext={this.PangContext} />}
+              ? (
+                  React.createElement(
+                    getRoutedPangponent(
+                      this.PangContext.currentNavigation.route
+                    ).SingleView,
+                    {
+                      PangContext: this.PangContext,
+                      Key: this.PangContext.currentNavigation.key
+                    }
+                  )
+                )
+              : <DataViewerEmptyView PangContext={this.PangContext} />}
           </DataViewerContentWrapper>
         </PangDataViewDrawer>
       </RootDiv>

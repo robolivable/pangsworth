@@ -21,10 +21,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import BaseComponent from './base-component'
 import {
-  DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR,
-  DARK_CONTRAST_BG_COLOR,
-  LIGHT_CONTRAST_BG_COLOR,
   colorForTheme,
   PangIcon,
   PangDataGrid,
@@ -65,7 +61,6 @@ import Items, {
   iconCellRenderer as itemsIconCellRenderer
 } from './items'
 import Skills, {
-  nameCellRenderer as skillsNameCellRenderer,
   iconCellRenderer as skillsIconCellRenderer
 } from './skills'
 import NPCs, {
@@ -91,10 +86,10 @@ const useStyles = makeStyles(theme => ({
     alignContent: 'center'
   },
   searchBar: {
-    backdropFilter: 'blur(10px)',
+    backdropFilter: 'blur(10px)'
   },
   searchBarTable: {
-    backdropFilter: 'blur(10px)',
+    backdropFilter: 'blur(10px)'
   },
   searchBarWidth: {
     width: '80%',
@@ -147,7 +142,7 @@ const useStyles = makeStyles(theme => ({
   pangsworthIconWrapper: {
     position: 'relative',
     top: '46px',
-    left: '92px',
+    left: '92px'
   },
   pangsworthIcon: {
     width: '368px',
@@ -165,13 +160,13 @@ const useStylesSearchBar = props => makeStyles(theme => ({
     backgroundColor: 'rgba(0 0 0 / 0%)',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     '&:hover': {
-     backgroundColor: 'rgba(0 0 0 / 0%)',
+      backgroundColor: 'rgba(0 0 0 / 0%)'
     },
     '&$focused': {
       backgroundColor: 'rgba(0 0 0 / 0%)',
       boxShadow: `${colorForTheme(props, 50)} 0 0 0 1px`,
-      borderColor: colorForTheme(props, 50),
-    },
+      borderColor: colorForTheme(props, 50)
+    }
   },
   focused: {},
   notchedOutline: {
@@ -337,10 +332,6 @@ const PangResultsTable = props => {
     return prev
   }, {})
 
-  const cellRenderer = params => {
-    return params.value
-  }
-
   for (const key in columnsMap) {
     columnDefs.push({ field: key })
   }
@@ -465,16 +456,18 @@ const PangSearch = props => {
               viewBox='0 0 975 875'
             />
           </div>
-        )
+          )
         : null}
       {getSearchBar()}
       {showTable
-        ? <div className={classes.searchBarTable}>
+        ? (
+          <div className={classes.searchBarTable}>
             <PangResultsTable
               PangContext={props.PangContext}
               results={results}
             />
           </div>
+          )
         : null}
     </Grid>
   )
