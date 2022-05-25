@@ -6,7 +6,7 @@ const {
   getGameObjectsByTypeName
 } = require('./game-objects')
 const { Settings } = require('./settings')
-const { Breadcrumbs } = require('./breadcrumbs')
+const { Breadcrumbs, Navigation } = require('./breadcrumbs')
 
 const config = require('../config')
 const Search = require('./search')
@@ -41,6 +41,7 @@ const BuiltinEvents = {
 class Context extends EventEmitter {
   constructor (defaultRoute, ...args) {
     super(...args)
+    this.navigateSingleItem = this.navigateSingleItem.bind(this)
     this.gameData = {}
     const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
       .filter(o => o.hydrate).map(o => o.name)
@@ -54,13 +55,6 @@ class Context extends EventEmitter {
     this.localStorage = {
       search: {}
     }
-  }
-
-  get currentNavigation () {
-    if (!this.breadcrumbs) {
-      return
-    }
-    return this.breadcrumbs.current.navigation
   }
 
   async _initStartup () {
@@ -147,6 +141,28 @@ class Context extends EventEmitter {
         yield dataObject
       }
     }
+  }
+
+  get currentNavigation () {
+    if (!this.breadcrumbs) {
+      return
+    }
+    return this.breadcrumbs.current.navigation
+  }
+
+  navigateSingleItem (dataItem) {
+    const navigation = new Navigation(
+      dataItem.type.name,
+      dataItem.id,
+      dataItem.name,
+      dataItem.icon
+    )
+    if (!this.breadcrumbs) {
+      this.breadcrumbs = new Breadcrumbs(navigation)
+    } else {
+      this.breadcrumbs.navigateTo(navigation)
+    }
+    this.emit(BuiltinEvents.NAVIGATE_SINGLE_ITEM)
   }
 
   get Classes () {

@@ -21,8 +21,14 @@ import React, { useEffect, useState } from 'react'
 import BaseComponent from './base-component'
 import {
   PangDataGrid,
+  PangDataText,
+  PangDataViewIcon,
   PangContentBackdrop,
   PangNavigationAccordionItem,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
+  PangDataViewPaperGroup,
+  PangDataViewPaperItem,
   ITEM_RARITY_COLORS
 } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
@@ -63,7 +69,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={inner}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleItem(params.data)}
     />
   )
 }
@@ -77,39 +83,39 @@ export const iconCellRenderer = classes => params => {
   )
 }
 
+const getClassById = (classId, PangContext) => {
+  if (!classId) {
+    return 'Any'
+  }
+  return PangContext.Classes
+    .get(classId)
+    .get('name').en // TODO: localize
+}
+
 const ItemsPangDataGrid = props => {
   const classes = useStyles(props)
-
-  const getClassById = classId => {
-    if (!classId) {
-      return 'Any'
-    }
-    return props.PangContext.Classes
-      .get(classId)
-      .get('name').en // TODO: localize
-  }
-
   const createRowFromGameObject = go => ({
+    id: go.id,
+    type: go.type,
+    icon: go.icon,
+    name: go.get('name').en, // TODO: localize
+    description: go.get('description').en, // TODO: localize
     additionalSkillDamage: go.get('additionalSkillDamage'),
     attackRange: go.get('attackRange'),
     attackSpeed: go.get('attackSpeed'),
     buyPrice: go.get('buyPrice'),
     category: go.get('category'),
-    class: getClassById(go.get('class')),
+    class: getClassById(go.get('class'), props.PangContext),
     consumable: go.get('consumable'),
     deletable: go.get('deletable'),
-    description: go.get('description').en, // TODO: localize
     durationRealTime: go.get('durationRealTime'),
     element: go.get('element'),
     guildContribution: go.get('guildContribution'),
-    icon: go.icon,
-    id: go.id,
     lv: go.get('level'),
     maxAttack: go.get('maxAttack'),
     minAttack: go.get('minAttack'),
     maxDefense: go.get('maxDefense'),
     minDefense: go.get('minDefense'),
-    name: go.get('name').en, // TODO: localize
     premium: go.get('premium'),
     rarity: go.get('rarity'),
     resourceId: go.get('id'),
@@ -145,10 +151,6 @@ const ItemsPangDataGrid = props => {
       return ''
     }
     return params.value
-  }
-
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
   }
 
   const rarityCellRenderer = params => {
@@ -190,7 +192,7 @@ const ItemsPangDataGrid = props => {
       resizable: true,
       filter: true,
       hide: false,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleItem)
     },
     {
       field: 'lv',
@@ -420,10 +422,34 @@ Items.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-Items.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW ITEMS</div>
-  }
+Items.SingleView = props => {
+  const item = props.PangContext.Items.get(props.Key)
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={item.id} />}
+          Name={<PangDataText text={item.get('name').en} />}
+          Type={<PangDataText text={item.type.name} />}
+          Level={<PangDataText text={item.get('level')} />}
+          Rarity={<PangDataText text={item.get('rarity')} />}
+          Class={<PangDataText text={getClassById(item.get('class'), props.PangContext)} />}
+          {...props}
+        />
+      )}
+      Icon={<PangDataViewIcon src={item.icon} {...props} />}
+      {...props}
+    >
+      <PangDataViewPaperGroup {...props}>
+        <PangDataViewPaperItem size={12} {...props}>
+          TODO remaining item details
+        </PangDataViewPaperItem>
+        <PangDataViewPaperItem size={12} {...props}>
+          TODO list dropped by
+        </PangDataViewPaperItem>
+      </PangDataViewPaperGroup>
+    </DataViewerContentContainer>
+  )
 }
 
 Items.ROUTE = 'Items'

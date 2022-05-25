@@ -1,23 +1,31 @@
+const utils = require('./utils')
+
 class Navigation {
-  constructor (route, key = '', name = '') {
+  constructor (route, key = '', name = '', icon = '') {
     this.route = route
     this.key = key
     this.name = name || route
+    this.icon = icon
   }
 
-  get id () { return `${this.route}:${this.key}` }
+  get id () { return `${this.route}:${this.key}:${this.name}` }
   toString () { return this.name }
   get serialized () { return this.toJSON() }
+  get Route () { return utils.capitalize(this.route) }
+  equals (navigation) {
+    return JSON.stringify(navigation.toJSON()) === JSON.stringify(this.toJSON())
+  }
 
   toJSON () {
     return {
       route: this.route,
       key: this.key,
-      name: this.name
+      name: this.name,
+      icon: this.icon
     }
   }
 
-  static fromJSON (j) { return new Navigation(j.route, j.key, j.name) }
+  static fromJSON (j) { return new Navigation(j.route, j.key, j.name, j.icon) }
 }
 
 class Crumb {
@@ -28,6 +36,7 @@ class Crumb {
   }
 
   get id () { return this.navigation.id }
+  equals (crumb) { return this.navigation.equals(crumb.navigation) }
 }
 
 class Breadcrumbs {
@@ -36,7 +45,7 @@ class Breadcrumbs {
     this.current = this.head
   }
 
-  isCurrent (crumb) { return crumb.id === this.current.id }
+  isCurrent (crumb) { return crumb.equals(this.current) }
 
   * iter () {
     let node = this.head
@@ -47,7 +56,11 @@ class Breadcrumbs {
   }
 
   navigateTo (navigation) {
-    this.current.next = new Crumb(navigation, this.current)
+    const crumb = new Crumb(navigation, this.current)
+    if (this.current.equals(crumb)) {
+      return
+    }
+    this.current.next = crumb
     this.current = this.current.next
   }
 
@@ -83,5 +96,6 @@ class Breadcrumbs {
 }
 
 module.exports = {
-  Breadcrumbs
+  Breadcrumbs,
+  Navigation
 }

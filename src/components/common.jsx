@@ -15,7 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import clsx from 'clsx'
 import { SvgIcon } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -263,7 +269,6 @@ const useStyles = makeStyles(theme => ({
     height: '100%'
   },
   dataViewContentGenericContainerGrid: {
-    height: '200px',
     marginBottom: 0
   },
   dataViewContentUniqueContainerGrid: {
@@ -286,7 +291,7 @@ const useStyles = makeStyles(theme => ({
     height: '100%'
   },
   dataViewContentIcon: {
-    maxHeight: '175px'
+    maxWidth: '-webkit-fill-available'
   },
   dataViewContentIconCenter: {
     textAlign: 'center'
@@ -503,6 +508,7 @@ export const PangDataViewDrawer = props => {
 
   props.PangContext.on(BuiltinEvents.NAVIGATE_SINGLE_ITEM, () => {
     setOpen(true)
+    props.PangContext.askRerender()
   })
 
   return (
@@ -662,7 +668,31 @@ export const DataViewerContentContainer = props => {
         spacing={1}
         className={classes.dataViewContentGenericContainerGrid}
       >
-        <Grid item xs={5} className={classes.dataViewContentGenericGrid}>
+        <Grid item xs={12}>
+          <Paper className={classes.dataViewContentIconSection}>
+            <Grid
+              container
+              className={classes.dataViewContentIconGridContainer}
+            >
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  direction='row'
+                  alignItems='center'
+                  justifyContent='center'
+                  className={classes.dataViewContentIconWrapper}
+                >
+                  <Grid item xs={12} className={classes.dataViewContentIcon}>
+                    <div className={classes.dataViewContentIconCenter}>
+                      {props.Icon}
+                    </div>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} className={classes.dataViewContentGenericGrid}>
           <Paper className={classes.dataViewContentGenericSection}>
             <Grid
               container
@@ -671,10 +701,10 @@ export const DataViewerContentContainer = props => {
               <Grid item xs={4}>
                 <Grid
                   container
-                  spacing={2}
+                  spacing={1}
                   direction='column'
                   alignItems='flex-start'
-                  justifyContent='flex-start'
+                  justifyContent='space-between'
                 >
                   <Grid item xs={12}>
                     <PangDataText bolder text='ID' />
@@ -702,42 +732,8 @@ export const DataViewerContentContainer = props => {
             </Grid>
           </Paper>
         </Grid>
-        <Grid item xs={7}>
-          <Paper className={classes.dataViewContentIconSection}>
-            <Grid
-              container
-              className={classes.dataViewContentIconGridContainer}
-            >
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  direction='row'
-                  alignItems='center'
-                  justifyContent='center'
-                  className={classes.dataViewContentIconWrapper}
-                >
-                  <Grid item xs={12} className={classes.dataViewContentIcon}>
-                    <div className={classes.dataViewContentIconCenter}>
-                      {props.Icon}
-                    </div>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
       </Grid>
-      <Grid
-        container
-        spacing={1}
-        className={classes.dataViewContentUniqueContainerGrid}
-      >
-        <Grid item xs={12}>
-          <Paper className={classes.dataViewContentUniqueSection}>
-            {props.children}
-          </Paper>
-        </Grid>
-      </Grid>
+      {props.children}
     </div>
   )
 }
@@ -745,16 +741,16 @@ export const DataViewerContentContainer = props => {
 export const DataViewerGenericComponent = props => (
   <Grid
     container
-    spacing={2}
+    spacing={1}
     direction='column'
-    justifyContent='flex-start'
+    justifyContent='space-between'
   >
-    <Grid item xs={12}>{props.Id}</Grid>
-    <Grid item xs={12}>{props.Name}</Grid>
-    <Grid item xs={12}>{props.Type}</Grid>
-    <Grid item xs={12}>{props.Level}</Grid>
-    <Grid item xs={12}>{props.Rarity}</Grid>
-    <Grid item xs={12}>{props.Class}</Grid>
+    <Grid item xs={12}>{props.Id || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>{props.Name || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>{props.Type || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>{props.Level || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>{props.Rarity || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>{props.Class || <PangDataText text='-' />}</Grid>
   </Grid>
 )
 
@@ -829,4 +825,28 @@ export const PangLevelChip = props => {
 export const PangDataViewIcon = props => {
   const classes = useStyles(props)
   return <img src={props.src} className={classes.dataViewContentIcon} />
+}
+
+export const PangDataViewPaperGroup = props => {
+  const classes = useStyles(props)
+  return (
+    <Grid
+      container
+      spacing={1}
+      className={classes.dataViewContentUniqueContainerGrid}
+    >
+      {props.children}
+    </Grid>
+  )
+}
+
+export const PangDataViewPaperItem = props => {
+  const classes = useStyles(props)
+  return (
+    <Grid item xs={props.size}>
+      <Paper className={classes.dataViewContentUniqueSection}>
+        {props.children}
+      </Paper>
+    </Grid>
+  )
 }

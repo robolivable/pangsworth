@@ -33,11 +33,14 @@ const prettyPrintSeconds = seconds => {
   return `${tHours.padStart(2, '0')}:${tMinutes.padStart(2, '0')}:${tSeconds.padStart(2, '0')}`
 }
 
+const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1)
+
 module.exports = {
   stripArrayDuplicates,
   isObject,
   isArrayOfObjects,
   batch,
   rollDice,
-  prettyPrintSeconds
+  prettyPrintSeconds,
+  capitalize
 }

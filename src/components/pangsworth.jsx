@@ -27,9 +27,10 @@ import BaseComponent from './base-component'
 import Routes, { SubRoutes } from './index'
 import {
   PangIcon,
-  PangDataText,
   PangRouteDrawer,
   PangDataViewDrawer,
+  PangDataViewPaperGroup,
+  PangDataViewPaperItem,
   DataViewerContentContainer,
   DataViewerGenericComponent,
   getDarkTheme,
@@ -87,12 +88,30 @@ const DataViewerBreadcrumbs = styled('div')(({ theme }) => ({
   overflowY: 'clip',
   backdropFilter: 'blur(5px)',
   position: 'fixed',
-  width: 'fit-content'
+  width: 'inherit'
 }))
 
 const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
-  color: colorForTheme(props, 80)
+  color: colorForTheme(props, 80),
+  fontSize: '0.9rem',
 }))
+
+const useStylesLinks = makeStyles(themes => ({
+  root: {
+    color: props => colorForTheme(props, 80),
+    fontSize: '0.9rem'
+  },
+  colorTextPrimary: {
+    color: props => colorForTheme(props, 100)
+  }
+}))
+
+const PangLink = props => {
+  const classes = useStylesLinks(props)
+  return (
+    <Link TypographyClasses={classes} {...props}>{props.children}</Link>
+  )
+}
 
 const MainContentWrapper = styled('main')(({ theme }) => ({
   paddingTop: theme.spacing(6),
@@ -109,6 +128,7 @@ const DataViewerContentWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   padding: theme.spacing(3),
+  paddingTop: theme.spacing(8),
   position: 'fixed',
   width: '-webkit-fill-available',
   height: '-webkit-fill-available',
@@ -118,40 +138,38 @@ const DataViewerContentWrapper = styled('div')(({ theme }) => ({
 
 const useStyles = makeStyles(theme => ({
   pangsworthIcon: {
-    width: 170,
+    width: 270,
     height: 170,
-    top: 33,
-    left: 188,
-    position: 'absolute',
-    color: props => colorForTheme(props, 50)
+    color: props => colorForTheme(props, 15)
   }
+}))
+
+const CrumbIcon = styled('img')(({ theme }) => ({
+  marginRight: theme.spacing(0.5),
+  width: 20,
+  height: 20,
+  marginBottom: -4
 }))
 
 const DataViewerEmptyView = props => {
   const classes = useStyles(props)
   return (
     <DataViewerContentContainer
-      Generic={(
-        <DataViewerGenericComponent
-          Id={(<PangDataText text='0' />)}
-          Name={<PangDataText text='Pangsworth' />}
-          Type={<PangDataText text='Mascot' />}
-          Level={<PangDataText text='120' />}
-          Rarity={<PangDataText text='Unique' />}
-          Class={<PangDataText text='Civilian' />}
-          {...props}
-        />
-      )}
+      Generic={<DataViewerGenericComponent {...props} />}
       Icon={(
         <PangIcon
           component={PlaceholderIcon}
           className={classes.pangsworthIcon}
-          viewBox='0 0 975 975'
+          viewBox='-100 0 975 975'
         />
       )}
       {...props}
     >
-      Test children
+      <PangDataViewPaperGroup {...props}>
+        <PangDataViewPaperItem size={12} {...props}>
+          Click on a row to view details
+        </PangDataViewPaperItem>
+      </PangDataViewPaperGroup>
     </DataViewerContentContainer>
   )
 }
@@ -253,30 +271,36 @@ export default class Pangsworth extends BaseComponent {
               PangContext={this.PangContext}
               maxItems={BREADCRUMBS_MAX_ITEMS}
               aria-label='breadcrumb'
+              separator='›'
             >
-              <Typography color='inherit'> {'>'} </Typography>
               {Array.from(this.PangContext.breadcrumbs?.iter() || []).map(
-                crumb => (
-                  <Link
+                crumb => crumb ? (
+                  <PangLink
+                    PangContext={this.PangContext}
                     key={crumb.navigation.id}
                     crumb={crumb}
                     color={this.PangContext.breadcrumbs.isCurrent(crumb)
                       ? 'textPrimary'
                       : 'inherit'}
-                    onClick={this.PangContext.breadcrumbs.jumpTo(crumb)}
+                    onClick={() => {
+                      this.PangContext.breadcrumbs.jumpTo(crumb)
+                      this.PangContext.askRerender()
+                    }}
+                    href='#'
                   >
+                    <CrumbIcon src={crumb.navigation.icon} />
                     {crumb.navigation.name}
-                  </Link>
-                )
+                  </PangLink>
+                ) : null
               )}
             </PangBreadcrumbs>
           </DataViewerBreadcrumbs>
           <DataViewerContentWrapper>
-            {this.PangContext.currentNavitation
+            {this.PangContext.currentNavigation
               ? (
                   React.createElement(
                     getRoutedPangponent(
-                      this.PangContext.currentNavigation.route
+                      this.PangContext.currentNavigation.Route
                     ).SingleView,
                     {
                       PangContext: this.PangContext,
