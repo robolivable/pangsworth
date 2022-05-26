@@ -698,7 +698,7 @@ export const DataViewerContentContainer = props => {
               container
               spacing={1}
             >
-              <Grid item xs={4}>
+              <Grid item xs={4} style={{ paddingLeft: 8 }}>
                 <Grid
                   container
                   spacing={1}

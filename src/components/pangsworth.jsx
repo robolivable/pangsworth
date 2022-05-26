@@ -22,6 +22,11 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
 import PlaceholderIcon from '../../static/images/placeholder.svg'
+import Button from '@material-ui/core/Button'
+import ButtonGroup from '@material-ui/core/ButtonGroup'
+import Popper from '@material-ui/core/Popper'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
 import BaseComponent from './base-component'
 import Routes, { SubRoutes } from './index'
@@ -35,6 +40,7 @@ import {
   DataViewerGenericComponent,
   getDarkTheme,
   colorForTheme,
+  bgColorForTheme,
   toggleAGTableDarkMode
 } from './common'
 
@@ -49,8 +55,6 @@ const AllRoutes = Object.assign(
     (prev, curr) => Object.assign(prev, curr), {}
   )
 )
-
-const BREADCRUMBS_MAX_ITEMS = 5
 
 const RootDiv = styled('div')(props => ({
   display: 'flex',
@@ -82,18 +86,20 @@ const MainBreadcrumbs = styled('div')(({ theme }) => ({
 
 const DataViewerBreadcrumbs = styled('div')(({ theme }) => ({
   display: 'flex',
-  margin: theme.spacing(1),
+  margin: theme.spacing(2),
+  marginLeft: theme.spacing(3),
+  marginRight: theme.spacing(3),
   zIndex: '999',
   overflowX: 'auto',
   overflowY: 'clip',
-  backdropFilter: 'blur(5px)',
+  backdropFilter: 'blur(10px)',
   position: 'fixed',
   width: 'inherit'
 }))
 
 const PangBreadcrumbs = styled(Breadcrumbs)(props => ({
   color: colorForTheme(props, 80),
-  fontSize: '0.9rem',
+  fontSize: '0.9rem'
 }))
 
 const useStylesLinks = makeStyles(themes => ({
@@ -102,7 +108,8 @@ const useStylesLinks = makeStyles(themes => ({
     fontSize: '0.9rem'
   },
   colorTextPrimary: {
-    color: props => colorForTheme(props, 100)
+    color: props => colorForTheme(props, 100),
+    fontWeight: 'bold'
   }
 }))
 
@@ -110,6 +117,159 @@ const PangLink = props => {
   const classes = useStylesLinks(props)
   return (
     <Link TypographyClasses={classes} {...props}>{props.children}</Link>
+  )
+}
+
+const useStylesBreadcrumbs = makeStyles(themes => ({
+  breadcrumbButtons: {
+    flexGrow: 1,
+    display: 'flex',
+    width: '-webkit-fill-available'
+  },
+  popper: {
+    zIndex: 9999,
+    width: 350,
+    maxHeight: 545,
+    backdropFilter: 'blur(50px)',
+    overflowY: 'auto',
+    border: '1px solid',
+    borderColor: props => colorForTheme(props, 50),
+    padding: 4
+  }
+}))
+
+const PangPopperContent = styled('div')(({ theme }) => ({
+}))
+
+const useStyleButtonSide = makeStyles(themes => ({
+  root: {
+    flexShrink: 1,
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    borderColor: props => colorForTheme(props, 50),
+    '&:disabled': {
+      color: props => colorForTheme(props, 20),
+      backgroundColor: props => bgColorForTheme(props, 50),
+      borderColor: props => colorForTheme(props, 10)
+    }
+  }
+}))
+
+const useStyleButtonMain = makeStyles(themes => ({
+  root: {
+    flexGrow: 1,
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    borderColor: props => colorForTheme(props, 50),
+    '&:disabled': {
+      color: props => colorForTheme(props, 20),
+      backgroundColor: props => bgColorForTheme(props, 50),
+      borderColor: props => colorForTheme(props, 10)
+    },
+    borderRightColor: 'unset !important'
+  },
+  label: {
+    fontSize: '1.5vw',
+    whiteSpace: 'nowrap',
+    contain: 'content'
+  }
+}))
+
+const PangBreadcrumbButtons = props => {
+  const classes = useStylesBreadcrumbs(props)
+  const classesButtonSide = useStyleButtonSide(props)
+  const classesButtonMain = useStyleButtonMain(props)
+  const [anchorEl, setAnchorEl] = React.useState(null)
+
+  const handleClick = e => {
+    setAnchorEl(anchorEl ? null : e.currentTarget)
+  }
+
+  const open = !!anchorEl
+  const id = open ? 'simple-popper' : null
+
+  const iconSrc = props.PangContext.currentNavigation?.icon
+  const name = props.PangContext.currentNavigation?.name
+  return (
+    <ButtonGroup className={classes.breadcrumbButtons} {...props}>
+      <Button
+        classes={classesButtonSide}
+        disabled={!props.PangContext.breadcrumbs?.current.prev}
+        onClick={() => {
+          props.PangContext.breadcrumbs.jumpTo(
+            props.PangContext.breadcrumbs.current.prev
+          )
+          props.PangContext.askRerender()
+        }}
+        {...props}
+      >
+        <ChevronLeftIcon className={classes.breadbrumbButtons} {...props} />
+      </Button>
+      <Button
+        aria-describedby={id}
+        classes={classesButtonMain}
+        disabled={!props.PangContext.breadcrumbs?.current}
+        onClick={handleClick}
+        startIcon={ iconSrc ? <CrumbIcon src={iconSrc} /> : null }
+        {...props}
+      >
+        {name || '-'}
+      </Button>
+      <Popper
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        className={classes.popper}
+        {...props}
+      >
+        <PangBreadcrumbs
+          PangContext={props.PangContext}
+          aria-label='breadcrumb'
+          separator='›'
+          maxItems={Infinity}
+        >
+          {Array.from(props.PangContext.breadcrumbs?.iter() || []).map(
+            crumb => crumb
+              ? (
+                  <PangLink
+                    PangContext={props.PangContext}
+                    key={crumb.navigation.id}
+                    crumb={crumb}
+                    color={props.PangContext.breadcrumbs.isCurrent(crumb)
+                      ? 'textPrimary'
+                      : 'inherit'}
+                    onClick={() => {
+                      props.PangContext.breadcrumbs.jumpTo(crumb)
+                      props.PangContext.askRerender()
+                      handleClick()
+                    }}
+                    href='#'
+                  >
+                    <CrumbIcon
+                      src={crumb.navigation.icon}
+                      style={{ marginBottom: -4 }}
+                    />
+                    {crumb.navigation.name}
+                  </PangLink>
+                )
+              : null
+          )}
+        </PangBreadcrumbs>
+      </Popper>
+      <Button
+        classes={classesButtonSide}
+        disabled={!props.PangContext.breadcrumbs?.current.next}
+        onClick={() => {
+          props.PangContext.breadcrumbs.jumpTo(
+            props.PangContext.breadcrumbs.current.next
+          )
+          props.PangContext.askRerender()
+        }}
+        {...props}
+      >
+        <ChevronRightIcon className={classes.breadbrumbButtons} {...props}/>
+      </Button>
+    </ButtonGroup>
   )
 }
 
@@ -147,8 +307,7 @@ const useStyles = makeStyles(theme => ({
 const CrumbIcon = styled('img')(({ theme }) => ({
   marginRight: theme.spacing(0.5),
   width: 20,
-  height: 20,
-  marginBottom: -4
+  height: 20
 }))
 
 const DataViewerEmptyView = props => {
@@ -267,33 +426,7 @@ export default class Pangsworth extends BaseComponent {
           onDrawerStateToggle={this.handleDataViewerDrawerStateToggle}
         >
           <DataViewerBreadcrumbs>
-            <PangBreadcrumbs
-              PangContext={this.PangContext}
-              maxItems={BREADCRUMBS_MAX_ITEMS}
-              aria-label='breadcrumb'
-              separator='›'
-            >
-              {Array.from(this.PangContext.breadcrumbs?.iter() || []).map(
-                crumb => crumb ? (
-                  <PangLink
-                    PangContext={this.PangContext}
-                    key={crumb.navigation.id}
-                    crumb={crumb}
-                    color={this.PangContext.breadcrumbs.isCurrent(crumb)
-                      ? 'textPrimary'
-                      : 'inherit'}
-                    onClick={() => {
-                      this.PangContext.breadcrumbs.jumpTo(crumb)
-                      this.PangContext.askRerender()
-                    }}
-                    href='#'
-                  >
-                    <CrumbIcon src={crumb.navigation.icon} />
-                    {crumb.navigation.name}
-                  </PangLink>
-                ) : null
-              )}
-            </PangBreadcrumbs>
+            <PangBreadcrumbButtons PangContext={this.PangContext} />
           </DataViewerBreadcrumbs>
           <DataViewerContentWrapper>
             {this.PangContext.currentNavigation
