@@ -131,7 +131,7 @@ const SkillsPangDataGrid = props => {
     target: go.get('target'),
     combo: go.get('combo'),
     debuff: go.get('debuff'),
-    description: go.get('description'),
+    description: go.get('description').en, // TODO: localize
     element: go.get('element'),
     flying: go.get('flying'),
     magic: go.get('magic'),
@@ -165,22 +165,37 @@ const SkillsPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    { field: 'id', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'icon', width: 65, minWidth: 65, maxWidth: 65, sortable: true, resizable: true, filter: true, cellRenderer: iconCellRenderer(props, classes), hide: false },
-    { field: 'name', width: 135, minWidth: 135, sortable: true, resizable: true, filter: true, cellRenderer: nameCellRenderer(navigateSingleItem), hide: false },
-    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55, sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'class', width: 75, sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'skillPoints', sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'target', sortable: true, resizable: true, filter: true, hide: false },
-    { field: 'passive', sortable: true, resizable: true, filter: true, hide: false },
-
-    { field: 'combo', sortable: true, resizable: true, filter: true },
-    { field: 'debuff', sortable: true, resizable: true, filter: true },
-    { field: 'description', sortable: true, resizable: true, filter: true, cellRenderer: descriptionCellRenderer },
-    { field: 'element', sortable: true, resizable: true, filter: true },
-    { field: 'flying', sortable: true, resizable: true, filter: true },
-    { field: 'magic', sortable: true, resizable: true, filter: true },
-    { field: 'weapon', sortable: true, resizable: true, filter: true }
+    {
+      field: 'id',
+      width: 55,
+      minWidth: 55,
+      maxWidth: 55
+    },
+    {
+      field: 'icon',
+      width: 65,
+      minWidth: 65,
+      maxWidth: 65,
+      cellRenderer: iconCellRenderer(props, classes)
+    },
+    {
+      field: 'name',
+      width: 135,
+      minWidth: 135,
+      cellRenderer: nameCellRenderer(navigateSingleItem)
+    },
+    { field: 'lv', width: 55, minWidth: 55, maxWidth: 55 },
+    { field: 'class', width: 75 },
+    { field: 'skillPoints' },
+    { field: 'target' },
+    { field: 'passive' },
+    { field: 'description', cellRenderer: descriptionCellRenderer },
+    { field: 'combo' },
+    { field: 'debuff' },
+    { field: 'element' },
+    { field: 'flying' },
+    { field: 'magic' },
+    { field: 'weapon' }
   ])
   return (
     <PangDataGrid

@@ -21,7 +21,7 @@ import 'regenerator-runtime/runtime'
 const { getGameObjectsByTypeName } = require('./clients/game-objects')
 const { Limiter, RATES, Events } = require('./clients/limiter')
 const config = require('./config')
-const utils = require('./clients/utils')
+const utils = require('./utils')
 
 const getRetryBackoffMS = retry =>
   ((config.BG_IMG_PRELOAD.backoffExp * retry) ** 2) *

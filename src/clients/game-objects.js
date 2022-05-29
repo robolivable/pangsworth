@@ -1,9 +1,11 @@
 const { GalaResource } = require('./gala')
+const { Navigation } = require('./breadcrumbs')
 
 const config = require('../config')
+const utils = require('../utils')
+const uiutils = require('../uiutils')
 const i18nUtils = require('../i18n/utils')
 const JSQueue = require('./js-queue')
-const utils = require('./utils')
 
 class Keyphrases {
   constructor (docId, docType) {
@@ -117,6 +119,7 @@ class GameObject {
   }
 
   async hydrate () { /* NO-OP: child instance implements */ }
+  connectEdgesFromContext (context) { /* NO-OP: child instance implements */ }
   toJSON () { return this.props }
 }
 
@@ -244,6 +247,21 @@ class Location extends GameChildObject {
       await this.world.fetch()
     }
     await this.fetchContinent()
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._world) {
+      const worldId = this.get('world')
+      if (worldId) {
+        this._world = context.Worlds.get(worldId)
+      }
+    }
+    if (!this._continent) {
+      const continentId = this.get('continent')
+      if (continentId) {
+        this._continent = this.world.continent(continentId, this)
+      }
+    }
   }
 }
 
@@ -456,6 +474,13 @@ class Drop extends GameChildObject {
     return this._item
   }
 
+  get probabilityRange () {
+    const prob = this.get('probabilityRange')
+    return prob.substr(1, prob.length - 2).split(';').map(
+      p => p.substr(0, p.length - 1) - 0
+    )
+  }
+
   async hydrate () {
     if (this.item && this.item.isTransparent) {
       await this.item.fetch()
@@ -487,6 +512,12 @@ class Shop extends GameChildObject {
     }
     await Promise.all(promiseList)
   }
+
+  connectEdgesFromContext (context) {
+    for (const item of this.items()) {
+      item.connectEdgesFromContext(context)
+    }
+  }
 }
 
 class World extends GameObject {
@@ -504,7 +535,11 @@ class World extends GameObject {
 
   * images () {
     for (const [x, y] of this.imageCodes()) {
-      yield config.API_RESOURCE_TYPES.world.api.image(this.props.tileName, x, y)
+      yield config.API_RESOURCE_TYPES.world.api.image(
+        this.props.tileName,
+        x,
+        y
+      )
     }
   }
 
@@ -793,6 +828,15 @@ class Class extends GameObject {
     return config.API_RESOURCE_TYPES.classes.api.image(style, this.props.icon)
   }
 
+  iconForVariant (variant) {
+    const iconStyleKey = `old${utils.capitalize(variant)}`
+    const iconStyle = config.API_RESOURCE_TYPES.classes.iconStyles[iconStyleKey]
+    return config.API_RESOURCE_TYPES.classes.api.image(
+      iconStyle,
+      this.props.icon
+    )
+  }
+
   * images () {
     const iconStyles = config.API_RESOURCE_TYPES.classes.iconStyles
     for (const style of Object.values(iconStyles)) {
@@ -850,6 +894,18 @@ class Item extends GameObject {
     super({ name }, props)
   }
 
+  static get ComplexPropNames () {
+    return [
+      'abilities',
+      'blinkwingTarget',
+      'class',
+      'location',
+      'spawns',
+      'transy',
+      'triggerSkill'
+    ]
+  }
+
   static get type () { return config.API_RESOURCE_TYPES.items }
   get type () { return Item.type }
 
@@ -863,6 +919,22 @@ class Item extends GameObject {
 
   * images () {
     yield config.API_RESOURCE_TYPES.items.api.image(this.props.icon)
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (Item.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
   }
 
   * abilities () {
@@ -980,6 +1052,47 @@ class Item extends GameObject {
     }
     await Promise.all(promiseList)
   }
+
+  connectEdgesFromContext (context) {
+    if (!this._class) {
+      const classId = this.get('class')
+      if (classId) {
+        this._class = context.Classes.get(classId)
+      }
+    }
+    if (!this._transy) {
+      const transyId = this.get('transy')
+      if (transyId) {
+        this._transy = context.Items.get(transyId)
+      }
+    }
+    if (!this._triggerSkill) {
+      const skillId = this.get('triggerSkill')
+      if (skillId) {
+        this._triggerSkill = context.Skills.get(skillId)
+      }
+    }
+    this.location?.connectEdgesFromContext(context)
+    this.blinkwingTarget?.connectEdgesFromContext(context)
+    for (const spawn of this.spawns()) {
+      spawn.connectEdgesFromContext(context)
+    }
+  }
+
+  soldByFromContext (context) {
+    return context.shopAdjacency[this.id] || []
+  }
+
+  droppedByFromContext (context) {
+    return context.lootAdjacency[this.id]?.sort((droppedByA, droppedByB) => {
+      const rA = droppedByA.probabilityRange[1]
+      const rB = droppedByB.probabilityRange[1]
+      if (rA === rB) {
+        return 0
+      }
+      return rA > rB ? 1 : -1
+    }) || []
+  }
 }
 
 class Items extends GameObjectCollection {
@@ -1090,100 +1203,6 @@ class EquipmentSets extends GameObjectCollection {
       await object.hydrate()
       this._hydrated.push(object)
       yield object
-    }
-  }
-
-  static get parameterTypes () {
-    return {
-      str: 'STR',
-      dex: 'DEX',
-      int: 'INT',
-      sta: 'STA',
-      speed: 'Speed',
-      attackspeed: 'Attack Speed',
-      attackspeedrate: 'Attack Speed Rate',
-      jumpheight: 'Jump Height',
-      bowrange: 'Bow Range',
-      def: 'DEF',
-      parry: 'Parry',
-      reflectdamage: 'Reflect Damage',
-      rangedblock: 'Ranged Block',
-      meleeblock: 'Melee Block',
-      electricitydefense: 'Electricity Defense',
-      firedefense: 'Fire Defense',
-      winddefense: 'Wind Defense',
-      waterdefense: 'Water Defense',
-      earthdefense: 'Earth Defense',
-      attack: 'Attack',
-      hitrate: 'Hit Rate',
-      magicattack: 'Magic Attack',
-      swordattack: 'Sword Attack',
-      axeattack: 'Ax Attack',
-      knuckleattack: 'Knuckle Attack',
-      yoyoattack: 'Yoyo Attack',
-      bowattack: 'Bow Attack',
-      earthmastery: 'Earth Mastery',
-      firemastery: 'Fire Mastery',
-      watermastery: 'Water Mastery',
-      electricitymastery: 'Electricity Mastery',
-      windmastery: 'Wind Mastery',
-      damage: 'Damage',
-      criticalchance: 'Critical Chance',
-      elementattack: 'Element Attack',
-      skillchance: 'Skill Chance',
-      attribute: 'Attribute',
-      maxhp: 'Max HP',
-      maxmp: 'Max MP',
-      maxfp: 'Max FP',
-      hprecovery: 'HP Recovery',
-      mprecovery: 'MP Recovery',
-      fprecovery: 'FP Recovery',
-      hprecoveryafterkill: 'HP Recovery After Kill',
-      mprecoveryafterkill: 'MP Recovery After Kill',
-      fprecoveryafterkill: 'FP Recovery After Kill',
-      decreasedmpconsumption: 'Decreased MP Consumption',
-      decreasedfpconsumption: 'Decreased FP Consumption',
-      minability: 'Min Ability',
-      maxability: 'Max Ability',
-      attributeimmunity: 'Attribute Immunity',
-      autohp: 'Auto HP',
-      decreasedcastingtime: 'Decreased Casting Time',
-      criticaldamage: 'Critical Damage',
-      skilldamage: 'Skill Damage',
-      hprestoration: 'HP Restoration',
-      criticalresist: 'Critical Resist',
-      healing: 'Healing',
-      pvpdamagereduction: 'PvP Damage Reduction',
-      magicdefense: 'Magic Defense',
-      pvpdamage: 'PvP Damage',
-      pvedamage: 'PvE Damage',
-      penya: 'Penya',
-      hp: 'HP',
-      mp: 'MP',
-      fp: 'FP',
-      allelementsdefense: 'All Elements Defense',
-      allstats: 'All Stats',
-      attackandmaxhp: 'Attack and Maximum HP',
-      defenseandhitratedecrease: 'Defense and Hit Rate Decrease',
-      cure: 'Cure',
-      movement: 'Movement',
-      allelementsmastery: 'All Elements Mastery',
-      allrecovery: 'All Recovery',
-      allrecoveryafterkill: 'All Recovery After Kill',
-      decreasedfpandmpconsumption: 'Decreased FP and MP Consumption',
-      removealldebuff: 'Remove All Debuff',
-      block: 'Block',
-      removedebuff: 'Removed Buff',
-      damageandstealhp: 'Damage and Steal HP',
-      stealhp: 'Steal HP',
-      explostdecreaseatrevival: 'Experience Lost Decrease At Revival',
-      cheerpoint: 'Cheerpoint',
-      incomingdamage: 'Incoming Damage',
-      spiritstrike: 'Spirit Strike',
-      stealfp: 'Steal FP',
-      exprate: 'Experience Rate',
-      droprate: 'Drop Rate',
-      fprecoveryautoattack: 'FP Recovery Auto Attack'
     }
   }
 }
@@ -1997,6 +2016,41 @@ const getGameObjectsByTypeName = typeName => {
   }
 }
 
+const getNavigationByDataItem = dataItem => {
+  const navigation = new Navigation(
+    dataItem.type.name,
+    dataItem.id,
+    dataItem.name,
+    dataItem.icon
+  )
+  switch (dataItem.type.name) {
+    case config.API_RESOURCE_TYPES.items.name:
+      navigation.nameColor = uiutils.getThemeForRarity(dataItem.rarity).color
+      break
+    default:
+      break
+  }
+  return navigation
+}
+
+const getNavigationByItem = item => {
+  console.log({item})
+  const navigation = new Navigation(
+    item.type.name,
+    item.id,
+    item.get('name').en, // TODO: localize
+    item.icon
+  )
+  switch (item.type.name) {
+    case config.API_RESOURCE_TYPES.items.name:
+      navigation.nameColor = uiutils.getThemeForRarity(item.rarity).color
+      break
+    default:
+      break
+  }
+  return navigation
+}
+
 module.exports = {
   GameObject,
   GameObjectCollection,
@@ -2022,5 +2076,7 @@ module.exports = {
   Karmas,
   Achievement,
   Achievements,
-  getGameObjectsByTypeName
+  getGameObjectsByTypeName,
+  getNavigationByDataItem,
+  getNavigationByItem
 }

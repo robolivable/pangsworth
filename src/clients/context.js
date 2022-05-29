@@ -2,11 +2,13 @@ const { GalaResource } = require('./gala')
 const {
   Classes,
   Items,
-  EquipmentSets,
-  getGameObjectsByTypeName
+  getGameObjectsByTypeName,
+  getNavigationByDataItem,
+  getNavigationByItem
 } = require('./game-objects')
+const GameSchemas = require('./game-schemas')
 const { Settings } = require('./settings')
-const { Breadcrumbs, Navigation } = require('./breadcrumbs')
+const { Breadcrumbs } = require('./breadcrumbs')
 
 const config = require('../config')
 const Search = require('./search')
@@ -42,6 +44,7 @@ class Context extends EventEmitter {
   constructor (defaultRoute, ...args) {
     super(...args)
     this.navigateSingleItem = this.navigateSingleItem.bind(this)
+    this.navigateSingleDataItem = this.navigateSingleDataItem.bind(this)
     this.gameData = {}
     const hydratableResourceNames = Object.values(config.API_RESOURCE_TYPES)
       .filter(o => o.hydrate).map(o => o.name)
@@ -84,6 +87,40 @@ class Context extends EventEmitter {
     // add additional checks here
   }
 
+  _generateLootAdjacencyMap () {
+    this.lootAdjacency = {}
+    for (const monster of this.Monsters.iter()) {
+      for (const drop of monster.drops()) {
+        if (!this.lootAdjacency[drop.get('item')]) {
+          this.lootAdjacency[drop.get('item')] = []
+        }
+        this.lootAdjacency[drop.get('item')].push({
+          probabilityRange: drop.probabilityRange,
+          common: drop.get('common'),
+          monster
+        })
+      }
+    }
+  }
+
+  _generateShopAdjacencyMap () {
+    this.shopAdjacency = {}
+    for (const npc of this.NPCs.iter()) {
+      for (const shop of npc.shop()) {
+        shop.connectEdgesFromContext(this)
+        for (const item of shop.items()) {
+          if (!this.shopAdjacency[item.id]) {
+            this.shopAdjacency[item.id] = []
+          }
+          this.shopAdjacency[item.id].push({
+            shopName: shop.get('name').en, // TODO: localize
+            npc
+          })
+        }
+      }
+    }
+  }
+
   async initialize () {
     if (this.initialized) {
       return
@@ -98,6 +135,8 @@ class Context extends EventEmitter {
       for (const gameObjectCollection of Object.values(this.gameData)) {
         await gameObjectCollection.fetch()
       }
+      this._generateLootAdjacencyMap()
+      this._generateShopAdjacencyMap()
       this.initialized = true
     } catch (error) {
       console.error('error initializing pang context', { error })
@@ -150,13 +189,18 @@ class Context extends EventEmitter {
     return this.breadcrumbs.current.navigation
   }
 
-  navigateSingleItem (dataItem) {
-    const navigation = new Navigation(
-      dataItem.type.name,
-      dataItem.id,
-      dataItem.name,
-      dataItem.icon
-    )
+  navigateSingleDataItem (dataItem) {
+    const navigation = getNavigationByDataItem(dataItem)
+    if (!this.breadcrumbs) {
+      this.breadcrumbs = new Breadcrumbs(navigation)
+    } else {
+      this.breadcrumbs.navigateTo(navigation)
+    }
+    this.emit(BuiltinEvents.NAVIGATE_SINGLE_ITEM)
+  }
+
+  navigateSingleItem (item) {
+    const navigation = getNavigationByItem(item)
     if (!this.breadcrumbs) {
       this.breadcrumbs = new Breadcrumbs(navigation)
     } else {
@@ -189,7 +233,7 @@ class Context extends EventEmitter {
     return this.gameData[config.API_RESOURCE_TYPES.equipmentSets.name]
   }
 
-  get EquipmentSetParameterTypes () { return EquipmentSets.parameterTypes }
+  get GameSchemas () { return GameSchemas }
 
   get Skills () {
     return this.gameData[config.API_RESOURCE_TYPES.skills.name]

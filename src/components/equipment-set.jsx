@@ -23,7 +23,6 @@ import {
   PangDataGrid,
   PangContentBackdrop,
   PangNavigationAccordionItem,
-  ITEM_RARITY_COLORS,
   getDarkTheme,
   DARK_CONTRAST_BG_COLOR,
   LIGHT_CONTRAST_BG_COLOR
@@ -38,6 +37,7 @@ import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import * as config from '../config'
+import * as uiutils from '../uiutils'
 
 const useStyles = makeStyles(theme => ({
   setPartsWrapper: {
@@ -188,7 +188,7 @@ const EquipmentSetPangDataGrid = props => {
   }
 
   const nameCellRenderer = params => {
-    const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
+    const nameColor = uiutils.getThemeForRarity(params.data.rarity).color
     if (!nameColor) {
       return params.value
     }
@@ -283,7 +283,7 @@ const EquipmentSetPangDataGrid = props => {
 
     const bonusParameterText = ability => {
       const parameter =
-        props.PangContext.EquipmentSetParameterTypes[ability.parameter]
+        props.PangContext.GameSchemas.AbilityParameterTypesMap[ability.parameter]
       if (ability.add) {
         return `${parameter} +${ability.add}${ability.rate ? '%' : ''}`
       }

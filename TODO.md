@@ -158,7 +158,6 @@
     - Streaming pipeline for exporting data within tabs, a framework would make it possible for any tab to export data relevant to its view
   - Copying to system clipboard
     - Copy in-game paste-able link to clipboard
-- Graph to plot mob experience gained per level (on a monster view)
 - Asset "size on disk" stats (how much API data stored, cache stats, etc.)
 - App cache refresh button
 - UI/UX Polish/Improvements
@@ -177,6 +176,9 @@
     - Pretty formatted numbers (comma separation for multiples of 1k)
     - Prettier loading overlay
   - Full Accessibility features (keyboard-only usage)
+- Game Data tools
+  - Graph to plot mob experience gained per level (on a monster view)
+  - Items upgrade calculator (for piercing and power dice enhancing)
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate

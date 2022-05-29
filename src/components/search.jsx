@@ -29,7 +29,7 @@ import {
 import SearchIcon from '../../static/images/magnifying-glass.svg'
 import PangsworthLogoIcon from '../../static/images/pangsworth-logo.svg'
 import * as config from '../config'
-import * as utils from '../clients/utils'
+import * as utils from '../utils'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/core/styles'
@@ -156,8 +156,9 @@ const useStylesSearchBar = props => makeStyles(theme => ({
   root: {
     border: `1px solid ${colorForTheme(props, 50)}`,
     overflow: 'hidden',
-    borderRadius: 4,
     backgroundColor: 'rgba(0 0 0 / 0%)',
+    marginRight: -1,
+    marginBottom: -1,
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     '&:hover': {
       backgroundColor: 'rgba(0 0 0 / 0%)'

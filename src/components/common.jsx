@@ -36,10 +36,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Tooltip from '@material-ui/core/Tooltip'
 import Collapse from '@material-ui/core/Collapse'
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import Fab from '@material-ui/core/Fab'
 import * as config from '../config'
+import * as uiutils from '../uiutils'
 import { BuiltinEvents } from '../clients/context'
 import { localize } from '../i18n'
 import PlaceholderIcon from '../../static/images/placeholder.svg'
@@ -47,6 +48,9 @@ import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
+import Accordion from '@material-ui/core/Accordion'
+import AccordionSummary from '@material-ui/core/AccordionSummary'
+import AccordionDetails from '@material-ui/core/AccordionDetails'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -91,14 +95,6 @@ export const bgColorForTheme = (props, opacity = 100) => {
     theme = DARK_CONTRAST_BG_COLOR
   }
   return `rgba(${theme} / ${opacity}%)`
-}
-
-export const ITEM_RARITY_COLORS = {
-  common: { display: 'Common', color: 'rgba(34 113 177 / 100%)' },
-  rare: { display: 'Rare', color: 'rgba(0 170 0 / 100%)' },
-  uncommon: { display: 'Uncommon', color: 'rgba(128 64 0 / 100%)' },
-  unique: { display: 'Unique', color: 'rgba(210 0 0 / 100%)' },
-  veryrare: { display: 'Very Rare', color: 'rgba(210 0 0 / 100%)' }
 }
 
 export const TABLE_FOREGROUND_COLOR_PROP_NAME = '--table-theme-foreground-color'
@@ -303,11 +299,25 @@ const useStyles = makeStyles(theme => ({
     height: '100%'
   },
   dataViewContentUniqueSection: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(1.5),
     textAlign: 'center',
     color: props => colorForTheme(props, 80),
     backgroundColor: props => bgColorForTheme(props, 80),
     height: '100%'
+  },
+  dataViewAccordionContentSection: {
+    paddingRight: theme.spacing(1.5),
+    paddingLeft: theme.spacing(1.5),
+    textAlign: 'center',
+    color: props => colorForTheme(props, 80),
+    backgroundColor: props => bgColorForTheme(props, 80),
+    height: '100%'
+  },
+  dataViewAccordionDetails: {
+    padding: 'unset',
+  },
+  dataViewAccordionExpandIcon: {
+    color: props => colorForTheme(props, 80)
   }
 }))
 
@@ -446,8 +456,8 @@ export const PangNavigationAccordion = props => {
             <ListItemText primary={props.name} />
             {
               state.openAccordion
-                ? <ExpandLess onClick={handleChevronClick} />
-                : <ExpandMore onClick={handleChevronClick} />
+                ? <ExpandLessIcon onClick={handleChevronClick} />
+                : <ExpandMoreIcon onClick={handleChevronClick} />
             }
           </ListItem>
         </div>
@@ -569,8 +579,12 @@ export const PangDataGrid = props => {
 
   const gridRef = useRef()
   const onGridReady = useCallback(() => {
-    gridRef.current.api.sizeColumnsToFit()
-    gridRef.current.columnApi.autoSizeAllColumns()
+    if (!props.noSizeToFit) {
+      gridRef.current.api.sizeColumnsToFit()
+    }
+    if (!props.noAutoSizeAll) {
+      gridRef.current.columnApi.autoSizeAllColumns()
+    }
     if (typeof onGridReadyTrigger === 'function') {
       onGridReadyTrigger()
     }
@@ -592,10 +606,12 @@ export const PangDataGrid = props => {
 
   const defaultColDef = useMemo(() => ({
     flex: 1,
-    minWidth: 40,
+    minWidth: 100,
     width: 100,
-    hide: true,
-    resizable: true
+    filter: true,
+    hide: false,
+    resizable: true,
+    sortable: true
   }), [])
 
   return (
@@ -763,10 +779,45 @@ export const PangDataText = props => {
   if (props.bolder) {
     styleProps.fontWeight = 'bolder'
   }
+  if (props.littleBigger) {
+    styleProps.fontSize = '0.875rem'
+  }
+  if (props.bigger) {
+    styleProps.fontSize = '1.175rem'
+  }
+  if (props.smaller) {
+    styleProps.fontSize = '0.625rem'
+  }
+  switch (props.color) {
+    case 'green':
+    case 'rare':
+    case 'Rare':
+      styleProps.color = uiutils.THEME_GREEN
+      break
+    case 'blue':
+    case 'common':
+    case 'Common':
+      styleProps.color = uiutils.THEME_BLUE
+      break
+    case 'red':
+    case 'unique':
+    case 'Unique':
+    case 'veryrare':
+    case 'Very Rare':
+      styleProps.color = uiutils.THEME_RED
+      break
+    case 'brown':
+    case 'uncommon':
+    case 'Uncommon':
+      styleProps.color = uiutils.THEME_BROWN
+      break
+  }
   const style = overrideStyle(styleProps)()
   return (
     <Typography
       classes={{ root: style.root }}
+      variant={props.variant}
+      style={props.innerTypographyStyle}
     >
       {props.text}
     </Typography>
@@ -775,24 +826,39 @@ export const PangDataText = props => {
 
 export const PangNameChip = props => {
   const name = props.name || '[no name]'
-  const styleProps = {
-    fontSize: '0.675rem'
-  }
-  if (props.rarity) {
-    styleProps.color = ITEM_RARITY_COLORS[props.rarity].color
-  }
-  const style = overrideStyle(styleProps)()
   const innerLabel = (
-    <Typography
-      classes={{ root: style.root }}
+    <PangDataText
+      bigger={props.bigger}
+      littleBigger={props.littleBigger}
+      smaller={props.smaller}
+      bolder={props.bolder}
+      text={name}
+      color={props.rarity}
+      innerTypographyStyle={props.innerTextStyle}
       variant='subtitle2'
-    >
-      {name}
-    </Typography>
+    />
   )
+  const styleRoot = {}
+  const styleIcon = {}
+  const styleIconSmall = {}
+  if (props.smaller) {
+    styleRoot.height = 20
+    styleIconSmall.width = 10
+  }
+  if (props.bigger) {
+    styleIcon.width = 24
+  }
+  const style = makeStyles({
+    root: styleRoot,
+    icon: styleIcon,
+    iconSmall: styleIconSmall,
+    deleteIcon: styleIconSmall,
+    deleteIconSmall: styleIconSmall
+  })()
   return (
     <Chip
-      size='small'
+      classes={style}
+      size={props.bigger ? null : 'small'}
       label={innerLabel}
       icon={props.leftIcon}
       onDelete={props.rightIcon ? () => {} : null}
@@ -844,9 +910,44 @@ export const PangDataViewPaperItem = props => {
   const classes = useStyles(props)
   return (
     <Grid item xs={props.size}>
-      <Paper className={classes.dataViewContentUniqueSection}>
+      <Paper
+        className={classes.dataViewContentUniqueSection}
+        style={props.innerStyle}
+      >
         {props.children}
       </Paper>
+    </Grid>
+  )
+}
+
+export const PangDataViewAccordionItem = props => {
+  const classes = useStyles(props)
+  if (!props.children) {
+    return null
+  }
+  if (Array.isArray(props.children) && !props.children.filter(c => c).length) {
+    return null
+  }
+  return (
+    <Grid item xs={props.size}>
+      <Accordion className={classes.dataViewAccordionContentSection}>
+        <AccordionSummary
+          expandIcon={(
+            <ExpandMoreIcon
+              className={classes.dataViewAccordionExpandIcon}/>
+          )}
+          aria-controls='panel1a-content'
+          id='panel1a-header'
+        >
+          {props.summary}
+        </AccordionSummary>
+        <AccordionDetails
+          className={classes.dataViewAccordionDetails}
+          style={props.flexColumn ? { flexDirection: 'column' } : {}}
+        >
+          {props.children}
+        </AccordionDetails>
+      </Accordion>
     </Grid>
   )
 }

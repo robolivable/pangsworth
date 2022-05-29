@@ -1,11 +1,12 @@
-const utils = require('./utils')
+const utils = require('../utils')
 
 class Navigation {
-  constructor (route, key = '', name = '', icon = '') {
+  constructor (route, key = '', name = '', icon = '', nameColor = '') {
     this.route = route
     this.key = key
     this.name = name || route
     this.icon = icon
+    this.nameColor = nameColor
   }
 
   get id () { return `${this.route}:${this.key}:${this.name}` }
@@ -21,7 +22,8 @@ class Navigation {
       route: this.route,
       key: this.key,
       name: this.name,
-      icon: this.icon
+      icon: this.icon,
+      nameColor: this.nameColor
     }
   }
 

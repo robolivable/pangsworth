@@ -120,12 +120,21 @@ const PangLink = props => {
   )
 }
 
-const useStylesBreadcrumbs = makeStyles(themes => ({
-  breadcrumbButtons: {
+const useStylesButtonGroup = makeStyles(() => ({
+  root: {
     flexGrow: 1,
     display: 'flex',
-    width: '-webkit-fill-available'
+    width: '-webkit-fill-available',
   },
+  groupedOutlinedHorizontal: {
+    '&:not(:last-child)': {
+      // HACK: only way to disable this setting is to override it
+      borderRightColor: props => colorForTheme(props, 50)
+    }
+  }
+}))
+
+const useStylesBreadcrumbs = makeStyles(themes => ({
   popper: {
     zIndex: 9999,
     width: 350,
@@ -136,9 +145,6 @@ const useStylesBreadcrumbs = makeStyles(themes => ({
     borderColor: props => colorForTheme(props, 50),
     padding: 4
   }
-}))
-
-const PangPopperContent = styled('div')(({ theme }) => ({
 }))
 
 const useStyleButtonSide = makeStyles(themes => ({
@@ -165,8 +171,7 @@ const useStyleButtonMain = makeStyles(themes => ({
       color: props => colorForTheme(props, 20),
       backgroundColor: props => bgColorForTheme(props, 50),
       borderColor: props => colorForTheme(props, 10)
-    },
-    borderRightColor: 'unset !important'
+    }
   },
   label: {
     fontSize: '1.5vw',
@@ -179,6 +184,7 @@ const PangBreadcrumbButtons = props => {
   const classes = useStylesBreadcrumbs(props)
   const classesButtonSide = useStyleButtonSide(props)
   const classesButtonMain = useStyleButtonMain(props)
+  const classesButtonGroup = useStylesButtonGroup(props)
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   const handleClick = e => {
@@ -190,8 +196,13 @@ const PangBreadcrumbButtons = props => {
 
   const iconSrc = props.PangContext.currentNavigation?.icon
   const name = props.PangContext.currentNavigation?.name
+  const nameColor = props.PangContext.currentNavigation?.nameColor
+  const style = { fontWeight: 'bold' }
+  if (nameColor) {
+    style.color = nameColor
+  }
   return (
-    <ButtonGroup className={classes.breadcrumbButtons} {...props}>
+    <ButtonGroup classes={classesButtonGroup} {...props}>
       <Button
         classes={classesButtonSide}
         disabled={!props.PangContext.breadcrumbs?.current.prev}
@@ -206,11 +217,12 @@ const PangBreadcrumbButtons = props => {
         <ChevronLeftIcon className={classes.breadbrumbButtons} {...props} />
       </Button>
       <Button
+        style={style}
         aria-describedby={id}
         classes={classesButtonMain}
         disabled={!props.PangContext.breadcrumbs?.current}
         onClick={handleClick}
-        startIcon={ iconSrc ? <CrumbIcon src={iconSrc} /> : null }
+        startIcon={iconSrc ? <CrumbIcon src={iconSrc} /> : null}
         {...props}
       >
         {name || '-'}
@@ -267,7 +279,7 @@ const PangBreadcrumbButtons = props => {
         }}
         {...props}
       >
-        <ChevronRightIcon className={classes.breadbrumbButtons} {...props}/>
+        <ChevronRightIcon className={classes.breadbrumbButtons} {...props} />
       </Button>
     </ButtonGroup>
   )
@@ -292,7 +304,7 @@ const DataViewerContentWrapper = styled('div')(({ theme }) => ({
   position: 'fixed',
   width: '-webkit-fill-available',
   height: '-webkit-fill-available',
-  overflowY: 'auto',
+  overflowY: 'overlay',
   overflowX: 'clip'
 }))
 
@@ -334,7 +346,19 @@ const DataViewerEmptyView = props => {
 }
 
 // NOTE: Settings is exported as a getter in Routes
-const getRoutedPangponent = route => AllRoutes[route] || Routes[route]
+const getRoutedPangponent = route => {
+  const directory = {}
+  for (const r in Routes) {
+    const t = (r + '').toLowerCase()
+    directory[t] = Routes[r]
+  }
+  for (const r in AllRoutes) {
+    const t = (r + '').toLowerCase()
+    directory[t] = AllRoutes[r]
+  }
+  const t = (route + '').toLowerCase()
+  return directory[t]
+}
 
 export default class Pangsworth extends BaseComponent {
   constructor (props, ...args) {

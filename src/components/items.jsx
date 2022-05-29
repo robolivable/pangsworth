@@ -23,31 +23,49 @@ import {
   PangDataGrid,
   PangDataText,
   PangDataViewIcon,
+  PangNameChip,
   PangContentBackdrop,
   PangNavigationAccordionItem,
   DataViewerContentContainer,
   DataViewerGenericComponent,
   PangDataViewPaperGroup,
   PangDataViewPaperItem,
-  ITEM_RARITY_COLORS
+  PangDataViewAccordionItem,
+  colorForTheme
 } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
+import SpikedDragonHeadIcon from '../../static/images/spiked-dragon-head.svg'
+import DeathSkullIcon from '../../static/images/death-skull.svg'
+import FluffyWingIcon from '../../static/images/fluffy-wing.svg'
+import CompassIcon from '../../static/images/compass.svg'
+import ImpactPointIcon from '../../static/images/impact-point.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
+import Table from '@material-ui/core/Table'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableBody from '@material-ui/core/TableBody'
+import TableRow from '@material-ui/core/TableRow'
+import TableCell from '@material-ui/core/TableCell'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemAvatar from '@material-ui/core/ListItemAvatar'
+import * as utils from '../utils'
+import * as uiutils from '../uiutils'
+import * as TableColumnDefs from '../table-column-defs'
 
 const useStyles = makeStyles(theme => ({
   icons: {
     backgroundColor: 'rgba(0 0 0 / 0%)'
-  }
+  },
 }))
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
-export const nameCellRenderer = navigateSingleItem => params => {
-  const nameColor = ITEM_RARITY_COLORS[params.data.rarity].color
+export const nameCellRenderer = navigateSingleDataItem => params => {
+  const nameColor = uiutils.getThemeForRarity(params.data.rarity).color
   if (!nameColor) {
     return params.value
   }
@@ -69,7 +87,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={inner}
-      onClick={() => navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
     />
   )
 }
@@ -94,42 +112,30 @@ const getClassById = (classId, PangContext) => {
 
 const ItemsPangDataGrid = props => {
   const classes = useStyles(props)
-  const createRowFromGameObject = go => ({
-    id: go.id,
-    type: go.type,
-    icon: go.icon,
-    name: go.get('name').en, // TODO: localize
-    description: go.get('description').en, // TODO: localize
-    additionalSkillDamage: go.get('additionalSkillDamage'),
-    attackRange: go.get('attackRange'),
-    attackSpeed: go.get('attackSpeed'),
-    buyPrice: go.get('buyPrice'),
-    category: go.get('category'),
-    class: getClassById(go.get('class'), props.PangContext),
-    consumable: go.get('consumable'),
-    deletable: go.get('deletable'),
-    durationRealTime: go.get('durationRealTime'),
-    element: go.get('element'),
-    guildContribution: go.get('guildContribution'),
-    lv: go.get('level'),
-    maxAttack: go.get('maxAttack'),
-    minAttack: go.get('minAttack'),
-    maxDefense: go.get('maxDefense'),
-    minDefense: go.get('minDefense'),
-    premium: go.get('premium'),
-    rarity: go.get('rarity'),
-    resourceId: go.get('id'),
-    sellPrice: go.get('sellPrice'),
-    sex: go.get('sex'),
-    shining: go.get('shining'),
-    stack: go.get('stack'),
-    subcategory: go.get('subcategory'),
-    tradable: go.get('tradable'),
-    triggerSkill: go.get('triggerSkill'),
-    triggerSkillProbability: go.get('triggerSkillProbability'),
-    transy: go.get('transy'),
-    twoHanded: go.get('twoHanded')
-  })
+  const createRowFromGameObject = go => {
+    const row = {}
+    for (const prop in go.props) {
+      switch (prop) {
+        case 'id':
+        case '__id':
+        case 'type':
+        case 'name':
+        case 'description':
+        case 'class':
+        case 'icon':
+          continue
+      }
+      row[prop] = go.get(prop)
+    }
+    row.id = go.id
+    row.type = go.type
+    row.icon = go.icon
+    row.name = go.get('name').en // TODO: localize
+    row.description = go.get('description').en // TODO: localize
+    row.class = getClassById(go.get('class'), props.PangContext)
+    row.resourceId = go.get('id')
+    return row
+  }
 
   const [rowData, setRowDataState] = useState(
     Array.from(props.PangContext.Items.iter()).map(createRowFromGameObject)
@@ -154,7 +160,7 @@ const ItemsPangDataGrid = props => {
   }
 
   const rarityCellRenderer = params => {
-    return ITEM_RARITY_COLORS[params.value].display
+    return uiutils.getThemeForRarity(params.value).display
   }
 
   const rarityComparator = (valueA, valueB) => {
@@ -166,219 +172,51 @@ const ItemsPangDataGrid = props => {
     return rankA > rankB ? 1 : -1
   }
 
-  const [columnDefs] = useState([
-    {
-      field: 'id',
+  const columnDefsMap = {
+    id: {
       width: 55,
       minWidth: 55,
       maxWidth: 55,
-      sortable: true,
-      filter: true,
-      hide: false
     },
-    {
-      field: 'icon',
+    icon: {
       width: 65,
       minWidth: 65,
       maxWidth: 65,
-      hide: false,
-      cellRenderer: iconCellRenderer(classes)
+      cellRenderer: iconCellRenderer(classes),
+      filter: false,
+      sortable: false
     },
-    {
-      field: 'name',
+    name: {
       width: 200,
       minWidth: 200,
-      sortable: true,
-      resizable: true,
-      filter: true,
-      hide: false,
-      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
-    {
-      field: 'lv',
-      width: 55,
-      minWidth: 55,
-      maxWidth: 55,
-      sortable: true,
-      filter: true,
-      hide: false
+    level: {
+      width: 70,
+      minWidth: 70,
+      maxWidth: 70,
     },
-    {
-      field: 'rarity',
+    rarity: {
       width: 75,
-      resizable: true,
       minWidth: 75,
-      sortable: true,
-      filter: true,
-      hide: false,
       cellRenderer: rarityCellRenderer,
       comparator: rarityComparator
     },
-    {
-      field: 'class',
+    class: {
       width: 75,
-      resizable: true,
-      sortable: true,
-      filter: true,
-      hide: false
+      minWidth: 75,
     },
-    {
-      field: 'category',
-      width: 85,
-      resizable: true,
-      sortable: true,
-      filter: true,
-      hide: false
-    },
-    {
-      field: 'subcategory',
+    subcategory: {
       width: 100,
-      resizable: true,
-      sortable: true,
-      filter: true,
-      hide: false
     },
-    {
-      field: 'buyPrice',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'sellPrice',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'description',
-      resizable: true,
-      filter: true,
+    description: {
       cellRenderer: descriptionCellRenderer
-    },
-    {
-      field: 'attackSpeed',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'attackRange',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'additionalSkillDamage',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'consumable',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'deletable',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'durationRealTime',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'element',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'guildContribution',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'maxAttack',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'minAttack',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'maxDefense',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'minDefense',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'premium',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'resourceId',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'sex',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'shining',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'stack',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'tradable',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'triggerSkill',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'triggerSkillProbability',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'transy',
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'twoHanded',
-      resizable: true,
-      filter: true
     }
-  ])
+  }
+
+  const [columnDefs] = useState(TableColumnDefs.Templates.Items.map(
+    col => Object.assign({}, columnDefsMap[col.field] || {}, col)
+  ))
 
   return (
     <PangDataGrid
@@ -422,18 +260,234 @@ Items.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
+const useSingleViewStyles = makeStyles(() => ({
+  monsterIcons: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
+    height: '50px',
+    width: '50px',
+    objectFit: 'contain'
+  },
+  npcImages: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
+    height: '100px',
+    width: '100px',
+    objectFit: 'contain'
+  },
+  primitivesTable: {
+    color: props => colorForTheme(props, 80)
+  },
+  droppedByMonsters: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    maxHeight: '450px',
+    overflowY: 'overlay'
+  }
+}))
+
 Items.SingleView = props => {
+  const classes = useSingleViewStyles(props)
   const item = props.PangContext.Items.get(props.Key)
+  const itemDescription = item.get('description')?.en // TODO: localize
+  item.connectEdgesFromContext(props.PangContext)
+  const itemAbilities = Array.from(item.abilities())
+  const itemSpawns = Array.from(item.spawns())
+  const droppedBy = item.droppedByFromContext(props.PangContext)
+  const soldBy = item.soldByFromContext(props.PangContext)
+
+  const getFlyingIcon = flying => flying ? <FluffyWingIcon /> : null
+  const getRankIcon = rank => {
+    switch (rank) {
+      case 'super':
+        return <SpikedDragonHeadIcon />
+      case 'giant':
+        return <DeathSkullIcon />
+      default:
+        return null
+    }
+  }
+
+  const [monsterLootColumnDefs] = useState([
+    {
+      field: 'name',
+      maxWidth: 110,
+      resizable: false,
+      cellRenderer: params => (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          height: '100px'
+        }}>
+          <PangNameChip
+            bolder
+            smaller
+            name={params.value}
+            innerTextStyle={{ fontSize: '1.1vw' }}
+            leftIcon={getRankIcon(params.data.monsterRank)}
+            rightIcon={getFlyingIcon(params.data.monsterFlying)}
+            onClick={() => props.PangContext.navigateSingleItem(
+              params.data.drop.monster
+            )}
+          />
+          <img className={classes.monsterIcons} src={params.data.monsterIcon} />
+        </div>
+      )
+    },
+    {
+      field: 'level',
+      resizable: false,
+      maxWidth: 70,
+      cellRenderer: params => (
+        <PangDataText
+          bolder
+          littleBigger
+          text={'Lv ' + params.value}
+        />
+      )
+    },
+    {
+      field: 'droprate',
+      resizable: false,
+      comparator: (valueA, valueB) => {
+        if (valueA[1] === valueB[1]) {
+          return 0
+        }
+        return (valueA[1] > valueB[1]) ? 1 : -1
+      },
+      cellRenderer: params => (
+        <PangDataText
+          bolder
+          littleBigger
+          text={params.value.map(
+            r => r + '%'
+          ).join(' - ')}
+        />
+      )
+    }
+  ])
+
+  const monsterLootRowData = droppedBy.map(drop => ({
+    name: drop.monster.get('name').en, // TODO: localize
+    level: drop.monster.get('level'),
+    droprate: drop.probabilityRange,
+    monsterIcon: drop.monster.icon,
+    monsterRank: drop.monster.get('rank'),
+    monsterFlying: drop.monster.get('flying'),
+    drop
+  }))
+  const monsterLootRowHeight = 100
+
+  const [posColumnDefs] = useState([
+    {
+      field: 'npc',
+      maxWidth: 150,
+      resizable: false,
+      cellRenderer: params => (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          height: '150px'
+        }}>
+          <PangNameChip
+            bolder
+            smaller
+            name={params.value}
+            innerTextStyle={{ fontSize: '1.1vw' }}
+            onClick={() => props.PangContext.navigateSingleItem(
+              params.data.pos.npc
+            )}
+          />
+          <img className={classes.npcImages} src={params.data.npcImage} />
+        </div>
+      )
+    },
+    {
+      field: 'shop',
+      resizable: false,
+      maxWidth: 70
+    },
+    {
+      field: 'price',
+      resizable: false,
+      maxWidth: 70,
+      cellRenderer: params => utils.intToLocalizedString(params.value) // TODO: localize
+    }
+  ])
+
+  const posRowData = soldBy.map(pos => ({
+    npc: pos.npc.get('name').en, // TODO: localize
+    shop: pos.shopName,
+    price: item.get('buyPrice'),
+    npcImage: pos.npc.image,
+    pos
+  }))
+  const posRowHeight = 150
+
+  const [spawnsColumnDefs] = useState([
+    {
+      field: 'continent',
+      resizable: false
+    },
+    {
+      field: 'navigate',
+      sortable: false,
+      filter: false,
+      resizable: false,
+      cellRenderer: params => (
+        <PangNameChip
+          littleBigger
+          bolder
+          name='Area'
+          leftIcon={<CompassIcon />}
+          onClick={() => { console.log({params}) }}
+        />
+      )
+    },
+  ])
+
+  const spawnsRowData = Array.from(item.spawns()).map(spawn => ({
+    continent: spawn.continent.get('name').en, // TODO: localize
+    area: {
+      top: spawn.get('top'),
+      bottom: spawn.get('bottom'),
+      left: spawn.get('left'),
+      right: spawn.get('right')
+    },
+    world: spawn.world.id
+  }))
+  const spawnsRowHeight = 35
+
+  const getTableHeightForRowCount =
+    (rowCount, rowHeight) => rowCount * rowHeight
+
   return (
     <DataViewerContentContainer
       Generic={(
         <DataViewerGenericComponent
           Id={<PangDataText text={item.id} />}
-          Name={<PangDataText text={item.get('name').en} />}
-          Type={<PangDataText text={item.type.name} />}
+          Name={<PangDataText
+            bolder
+            text={item.get('name').en || '[no name]' /* TODO: localize */}
+            color={item.get('rarity')}
+          />}
+          Type={<PangDataText text={utils.camelToTextCase(item.type.name)} />}
           Level={<PangDataText text={item.get('level')} />}
-          Rarity={<PangDataText text={item.get('rarity')} />}
-          Class={<PangDataText text={getClassById(item.get('class'), props.PangContext)} />}
+          Rarity={<PangDataText
+            text={uiutils.getThemeForRarity(item.get('rarity')).display}
+          />}
+          Class={(item.class ? (
+            <PangNameChip
+              name={item.class.get('name').en /* TODO: localize */}
+              onClick={() => props.PangContext.navigateSingleItem(item.class)}
+              leftIcon={item.class && item.get('sex') ? (
+                <img src={item.class.iconForVariant(item.get('sex'))} />
+              ) : null}
+            />
+          ) : <PangDataText text='Any' />)}
           {...props}
         />
       )}
@@ -441,12 +495,282 @@ Items.SingleView = props => {
       {...props}
     >
       <PangDataViewPaperGroup {...props}>
-        <PangDataViewPaperItem size={12} {...props}>
-          TODO remaining item details
-        </PangDataViewPaperItem>
-        <PangDataViewPaperItem size={12} {...props}>
-          TODO list dropped by
-        </PangDataViewPaperItem>
+        {itemDescription && itemDescription !== 'null' ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Description' />
+            <PangDataText text={itemDescription} />
+          </PangDataViewPaperItem>
+        ) : null}
+        {itemAbilities.length
+          ? (
+              <PangDataViewPaperItem size={12} {...props}>
+                <PangDataText bolder text='Abilities' />
+                <PangDataViewPaperGroup {...props}>
+                  {itemAbilities.map(ability => (
+                    <PangDataViewPaperItem
+                      key={ability.parameter}
+                      size={4}
+                      {...props}
+                    >
+                      <PangDataText
+                        text={
+                          props.PangContext.GameSchemas
+                            .AbilityParameterTypesMap[ability.get('parameter')]
+                        }
+                      />
+                      <PangDataText
+                        bigger
+                        bolder
+                        color='green'
+                        text={props.PangContext.GameSchemas.formatAbilityValue(
+                          ability
+                        )}
+                      />
+                    </PangDataViewPaperItem>
+                  ))}
+                </PangDataViewPaperGroup>
+              </PangDataViewPaperItem>
+            )
+          : null
+        }
+        {item.transy ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Variant' />
+            <PangDataViewPaperGroup {...props}>
+              <PangDataViewPaperItem
+                size={12}
+                innerStyle={{
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center'
+                }}
+                {...props}
+              >
+                <img src={item.transy.icon} />
+                <PangNameChip
+                  bolder
+                  littleBigger
+                  name={item.transy.get('name').en /* TODO: localize */}
+                  rarity={item.transy.get('rarity')}
+                  onClick={() => props.PangContext.navigateSingleItem(
+                    item.transy
+                  )}
+                />
+              </PangDataViewPaperItem>
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        ) : null}
+        {item.triggerSkill ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Skill Trigger' />
+            <PangDataViewPaperGroup {...props}>
+              <PangDataViewPaperItem
+                size={12}
+                innerStyle={{
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center'
+                }}
+                {...props}
+              >
+                <img src={item.triggerSkill.icon} />
+                <PangNameChip
+                  bolder
+                  littleBigger
+                  name={item.triggerSkill.get('name').en /* TODO: localize */}
+                  onClick={() => props.PangContext.navigateSingleItem(
+                    item.triggerSkill
+                  )}
+                />
+              </PangDataViewPaperItem>
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        ) : null}
+        {item.blinkwingTarget ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Blinkwing Destination' />
+            <PangDataViewPaperGroup {...props}>
+              <PangDataViewPaperItem
+                size={12}
+                innerStyle={{
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center'
+                }}
+                {...props}
+              >
+                <PangNameChip
+                  bigger
+                  bolder
+                  name={item.blinkwingTarget.continent.get('name').en /*TODO: localize*/}
+                  leftIcon={<ImpactPointIcon />}
+                  onClick={() => {console.log(item.blinkwingTarget)}}
+                />
+              </PangDataViewPaperItem>
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        ) : null}
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Sold By' />}
+          {...props}
+        >
+          {soldBy.length ? (
+            <div
+              style={{
+                flexDirection: 'column',
+                width: '100%',
+                height: getTableHeightForRowCount(
+                  posRowData.length, posRowHeight
+                ) + 30,
+                minHeight: 200,
+                maxHeight: 480,
+                textAlign: 'left'
+              }}
+            >
+              <PangDataText bolder text='NPC Shops' />
+              <div style={{ width: '100%' }}>
+                <PangDataGrid
+                  PangContext={props.PangContext}
+                  rowData={posRowData}
+                  columnDefs={posColumnDefs}
+                  rowHeight={posRowHeight}
+                  tableStyle={{
+                    height: getTableHeightForRowCount(
+                      posRowData.length, posRowHeight
+                    ),
+                    minHeight: 170,
+                    maxHeight: 450
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+        </PangDataViewAccordionItem>
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Obtained From' />}
+          flexColumn
+          {...props}
+        >
+          {item.location ? (
+            <div
+              style={{
+                flexDirection: 'column',
+                width: '100%',
+                textAlign: 'left'
+              }}
+            >
+              <PangDataText bolder text='Main Spawn Location' />
+              <PangNameChip
+                littleBigger
+                bolder
+                name={item.location.continent.get('name').en /*TODO: localize*/}
+                leftIcon={<ImpactPointIcon />}
+                onClick={() => {console.log(item.location)}}
+              />
+            </div>
+          ) : null}
+          {itemSpawns.length ? (
+            <div
+              style={{
+                flexDirection: 'column',
+                width: '100%',
+                height: getTableHeightForRowCount(
+                  spawnsRowData.length, spawnsRowHeight
+                ) + 30,
+                minHeight: 200,
+                maxHeight: 480,
+                textAlign: 'left'
+              }}
+            >
+              <PangDataText bolder text='Spawns' />
+              <PangDataGrid
+                PangContext={props.PangContext}
+                noAutoSizeAll
+                rowData={spawnsRowData}
+                columnDefs={spawnsColumnDefs}
+                rowHeight={spawnsRowHeight}
+                tableStyle={{
+                  height: getTableHeightForRowCount(
+                    spawnsRowData.length, spawnsRowHeight
+                  ),
+                  minHeight: 170,
+                  maxHeight: 450
+                }}
+              />
+            </div>
+          ) : null}
+          {droppedBy.length ? (
+            <div
+              style={{
+                flexDirection: 'column',
+                width: '100%',
+                height: getTableHeightForRowCount(
+                  monsterLootRowData.length, monsterLootRowHeight
+                ),
+                minHeight: 200,
+                maxHeight: 480,
+                textAlign: 'left'
+              }}
+            >
+              <PangDataText bolder text='Monster Loot' />
+              <div style={{ width: '100%' }}>
+                <PangDataGrid
+                  PangContext={props.PangContext}
+                  rowData={monsterLootRowData}
+                  columnDefs={monsterLootColumnDefs}
+                  rowHeight={monsterLootRowHeight}
+                  tableStyle={{
+                    height: getTableHeightForRowCount(
+                      monsterLootRowData.length, monsterLootRowHeight
+                    ),
+                    minHeight: 170,
+                    maxHeight: 450
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+        </PangDataViewAccordionItem>
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Full Details' />}
+          {...props}
+        >
+          <TableContainer>
+            <Table className={classes.primitivesTable} size='small' {...props}>
+              <TableBody>
+                {Array.from(item.primitives(['icon']) || []).map(primitive => (
+                  <TableRow key={primitive.name}>
+                    <TableCell
+                      className={classes.primitivesTable}
+                      component='th'
+                      scope='row'
+                    >
+                      <PangDataText
+                        bolder
+                        text={utils.camelToTextCase(primitive.name)}
+                      />
+                    </TableCell>
+                    <TableCell
+                      className={classes.primitivesTable}
+                      align='right'
+                    >
+                      <PangDataText
+                        text={uiutils.textFromPrimitive(
+                          primitive.value,
+                          primitive.name
+                        )}
+                        {...props}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </PangDataViewAccordionItem>
       </PangDataViewPaperGroup>
     </DataViewerContentContainer>
   )
