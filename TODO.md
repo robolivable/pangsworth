@@ -185,6 +185,7 @@
   - Game object schema module
   - Data tabs involving data grid
 - Reduce memory footprint wherever possible
+- Refactor routes design for search sub-routes
 #### Enhancements
 - Plugin framework
   - Allow embedding contribution from others

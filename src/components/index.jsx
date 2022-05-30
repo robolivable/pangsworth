@@ -42,8 +42,8 @@ const SubRoutes = {
     [Classes.ROUTE]: Classes,
     [Skills.ROUTE]: Skills,
     [NPCs.ROUTE]: NPCs,
-    [Quests.ROUTE]: Quests,
-    [Achievements.ROUTE]: Achievements
+//    [Quests.ROUTE]: Quests,
+//    [Achievements.ROUTE]: Achievements
   }
 }
 
