@@ -80,6 +80,8 @@ const SearchSubRoutes = {
 //  [Achievements.ROUTE]: Achievements
 }
 
+const SEARCH_BAR_UX_DELAY_MS = 10
+
 const useStyles = makeStyles(theme => ({
   searchBarWrapper: {
     width: '-webkit-fill-available',
@@ -381,7 +383,9 @@ const PangSearch = props => {
     })()
   }, [searchTerm])
 
-  const handleSearchBarOnChange = e => {
+  const handleSearchBarOnChange = async e => {
+    // NOTE: add delay for smoother UX
+    await new Promise(r => setTimeout(r, SEARCH_BAR_UX_DELAY_MS))
     if (defaultSearchTerm) {
       setDefaultSearchTerm(undefined)
     }
