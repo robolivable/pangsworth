@@ -27,7 +27,7 @@ import {
 import { BuiltinEvents } from '../clients/context'
 import TrophyLaurelIcon from '../../static/images/trophy-laurel.svg'
 
-export const nameCellRenderer = navigateSingleItem => params => params.value
+export const nameCellRenderer = navigateSingleDataItem => params => params.value
 
 const AchievementsPangDataGrid = props => {
   const createRowFromGameObject = go => ({
@@ -81,10 +81,6 @@ const AchievementsPangDataGrid = props => {
     )
   }, [])
 
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
-
   const descriptionCellRenderer = params => params.value
   const typeCellRenderer = params => params.value
   const categoryCellRenderer = params => params.value
@@ -109,7 +105,7 @@ const AchievementsPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'description',

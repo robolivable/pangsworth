@@ -28,11 +28,12 @@ import { BuiltinEvents } from '../clients/context'
 import * as config from '../config'
 import ScrollQuillIcon from '../../static/images/scroll-quill.svg'
 
-export const nameCellRenderer = navigateSingleItem => params => params.value
+export const nameCellRenderer = navigateSingleDataItem => params => params.value
 
 const QuestsPangDataGrid = props => {
   const createRowFromGameObject = go => ({
     id: go.id,
+    type: go.type,
     name: go.get('name').en, // TODO: localize
     level: go.get('minLevel'),
     gold: go.get('endReceiveGold'),
@@ -64,7 +65,7 @@ const QuestsPangDataGrid = props => {
         config.API_RESOURCE_TYPES.classes.iconStyles.messenger
       )
     }))),
-    type: go.get('type'),
+    questType: go.get('type'),
     repeatable: go.get('repeatable'),
     shareable: go.get('partyShare')
   })
@@ -95,10 +96,6 @@ const QuestsPangDataGrid = props => {
     )
   }, [])
 
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
-
   const karmaCellRenderer = params => params.value
   const expCellRenderer = params => params.value
   const itemsCellRenderer = params => params.value
@@ -123,7 +120,7 @@ const QuestsPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'level',
@@ -209,7 +206,7 @@ const QuestsPangDataGrid = props => {
       cellRenderer: classCellRenderer
     },
     {
-      field: 'type',
+      field: 'questType',
       hide: false,
       width: 85,
       minWidth: 85,

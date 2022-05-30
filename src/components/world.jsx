@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 
 const overrideStyle = root => makeStyles(theme => ({ root }))
 
-export const nameCellRenderer = navigateSingleItem => params => {
+export const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideStyle({
     fontSize: '0.675rem'
@@ -65,7 +65,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
       classes={{ root: style.root }}
       size='small'
       label={innerLabel}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
     />
   )
 }
@@ -89,13 +89,14 @@ const WorldPangDataGrid = props => {
   }
   const createRowFromGameObject = go => ({
     id: go.id,
+    type: go.type,
     name: go.get('name').en, // TODO: localize
     details: JSON.stringify({
       pk: go.get('pk'),
       inDoor: go.get('inDoor'),
       flying: go.get('flying')
     }),
-    type: go.get('type'),
+    worldType: go.get('type'),
     lodestars: JSON.stringify(Array.from(go.lodestars()).map(lode => ({
       key: lode.get('key'),
       location: getLodeLocation(lode)
@@ -128,10 +129,6 @@ const WorldPangDataGrid = props => {
       initializeHandler
     )
   }, [])
-
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
 
   const navigateMap = coordinates => e => {
     console.log({ coordinates, e })
@@ -223,7 +220,7 @@ const WorldPangDataGrid = props => {
       filter: true,
       sortable: true,
       resizable: true,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'details',
@@ -237,7 +234,7 @@ const WorldPangDataGrid = props => {
       cellRenderer: detailsCellRenderer
     },
     {
-      field: 'type',
+      field: 'worldType',
       hide: false,
       width: 85,
       minWidth: 85,

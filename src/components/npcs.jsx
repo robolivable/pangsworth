@@ -96,7 +96,7 @@ const useStyles = makeStyles(theme => ({
 
 const overrideStyle = root => makeStyles(theme => ({ root }))
 
-export const nameCellRenderer = navigateSingleItem => params => {
+export const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideStyle({
     fontSize: '0.675rem'
@@ -114,7 +114,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={innerLabel}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
     />
   )
 }
@@ -143,6 +143,7 @@ const NPCsPangDataGrid = props => {
     id: go.id,
     image: go.image,
     name: go.get('name').en, // TODO: localize
+    type: go.type,
     menus: formatMenus(go.get('menus')),
     locations: JSON.stringify(
       Array.from(go.locations())
@@ -180,10 +181,6 @@ const NPCsPangDataGrid = props => {
       initializeHandler
     )
   }, [])
-
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
 
   const menusCellRenderer = params => {
     const icons = {}
@@ -278,7 +275,7 @@ const NPCsPangDataGrid = props => {
       sortable: true,
       resizable: true,
       filter: true,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'locations',

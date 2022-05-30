@@ -89,7 +89,7 @@ const overrideTypography = root => makeStyles({ root })
 const overrideSlider = ({ root, markLabel }) => makeStyles({ root, markLabel })
 const overrideGrid = root => makeStyles({ root })
 
-export const nameCellRenderer = navigateSingleItem => params => {
+export const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideTypography({
     fontSize: '0.675rem'
@@ -106,7 +106,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={innerLabel}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
     />
   )
 }
@@ -311,6 +311,7 @@ const ClassesPangDataGrid = props => {
 
   const createRowFromGameObject = go => ({
     id: go.id,
+    type: go.type,
     icon: go.icon,
     iconMessenger: {
       messenger: go.iconStyled(
@@ -329,7 +330,7 @@ const ClassesPangDataGrid = props => {
     maxHP: go.get('maxHP'),
     maxFP: go.get('maxFP'),
     maxMP: go.get('maxMP'),
-    type: go.get('type'),
+    classType: go.get('type'),
     parent: getParentById(go.get('parent'))
   })
 
@@ -383,10 +384,6 @@ const ClassesPangDataGrid = props => {
         />
       </div>
     )
-  }
-
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
   }
 
   const maxHPCellRenderer = params => (
@@ -493,7 +490,7 @@ const ClassesPangDataGrid = props => {
       filter: true,
       hide: false,
       resizable: true,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'maxHP',
@@ -526,7 +523,7 @@ const ClassesPangDataGrid = props => {
       comparator: maxStatComparator('maxMP')
     },
     {
-      field: 'type',
+      field: 'classType',
       width: 100,
       minWidth: 100,
       sortable: true,

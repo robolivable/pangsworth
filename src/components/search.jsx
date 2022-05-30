@@ -220,19 +220,25 @@ const PangResultsTable = props => {
   }))
 
   const idCellRenderer = params => params.value
-  const typeCellRenderer = params => params.value
+  const typeCellRenderer = params => params.value.name
 
-  const handleNavigateWorldItem = item => e => {}
-  const handleNavigateItemsItem = item => e => {}
-  const handleNavigateMonstersItem = item => e => {}
-  const handleNavigateClassesItem = item => e => {}
-  const handleNavigateNPCsItem = item => e => {}
-  const handleNavigateEquipmentSetsItem = item => e => {}
-  const handleNavigateQuestsItem = item => e => {}
-  const handleNavigateAchievementsItem = item => e => {}
+  const handleNavigateWorldItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateItemsItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateMonstersItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateClassesItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateNPCsItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateEquipmentSetsItem = item =>
+    props.PangContext.navigateSingleDataItem(item)
+  const handleNavigateQuestsItem = item => {}
+  const handleNavigateAchievementsItem = item => {}
 
   const nameCellRenderer = params => {
-    switch (params.data.type) {
+    switch (params.data.type.name) {
       case 'world':
         return worldNameCellRenderer(handleNavigateWorldItem)(params)
       case 'items':
@@ -260,7 +266,7 @@ const PangResultsTable = props => {
     if (!params.value) {
       return null
     }
-    switch (params.data.type) {
+    switch (params.data.type.name) {
       case 'skills':
         return skillsIconCellRenderer(props, classes)(params)
       case 'items':
@@ -306,7 +312,7 @@ const PangResultsTable = props => {
     return ({
       id: go.id,
       name: go.get('name')?.en, // TODO: localize
-      type: go.type.name,
+      type: go.type,
       icon: go.icon,
       [`${go.type.name}Type`]: type,
       ...row

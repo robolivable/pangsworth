@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
-export const nameCellRenderer = navigateSingleItem => params => {
+export const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideTypography({
     fontSize: '0.675rem'
@@ -81,7 +81,7 @@ export const nameCellRenderer = navigateSingleItem => params => {
       icon={getRankIcon(params.data.rank)}
       size='small'
       label={innerLabel}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
       onDelete={getFlyingIcon(params.data.flying) ? () => {} : null}
       deleteIcon={getFlyingIcon(params.data.flying)}
     />
@@ -100,6 +100,7 @@ const MonstersPangDataGrid = props => {
   const formatFlying = isFlying => isFlying ? 'Yes' : 'No'
   const createRowFromGameObject = go => ({
     id: go.id,
+    type: go.type,
     icon: go.icon,
     name: go.get('name').en, // TODO: localize
     lv: go.get('level'),
@@ -143,10 +144,6 @@ const MonstersPangDataGrid = props => {
     )
   }, [])
 
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
-
   const [columnDefs] = useState([
     {
       field: 'id',
@@ -174,7 +171,7 @@ const MonstersPangDataGrid = props => {
       resizable: true,
       filter: true,
       hide: false,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'lv',

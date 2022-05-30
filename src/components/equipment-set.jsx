@@ -94,7 +94,7 @@ const overrideStyle = root => makeStyles({ root })
   containing equipment sets. To reduce complexity around hydration of
   search results, this method ignores the item rarity color.
 */
-export const nameSearchCellRenderer = navigateSingleItem => params => {
+export const nameSearchCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideStyle({
     fontSize: '0.675rem'
@@ -111,7 +111,7 @@ export const nameSearchCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={innerLabel}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
     />
   )
 }
@@ -136,6 +136,7 @@ const EquipmentSetPangDataGrid = props => {
     const setClassIconStyle = getIconStyleForSex(itemRef?.get('sex'))
     return ({
       id: go.id,
+      type: go.type,
       parts: JSON.stringify(Array.from(go.parts()).map(part => ({
         src: part.icon,
         alt: `${go.get('name').en} set piece.` // TODO: localize
@@ -183,10 +184,6 @@ const EquipmentSetPangDataGrid = props => {
     )
   }, [])
 
-  const navigateSingleItem = item => e => {
-    console.log({ item, e })
-  }
-
   const nameCellRenderer = params => {
     const nameColor = uiutils.getThemeForRarity(params.data.rarity).color
     if (!nameColor) {
@@ -209,7 +206,7 @@ const EquipmentSetPangDataGrid = props => {
       <Chip
         size='small'
         label={innerLabel}
-        onClick={navigateSingleItem(params.data)}
+        onClick={() => props.PangContext.navigateSingleDataItem(params.data)}
       />
     )
   }
@@ -438,4 +435,4 @@ EquipmentSet.SingleView = class extends BaseComponent {
   }
 }
 
-EquipmentSet.ROUTE = 'Equipment Set'
+EquipmentSet.ROUTE = 'EquipmentSets'

@@ -82,7 +82,6 @@ export const nameCellRenderer = navigateSingleDataItem => params => {
       {name}
     </Typography>
   )
-
   return (
     <Chip
       size='small'

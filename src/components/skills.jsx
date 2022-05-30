@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
-const nameCellRenderer = navigateSingleItem => params => {
+const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideTypography({
     fontSize: '0.675rem'
@@ -72,7 +72,7 @@ const nameCellRenderer = navigateSingleItem => params => {
     <Chip
       size='small'
       label={inner}
-      onClick={navigateSingleItem(params.data)}
+      onClick={() => navigateSingleDataItem(params.data)}
       onDelete={getPassiveIcon(params.data.passive) ? () => {} : null}
       deleteIcon={getPassiveIcon(params.data.passive)}
     />
@@ -122,6 +122,7 @@ const SkillsPangDataGrid = props => {
   const formatPassive = isPassive => isPassive ? 'Yes' : 'No'
   const createRowFromGameObject = go => ({
     id: go.id,
+    type: go.type,
     icon: go.iconStyled(getStyleForThemeMode(getDarkTheme(props))),
     name: go.get('name').en, // TODO: localize
     lv: go.get('level'),
@@ -153,10 +154,6 @@ const SkillsPangDataGrid = props => {
     )
   }, [])
 
-  const navigateSingleItem = item => e => {
-    console.log(JSON.stringify({ item }, null, 2))
-  }
-
   const descriptionCellRenderer = params => {
     if (!params.value || params.value === 'null') {
       return ''
@@ -182,7 +179,7 @@ const SkillsPangDataGrid = props => {
       field: 'name',
       width: 135,
       minWidth: 135,
-      cellRenderer: nameCellRenderer(navigateSingleItem)
+      cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     { field: 'lv', width: 55, minWidth: 55, maxWidth: 55 },
     { field: 'class', width: 75 },
