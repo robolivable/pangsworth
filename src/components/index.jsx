@@ -53,10 +53,6 @@ Object.defineProperty(Routes, 'default', { get: () => Search.ROUTE })
 // NOTE: settings component exported differently to bypass dynamic
 // loading
 Object.defineProperty(Routes, Settings.ROUTE, { get: () => Settings })
-// NOTE: HACK: we access this route through code in lowercase
-Object.defineProperty(Routes, 'settings', { get: () => Settings })
 
 export default Routes
-export {
-  SubRoutes
-}
+export { SubRoutes }

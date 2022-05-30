@@ -29,7 +29,8 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
 import BaseComponent from './base-component'
-import Routes, { SubRoutes } from './index'
+import Routes from './index'
+import RoutesDirectory, { getRoutedPangponent } from './directory'
 import {
   PangIcon,
   PangRouteDrawer,
@@ -48,13 +49,7 @@ import Context from '../clients/context'
 
 import * as config from '../config'
 
-const AllRoutes = Object.assign(
-  {},
-  Routes,
-  Object.values(SubRoutes).reduce(
-    (prev, curr) => Object.assign(prev, curr), {}
-  )
-)
+console.debug({RoutesDirectory, Routes})
 
 const RootDiv = styled('div')(props => ({
   display: 'flex',
@@ -345,21 +340,6 @@ const DataViewerEmptyView = props => {
   )
 }
 
-// NOTE: Settings is exported as a getter in Routes
-const getRoutedPangponent = route => {
-  const directory = {}
-  for (const r in Routes) {
-    const t = (r + '').toLowerCase()
-    directory[t] = Routes[r]
-  }
-  for (const r in AllRoutes) {
-    const t = (r + '').toLowerCase()
-    directory[t] = AllRoutes[r]
-  }
-  const t = (route + '').toLowerCase()
-  return directory[t]
-}
-
 export default class Pangsworth extends BaseComponent {
   constructor (props, ...args) {
     super(props, ...args)
@@ -376,7 +356,7 @@ export default class Pangsworth extends BaseComponent {
       config.SETTINGS_VALUE_KEYS.states.tabRoute
     )
     this.state = {
-      route: route || Routes.default
+      route: route || RoutesDirectory.default
     }
   }
 
@@ -390,8 +370,8 @@ export default class Pangsworth extends BaseComponent {
 
   render () {
     const items = Object.values(Routes).map(
-      Pangponent => ([Pangponent.Button, Pangponent.ROUTE])
-    )
+      Pangponent => Pangponent.ROUTE && ([Pangponent.Button, Pangponent.ROUTE])
+    ).filter(o => o)
 
     return (
       <RootDiv PangContext={this.PangContext}>
@@ -404,9 +384,9 @@ export default class Pangsworth extends BaseComponent {
             config.SETTINGS_VALUE_KEYS.states.routeDrawer
           )}
           onDrawerStateToggle={this.handleRouteDrawerStateToggle}
-          settingsItem={React.createElement(Routes.settings.Button, {
+          settingsItem={React.createElement(RoutesDirectory.settings.Button, {
             _handleRoute: this._handleRouteChange(
-              Routes.settings.ROUTE
+              RoutesDirectory.settings.ROUTE
             ),
             PangContext: this.PangContext
           })}
