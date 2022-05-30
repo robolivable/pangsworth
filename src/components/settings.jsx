@@ -191,8 +191,8 @@ const DataSettings = props => {
     const lastImageCacheCompletedAt =
       await props.PangContext.getLastCacheDownloadCompletedAt()
     const cacheMissDelta = Date.now() - lastImageCacheCompletedAt
-    const forceFetch =
-      cacheMissDelta > config.BG_IMG_PRELOAD.manualCacheDownloadCheckExpireMs
+    const forceFetch = lastImageCacheCompletedAt &&
+      (cacheMissDelta > config.BG_IMG_PRELOAD.manualCacheDownloadCheckExpireMs)
     await chrome.runtime.sendMessage({
       type: config.MESSAGE_VALUE_KEYS.preloadImages,
       forceFetch

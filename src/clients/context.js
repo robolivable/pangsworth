@@ -72,7 +72,7 @@ class Context extends EventEmitter {
       const lastImageCacheCompletedAt = await storageGetCacheCompletedAt()
       await chrome.runtime.sendMessage({
         type: config.MESSAGE_VALUE_KEYS.preloadImages,
-        forceFetch: cacheStale(
+        forceFetch: lastImageCacheCompletedAt && cacheStale(
           lastImageCacheCompletedAt,
           config.BG_IMG_PRELOAD.autoCacheDownloadCheckExpireMs
         )
