@@ -37,9 +37,17 @@ const preloadRetry = async (limiter, src, force = false, retries = 0) => {
     await new Promise(r => setTimeout(r, getRetryBackoffMS(retries)))
   }
   const c = await caches.open(config.CACHE_NAME_IMAGES)
-  const skip = !!(await c.match(src))
-  if (skip && !force) {
-    return
+  const match = await c.match(src)
+  if (!!match) {
+    if (!force) {
+      return
+    }
+    const isStale = (
+      Date.now() - (new Date(match.headers.get('date'))).getTime()
+    ) > config.BG_IMG_PRELOAD.staleCacheAgeMs
+    if (!isStale) {
+      return
+    }
   }
   limiter.load(async () => {
     try {

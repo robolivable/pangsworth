@@ -233,6 +233,7 @@ const exportDefault = {
     backoffExp: 1.5,
     backoffVarianceSec: 30,
     progressTickMs: 1000,
+    staleCacheAgeMs: 3600 * 1000,
     autoCacheDownloadCheckExpireMs: 365 * 24 * 3600 * 1000, // expire auto prefetch after 1 year
     manualCacheDownloadCheckExpireMs: 3600 * 1000
   },
@@ -249,7 +250,7 @@ const exportDefault = {
     }
   },
   DEFAULT_SETTINGS: {
-    backgroundImageLoading: false,
+    backgroundImageLoading: true,
     darkTheme: false
   },
   UI_LIMITS: {

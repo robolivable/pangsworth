@@ -140,7 +140,7 @@ const DataSettings = props => {
   const [state, setState] = React.useState({
     showBackgroundImageLoadConfirm: false,
     isBackgroundImageLoading: !!props.PangContext.isBackgroundImageLoading,
-    isBackgroundImageDone: false,
+    isBackgroundImageDone: true,
     backgroundLoadingProgress: 0,
     backgroundLoadingTimeRemaining: '00:00:00',
     settingBackgroundImageLoading: getBackgroundImageLoading(props),
@@ -251,18 +251,18 @@ const DataSettings = props => {
       className={classes.prefetchButton}
       classes={{ disabled: classes.disabledPrefetchButton }}
       startIcon={
-        state.isBackgroundImageLoading
+        !state.isBackgroundImageDone && state.isBackgroundImageLoading
           ? progressIndicator(state)
           : <CloudDownloadIcon />
       }
       onClick={refreshCacheButtonOnclickHandler}
       disabled={
-        state.isBackgroundImageLoading ||
+        (!state.isBackgroundImageDone && state.isBackgroundImageLoading) ||
         state.settingBackgroundImageLoading
       }
     >
       {
-        state.isBackgroundImageLoading
+        !state.isBackgroundImageDone && state.isBackgroundImageLoading
           ? `Downloading... (Est. time remaining: ${state.backgroundLoadingTimeRemaining})`
           : 'Download image cache'
       }
