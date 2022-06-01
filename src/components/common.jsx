@@ -553,6 +553,7 @@ export const PangDataViewDrawer = props => {
         anchor='right'
         open={open}
         BackdropProps={{ invisible: true }}
+        disableEnforceFocus
         className={classes.dataViewDrawer}
         classes={{ paper: classes.dataViewDrawerPaper }}
       >

@@ -179,6 +179,7 @@
 - Game Data tools
   - Graph to plot mob experience gained per level (on a monster view)
   - Items upgrade calculator (for piercing and power dice enhancing)
+  - Implement data views for quests and achievements
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate
