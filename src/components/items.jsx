@@ -31,6 +31,7 @@ import {
   PangDataViewPaperGroup,
   PangDataViewPaperItem,
   PangDataViewAccordionItem,
+  PangDataPrimitivesAccordion,
   colorForTheme
 } from './common'
 import BagIcon from '../../static/images/swap-bag.svg'
@@ -44,14 +45,6 @@ import { BuiltinEvents } from '../clients/context'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
-import Table from '@material-ui/core/Table'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableBody from '@material-ui/core/TableBody'
-import TableRow from '@material-ui/core/TableRow'
-import TableCell from '@material-ui/core/TableCell'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import * as utils from '../utils'
 import * as uiutils from '../uiutils'
 import * as TableColumnDefs from '../table-column-defs'
@@ -470,7 +463,7 @@ Items.SingleView = props => {
           Id={<PangDataText text={item.id} />}
           Name={<PangDataText
             bolder
-            text={item.get('name').en || '[no name]' /* TODO: localize */}
+            text={item.get('name')?.en || '[no name]' /* TODO: localize */}
             color={item.get('rarity')}
           />}
           Type={<PangDataText text={utils.camelToTextCase(item.type.name)} />}
@@ -732,44 +725,11 @@ Items.SingleView = props => {
             </div>
           ) : null}
         </PangDataViewAccordionItem>
-        <PangDataViewAccordionItem
-          size={12}
-          summary={<PangDataText bolder text='Full Details' />}
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(item.primitives(['icon'])) || []}
           {...props}
-        >
-          <TableContainer>
-            <Table className={classes.primitivesTable} size='small' {...props}>
-              <TableBody>
-                {Array.from(item.primitives(['icon']) || []).map(primitive => (
-                  <TableRow key={primitive.name}>
-                    <TableCell
-                      className={classes.primitivesTable}
-                      component='th'
-                      scope='row'
-                    >
-                      <PangDataText
-                        bolder
-                        text={utils.camelToTextCase(primitive.name)}
-                      />
-                    </TableCell>
-                    <TableCell
-                      className={classes.primitivesTable}
-                      align='right'
-                    >
-                      <PangDataText
-                        text={uiutils.textFromPrimitive(
-                          primitive.value,
-                          primitive.name
-                        )}
-                        {...props}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </PangDataViewAccordionItem>
+        />
       </PangDataViewPaperGroup>
     </DataViewerContentContainer>
   )

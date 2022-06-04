@@ -22,9 +22,10 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Pangsworth from './components/pangsworth'
 import Context from './clients/context'
+import * as uiutils from './uiutils'
 
-const HTML_HEIGHT = '600px'
-const HTML_WIDTH = '740px'
+const HTML_HEIGHT = `${uiutils.ROOT_MAX_HEIGHT_PX}px`
+const HTML_WIDTH = `${uiutils.ROOT_MAX_WIDTH_PX}px`
 
 const PangContext = new Context()
 PangContext.fetchSettings().then(() => {

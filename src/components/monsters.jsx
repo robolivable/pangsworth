@@ -23,16 +23,31 @@ import BaseComponent from './base-component'
 import {
   PangDataGrid,
   PangContentBackdrop,
-  PangNavigationAccordionItem
+  PangNavigationAccordionItem,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
+  PangDataText,
+  PangDataViewIcon,
+  PangDataViewPaperGroup,
+  PangDataViewPaperItem,
+  PangDataPrimitivesAccordion
 } from './common'
 import MimicChestIcon from '../../static/images/mimic-chest.svg'
 import SpikedDragonHeadIcon from '../../static/images/spiked-dragon-head.svg'
 import DeathSkullIcon from '../../static/images/death-skull.svg'
 import FluffyWingIcon from '../../static/images/fluffy-wing.svg'
+import VioletAuraIcon from '../../static/images/violet-aura.svg'
+import FireElementIcon from '../../static/images/element-fire.svg'
+import WaterElementIcon from '../../static/images/element-water.svg'
+import WindElementIcon from '../../static/images/element-wind.svg'
+import ElectricityElementIcon from '../../static/images/element-electricity.svg'
+import EarthElementIcon from '../../static/images/element-earth.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
+import * as utils from '../utils'
+import * as uiutils from '../uiutils'
 
 const useStyles = makeStyles(theme => ({
   monsterIcons: {
@@ -367,10 +382,153 @@ Monsters.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-Monsters.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW Monsters</div>
+const useSingleViewStyles = makeStyles(() => ({
+}))
+
+Monsters.SingleView = props => {
+  const classes = useSingleViewStyles(props)
+  console.log({props})
+
+  const monster = props.PangContext.Monsters.get(props.Key)
+  const monsterDescription = monster.get('description')?.en // TODO: localize
+  monster.connectEdgesFromContext(props.PangContext)
+
+  // Mosnter specific data objects
+  let rankIcon = null
+  switch (monster.get('rank')) {
+    case 'super':
+      rankIcon = <SpikedDragonHeadIcon />
+      break
+    case 'giant':
+      rankIcon = <DeathSkullIcon />
+      break
+    case 'violet':
+      rankIcon = <VioletAuraIcon />
+      break
   }
+  let elementIcon = null
+  switch (monster.get('element')) {
+    case 'fire':
+      elementIcon = <FireElementIcon />
+      break
+    case 'water':
+      elementIcon = <WaterElementIcon />
+      break
+    case 'electricity':
+      elementIcon = <ElectricityElementIcon />
+      break
+    case 'wind':
+      elementIcon = <WindElementIcon />
+      break
+    case 'earth':
+      elementIcon = <EarthElementIcon />
+      break
+  }
+  const isSignificant = !!rankIcon || !!elementIcon || monster.get('flying')
+
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={monster.id} />}
+          Name={<PangDataText
+            text={monster.get('name')?.en || '[no name]' /* TODO: localize */}
+          />}
+          Type={<PangDataText
+            text={utils.camelToTextCase(monster.type.name)}
+          />}
+          Level={<PangDataText text={monster.get('level')} />}
+          Rarity={<PangDataText
+            text={utils.camelToTextCase(monster.get('rank'))}
+          />}
+          Class={<PangDataText text='Any' />}
+          {...props}
+        />
+      )}
+      Icon={<PangDataViewIcon src={monster.icon} {...props} />}
+      {...props}
+    >
+      <PangDataViewPaperGroup {...props}>
+        <PangDataViewPaperItem size={12} {...props}>
+          <PangDataText bolder text='HP' />
+          <PangDataViewPaperGroup {...props}>
+            <PangDataViewPaperItem
+              size={12}
+              innerStyle={{
+                backgroundColor: uiutils.THEME_RED,
+                height: 24,
+                paddingTop: 4,
+                paddingBottom: 4,
+                color: 'white',
+              }}
+              {...props}
+            >
+              <PangDataText
+                bolder
+                text={utils.intToLocalizedString(monster.get('hp'))}
+              />
+            </PangDataViewPaperItem>
+          </PangDataViewPaperGroup>
+        </PangDataViewPaperItem>
+        {isSignificant ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Major Attributes' />
+            <PangDataViewPaperGroup {...props}>
+              {rankIcon ? (
+                <PangDataViewPaperItem size={4} {...props}>
+                  <PangDataText
+                    text={utils.camelToTextCase(monster.get('rank'))}
+                  />
+                  <PangDataText
+                    bigger
+                    bolder
+                    color={monster.get('rank')}
+                    text={rankIcon}
+                  />
+                </PangDataViewPaperItem>
+              ) : null}
+              {monster.get('flying') ? (
+                <PangDataViewPaperItem size={4} {...props}>
+                  <PangDataText
+                    text='Aerial'
+                  />
+                  <PangDataText
+                    bigger
+                    bolder
+                    text={<FluffyWingIcon />}
+                  />
+                </PangDataViewPaperItem>
+              ) : null}
+              {elementIcon ? (
+                <PangDataViewPaperItem size={4} {...props}>
+                  <PangDataText
+                    text={utils.camelToTextCase(monster.get('element'))}
+                  />
+                  <PangDataText
+                    bigger
+                    bolder
+                    color={monster.get('element')}
+                    text={elementIcon}
+                  />
+                </PangDataViewPaperItem>
+              ) : null}
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        ) : null}
+        {monsterDescription && monsterDescription !== 'null' ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Description' />
+            <PangDataText text={monsterDescription} />
+          </PangDataViewPaperItem>
+        ) : null}
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(monster.primitives(['icon'])) || []}
+          {...props}
+        />
+      </PangDataViewPaperGroup>
+    </DataViewerContentContainer>
+  )
 }
 
 Monsters.ROUTE = 'Monsters'

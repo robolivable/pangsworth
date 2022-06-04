@@ -800,6 +800,33 @@ class Monster extends GameObject {
     }
     await Promise.all(promiseList)
   }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (Monster.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'summoned',
+      'experienceTable',
+      'attacks',
+      'drops',
+      'location',
+      'spawns'
+    ]
+  }
 }
 
 class Monsters extends GameObjectCollection {

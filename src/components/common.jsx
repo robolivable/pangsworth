@@ -40,6 +40,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import Fab from '@material-ui/core/Fab'
 import * as config from '../config'
+import * as utils from '../utils'
 import * as uiutils from '../uiutils'
 import { BuiltinEvents } from '../clients/context'
 import { localize } from '../i18n'
@@ -51,11 +52,18 @@ import Chip from '@material-ui/core/Chip'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
+import TableContainer from '@material-ui/core/TableContainer'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableRow from '@material-ui/core/TableRow'
+import TableCell from '@material-ui/core/TableCell'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 import './styles/ag-tables-balham-theme.scss'
+
+const tableBufferScale = 9
 
 const routeDrawerWidth = 200
 const dataViewDrawerWidth = 370
@@ -615,6 +623,11 @@ export const PangDataGrid = props => {
     sortable: true
   }), [])
 
+  const bufferAreaHeight = (
+    uiutils.ROOT_MAX_HEIGHT_PX - uiutils.ROOT_TOP_PADDING_PX
+  ) * tableBufferScale
+  const rowBuffer = Math.round(bufferAreaHeight / props.rowHeight)
+
   return (
     <div
       className={`ag-theme-balham ${classes.agTable}`}
@@ -622,6 +635,7 @@ export const PangDataGrid = props => {
     >
       <AgGridReact
         defaultColDef={defaultColDef}
+        rowBuffer={rowBuffer}
         {...rest}
         rowData={rowData}
         ref={gridRef}
@@ -736,7 +750,7 @@ export const DataViewerContentContainer = props => {
                     <PangDataText bolder text='Level' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text='Rarity' />
+                    <PangDataText bolder text='Rarity/Rank' />
                   </Grid>
                   <Grid item xs={12}>
                     <PangDataText bolder text='Class' />
@@ -811,6 +825,41 @@ export const PangDataText = props => {
     case 'uncommon':
     case 'Uncommon':
       styleProps.color = uiutils.THEME_BROWN
+      break
+    case 'giant':
+    case 'Giant':
+      styleProps.fill = uiutils.THEME_DARK_BROWN
+      break
+    case 'super':
+    case 'Super':
+      styleProps.fill = uiutils.THEME_DARK_RED
+      break
+    case 'purple':
+    case 'violet':
+      styleProps.fill = uiutils.THEME_VIOLET
+      break
+    case 'water':
+    case 'Water':
+      styleProps.fill = uiutils.THEME_BLUE
+      break
+    case 'fire':
+    case 'Fire':
+      styleProps.fill = uiutils.THEME_RED
+      break
+    case 'yellow':
+    case 'electricity':
+    case 'Electricity':
+      styleProps.fill = uiutils.THEME_YELLOW
+      break
+    case 'lightblue':
+    case 'wind':
+    case 'Wind':
+      styleProps.fill = uiutils.THEME_LIGHT_BLUE
+      break
+    case 'lightbrown':
+    case 'earth':
+    case 'Earth':
+      styleProps.fill = uiutils.THEME_LIGHT_BROWN
       break
   }
   const style = overrideStyle(styleProps)()
@@ -950,5 +999,54 @@ export const PangDataViewAccordionItem = props => {
         </AccordionDetails>
       </Accordion>
     </Grid>
+  )
+}
+
+const usePrimitivesTableStyles = makeStyles(() => ({
+  primitivesTable: {
+    color: props => colorForTheme(props, 80)
+  }
+}))
+export const PangDataPrimitivesAccordion = props => {
+  const classes = usePrimitivesTableStyles(props)
+  return (
+    <PangDataViewAccordionItem
+       size={12}
+       summary={<PangDataText bolder text={props.title} />}
+       {...props}
+     >
+      <TableContainer>
+        <Table className={classes.primitivesTable} size='small' {...props}>
+          <TableBody>
+            {props.primitives.map(primitive => (
+              <TableRow key={primitive.name}>
+                <TableCell
+                  className={classes.primitivesTable}
+                  component='th'
+                  scope='row'
+                >
+                  <PangDataText
+                    bolder
+                    text={utils.camelToTextCase(primitive.name)}
+                  />
+                </TableCell>
+                <TableCell
+                  className={classes.primitivesTable}
+                  align='right'
+                >
+                  <PangDataText
+                    text={uiutils.textFromPrimitive(
+                      primitive.value,
+                      primitive.name
+                    )}
+                    {...props}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </PangDataViewAccordionItem>
   )
 }
