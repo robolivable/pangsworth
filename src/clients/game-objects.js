@@ -459,6 +459,15 @@ class Attack extends GameChildObject {
       await this.triggerSkill.fetch()
     }
   }
+
+  connectEdgesFromContext (context) {
+    if (!this._triggerSkill) {
+      const triggerSkillId = this.get('triggerSkill')
+      if (triggerSkillId) {
+        this._triggerSkill = context.Skills.get(triggerSkillId)
+      }
+    }
+  }
 }
 
 class Drop extends GameChildObject {
@@ -484,6 +493,15 @@ class Drop extends GameChildObject {
   async hydrate () {
     if (this.item && this.item.isTransparent) {
       await this.item.fetch()
+    }
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._item) {
+      const itemId = this.get('item')
+      if (itemId) {
+        this._item = context.Items.get(itemId)
+      }
     }
   }
 }
@@ -824,8 +842,38 @@ class Monster extends GameObject {
       'attacks',
       'drops',
       'location',
-      'spawns'
+      'spawns',
+      'booty',
+      'mineral'
     ]
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._booty) {
+      const bootyId = this.get('booty')
+      if (bootyId) {
+        this._booty = context.Items.get(bootyId)
+      }
+    }
+    if (!this._mineral) {
+      const mineralId = this.get('mineral')
+      if (mineralId) {
+        this._mineral = context.Items.get(mineralId)
+      }
+    }
+    this.location?.connectEdgesFromContext(context)
+    for (const drop of this.drops()) {
+      drop.connectEdgesFromContext(context)
+    }
+    for (const spawn of this.spawns()) {
+      spawn.connectEdgesFromContext(context)
+    }
+    for (const summon of this.summoned()) {
+      summon.connectEdgesFromContext(context)
+    }
+    for (const attack of this.attacks()) {
+      attack.connectEdgesFromContext(context)
+    }
   }
 }
 

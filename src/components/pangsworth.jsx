@@ -49,7 +49,7 @@ import Context from '../clients/context'
 
 import * as config from '../config'
 
-console.debug({RoutesDirectory, Routes})
+console.debug('Routes =>', {RoutesDirectory, Routes})
 
 const RootDiv = styled('div')(props => ({
   display: 'flex',

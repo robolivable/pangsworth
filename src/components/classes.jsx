@@ -544,7 +544,6 @@ const ClassesPangDataGrid = props => {
       field: 'maxLevel',
       width: 75,
       minWidth: 75,
-      maxWidth: 75,
       sortable: true,
       filter: true,
       resizable: true
@@ -553,7 +552,6 @@ const ClassesPangDataGrid = props => {
       field: 'minLevel',
       width: 75,
       minWidth: 75,
-      maxWidth: 75,
       sortable: true,
       filter: true,
       resizable: true

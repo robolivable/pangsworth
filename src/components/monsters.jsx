@@ -30,7 +30,9 @@ import {
   PangDataViewIcon,
   PangDataViewPaperGroup,
   PangDataViewPaperItem,
-  PangDataPrimitivesAccordion
+  PangDataPrimitivesAccordion,
+  PangDataViewAccordionItem,
+  PangNameChip
 } from './common'
 import MimicChestIcon from '../../static/images/mimic-chest.svg'
 import SpikedDragonHeadIcon from '../../static/images/spiked-dragon-head.svg'
@@ -383,6 +385,12 @@ Monsters.Button = class extends BaseComponent {
 }
 
 const useSingleViewStyles = makeStyles(() => ({
+  itemIcons: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
+    height: 32,
+    width: 32,
+    objectFit: 'contain'
+  }
 }))
 
 Monsters.SingleView = props => {
@@ -406,6 +414,7 @@ Monsters.SingleView = props => {
       rankIcon = <VioletAuraIcon />
       break
   }
+
   let elementIcon = null
   switch (monster.get('element')) {
     case 'fire':
@@ -425,6 +434,96 @@ Monsters.SingleView = props => {
       break
   }
   const isSignificant = !!rankIcon || !!elementIcon || monster.get('flying')
+
+  const [dropsColumnDefs] = useState([
+    {
+      field: 'name',
+      minWidth: 100,
+      width: 100,
+      cellRenderer: params => (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          height: '100px',
+        }}>
+          <PangNameChip
+            bolder
+            smaller
+            name={params.value}
+            innerTextStyle={{ fontSize: '1.1vw' }}
+            rarity={params.data.rarity}
+            onClick={() => props.PangContext.navigateSingleItem(
+              params.data.item
+            )}
+          />
+          <img className={classes.itemIcons} src={params.data.icon} />
+        </div>
+      )
+    },
+    {
+      field: 'droprate',
+      comparator: (valueA, valueB) => {
+        if (valueA[1] === valueB[1]) {
+          return 0
+        }
+        return (valueA[1] > valueB[1]) ? 1 : -1
+      },
+      cellRenderer: params => (
+        <PangDataText
+          bolder
+          littleBigger
+          text={params.value.map(
+            r => r + '%'
+          ).join(' - ')}
+        />
+      )
+    },
+    { field: 'sellPrice' },
+    {
+      field: 'class',
+      cellRenderer: params => params.data.classObject ? (
+        <PangNameChip
+          bolder
+          smaller
+          name={params.value}
+          innerTextStyle={{ fontSize: '1.1vw' }}
+          onClick={() => props.PangContext.navigateSingleItem(
+            params.data.classObject
+          )}
+        />
+      ) : params.data.class
+    },
+    { field: 'category' },
+    { field: 'subcategory' },
+    { field: 'rarity' },
+  ])
+
+  const dropsRowData = Array.from(monster.drops()).map(drop => {
+    let classObject = null
+    let className = 'Any'
+    if (drop.item.class?.id) {
+      classObject = props.PangContext.Classes.get(drop.item.class.id)
+      className = classObject.get('name').en // TODO: localize
+    }
+    return ({
+      name: drop.item.get('name').en, // TODO: localize
+      icon: drop.item.icon,
+      droprate: drop.probabilityRange,
+      class: className,
+      classObject,
+      item: drop.item,
+      category: drop.item.get('category'),
+      subcategory: drop.item.get('subcategory'),
+      sellPrice: drop.item.get('sellPrice'),
+      rarity: drop.item.get('rarity'),
+    })
+  })
+  const dropsRowHeight = 100
+
+  const getTableHeightForRowCount =
+    (rowCount, rowHeight) => rowCount * rowHeight
 
   return (
     <DataViewerContentContainer
@@ -515,12 +614,42 @@ Monsters.SingleView = props => {
             </PangDataViewPaperGroup>
           </PangDataViewPaperItem>
         ) : null}
-        {monsterDescription && monsterDescription !== 'null' ? (
-          <PangDataViewPaperItem size={12} {...props}>
-            <PangDataText bolder text='Description' />
-            <PangDataText text={monsterDescription} />
-          </PangDataViewPaperItem>
-        ) : null}
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Drops' />}
+          flexColumn
+          {...props}
+        >
+          {dropsRowData.length ? (
+            <div style={{
+              flexDirection: 'column',
+              width: '100%',
+              height: getTableHeightForRowCount(
+                dropsRowData.length, dropsRowHeight
+              ),
+              minHeight: 200,
+              maxHeight: 480,
+              textAlign: 'left'
+            }}>
+              <PangDataText bolder text='Items' />
+              <div style={{ width: '100%' }}>
+                <PangDataGrid
+                  PangContext={props.PangContext}
+                  rowData={dropsRowData}
+                  columnDefs={dropsColumnDefs}
+                  rowHeight={dropsRowHeight}
+                  tableStyle={{
+                    height: getTableHeightForRowCount(
+                      dropsRowData.length, dropsRowHeight
+                    ),
+                    minHeight: 170,
+                    maxHeight: 450
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+        </PangDataViewAccordionItem>
         <PangDataPrimitivesAccordion
           title='Full Details'
           primitives={Array.from(monster.primitives(['icon'])) || []}
