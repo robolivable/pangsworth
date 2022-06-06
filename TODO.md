@@ -38,20 +38,20 @@
   - ~~Sortable tables for data~~
   - Tooltip magnifier for monster images
   - All views completed
-- Search as you type
+- ~~Search as you type~~
 - Search results data list (less data focused)
   - Include icon in each row, button to export, button to copy item id to clipboard
 - Single item inspector fully implemented
-  - Breadcrumbs for tracking location in extension
-    - User should be able to click through infinitely long chains of item references
-    - Use colapsed breadcrumb system
+  - ~~Breadcrumbs for tracking location in extension~~
+    - ~~User should be able to click through infinitely long chains of item references~~
+    - ~~Use colapsed breadcrumb system~~
 - About modal on first time use
   - Describe usage terms (license)
   - Mention contribution process
 - Display appropriate copyright for tool assets (images)
 - ~~Build continent game objects from worlds~~
   - Hook up continents to npc list to show in filterable column
-- Pannable, zoomable canvas for map display using Leaflet
+- ~~Pannable, zoomable canvas for map display using Leaflet~~
 - Data grid view caching system
   - All row data should be cached once generated for faster load times after first time usage
   - Persist cache in user sync settings

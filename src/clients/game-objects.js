@@ -308,6 +308,15 @@ class Ability extends GameChildObject {
       await this.skill.fetch()
     }
   }
+
+  connectEdgesFromContext (context) {
+    if (!this._skill) {
+      const skillId = this.get('skill')
+      if (skillId) {
+        this._skill = context.Skills.get(skillId)
+      }
+    }
+  }
 }
 
 class ScalingParameter extends GameChildObject {}
@@ -352,6 +361,35 @@ class Level extends GameChildObject {
       promiseList.push(scalingParameter.hydrate())
     }
     await Promise.all(promiseList)
+  }
+
+  connectEdgesFromContext (context) {
+    for (const ability of this.abilities()) {
+      ability.connectEdgesFromContext(context)
+    }
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (Level.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'abilities',
+      'scalingParameters'
+    ]
   }
 }
 
@@ -416,6 +454,15 @@ class SkillRequirement extends GameChildObject {
   async hydrate () {
     if (this.skill && this.skill.isTransparent) {
       await this.skill.fetch()
+    }
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._skill) {
+      const skillId = this.get('skill')
+      if (skillId) {
+        this._skill = context.Skills.get(skillId)
+      }
     }
   }
 }
@@ -1362,6 +1409,21 @@ class Skill extends GameObject {
     }
   }
 
+  * abilities () {
+    if (this._abilities) {
+      for (const ability of this._abilities) {
+        yield ability
+      }
+      return
+    }
+    this._abilities = []
+    for (const a of this.get('abilities') || []) {
+      const ability = new Ability(this, a)
+      this._abilities.push(ability)
+      yield ability
+    }
+  }
+
   async hydrate () {
     const promiseList = []
     if (this.class && this.class.isTransparent) {
@@ -1377,6 +1439,56 @@ class Skill extends GameObject {
       promiseList.push(level.hydrate())
     }
     await Promise.all(promiseList)
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (Skill.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'abilities',
+      'class',
+      'triggerSkill',
+      'requirements',
+      'levels'
+    ]
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._class) {
+      const classId = this.get('class')
+      if (classId) {
+        this._class = context.Classes.get(classId)
+      }
+    }
+    if (!this._triggerSkill) {
+      const triggerSkillId = this.get('triggerSkill')
+      if (triggerSkillId) {
+        this._triggerSkill = context.Skills.get(triggerSkillId)
+      }
+    }
+    for (const ability of this.abilities()) {
+      ability.connectEdgesFromContext(context)
+    }
+    for (const skillRequirement of this.requirements()) {
+      skillRequirement.connectEdgesFromContext(context)
+    }
+    for (const level of this.levels()) {
+      level.connectEdgesFromContext(context)
+    }
   }
 }
 

@@ -87,12 +87,14 @@ const AbilityParameterTypesMap = {
   stealfp: 'Steal FP',
   exprate: 'Experience Rate',
   droprate: 'Drop Rate',
-  fprecoveryautoattack: 'FP Recovery Auto Attack'
+  fprecoveryautoattack: 'FP Recovery Auto Attack',
+  duration: 'Duration'
 }
 
 const formatAbilityValue = ability => {
   if (ability.get('add')) {
-    return `+ ${ability.get('add')}${ability.get('rate') ? '%' : ''}`
+    const isNegative = parseInt(ability.get('rate')) < 0
+    return `${!isNegative ? '+ ' : ''}${ability.get('add')}${ability.get('rate') ? '%' : ''}`
   }
   if (ability.get('set')) {
     return `${ability.get('set')}${ability.get('rate') ? '%' : ''}`

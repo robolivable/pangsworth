@@ -43,7 +43,10 @@ const textFromPrimitive = (value, name) => {
       }
       return utils.intToLocalizedString(value) // TODO: localize
     default:
-      return value
+      if (name === 'id') {
+        return value
+      }
+      return utils.camelToTextCase(value)
   }
 }
 

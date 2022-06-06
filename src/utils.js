@@ -34,7 +34,9 @@ const prettyPrintSeconds = seconds => {
 }
 
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1)
-const camelToTextCase = string => capitalize(string.replace(/([A-Z])/g, ' $1'))
+const camelToTextCase = string => capitalize(
+  string.replace(/([A-Z])/g, ' $1')
+).replace(/([A-Z]) /g, '$1')
 
 const intToLocalizedString = (value, i18n) => value.toLocaleString() // TODO: localize
 

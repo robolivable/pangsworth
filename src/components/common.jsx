@@ -316,6 +316,7 @@ const useStyles = makeStyles(theme => ({
   dataViewAccordionContentSection: {
     paddingRight: theme.spacing(1.5),
     paddingLeft: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5),
     textAlign: 'center',
     color: props => colorForTheme(props, 80),
     backgroundColor: props => bgColorForTheme(props, 80),
@@ -691,6 +692,7 @@ export const PangContentBackdrop = props => {
 }
 
 export const DataViewerContentContainer = props => {
+  console.log({props})
   const classes = useStyles(props)
   return (
     <div className={classes.dataViewContentContainerWrapper}>
@@ -750,7 +752,11 @@ export const DataViewerContentContainer = props => {
                     <PangDataText bolder text='Level' />
                   </Grid>
                   <Grid item xs={12}>
-                    <PangDataText bolder text='Rarity/Rank' />
+                    {props.Generic.props.Rarity ? (
+                      <PangDataText bolder text='Rarity/Rank' />
+                    ) : (
+                      <PangDataText bolder text='Scaler' />
+                    )}
                   </Grid>
                   <Grid item xs={12}>
                     <PangDataText bolder text='Class' />
@@ -780,7 +786,9 @@ export const DataViewerGenericComponent = props => (
     <Grid item xs={12}>{props.Name || <PangDataText text='-' />}</Grid>
     <Grid item xs={12}>{props.Type || <PangDataText text='-' />}</Grid>
     <Grid item xs={12}>{props.Level || <PangDataText text='-' />}</Grid>
-    <Grid item xs={12}>{props.Rarity || <PangDataText text='-' />}</Grid>
+    <Grid item xs={12}>
+      {props.Rarity || props.Scaler || <PangDataText text='-' />}
+    </Grid>
     <Grid item xs={12}>{props.Class || <PangDataText text='-' />}</Grid>
   </Grid>
 )
@@ -940,7 +948,13 @@ export const PangLevelChip = props => {
 
 export const PangDataViewIcon = props => {
   const classes = useStyles(props)
-  return <img src={props.src} className={classes.dataViewContentIcon} />
+  return (
+    <img
+      src={props.src}
+      className={classes.dataViewContentIcon}
+      onClick={props.iconOnClick}
+    />
+  )
 }
 
 export const PangDataViewPaperGroup = props => {
@@ -980,7 +994,10 @@ export const PangDataViewAccordionItem = props => {
   }
   return (
     <Grid item xs={props.size}>
-      <Accordion className={classes.dataViewAccordionContentSection}>
+      <Accordion
+        defaultExpanded
+        className={classes.dataViewAccordionContentSection}
+      >
         <AccordionSummary
           expandIcon={(
             <ExpandMoreIcon
@@ -1007,46 +1024,58 @@ const usePrimitivesTableStyles = makeStyles(() => ({
     color: props => colorForTheme(props, 80)
   }
 }))
-export const PangDataPrimitivesAccordion = props => {
+
+const PrimitivesTable = props => {
   const classes = usePrimitivesTableStyles(props)
   return (
-    <PangDataViewAccordionItem
-       size={12}
-       summary={<PangDataText bolder text={props.title} />}
-       {...props}
-     >
-      <TableContainer>
-        <Table className={classes.primitivesTable} size='small' {...props}>
-          <TableBody>
-            {props.primitives.map(primitive => (
-              <TableRow key={primitive.name}>
-                <TableCell
-                  className={classes.primitivesTable}
-                  component='th'
-                  scope='row'
-                >
-                  <PangDataText
-                    bolder
-                    text={utils.camelToTextCase(primitive.name)}
-                  />
-                </TableCell>
-                <TableCell
-                  className={classes.primitivesTable}
-                  align='right'
-                >
-                  <PangDataText
-                    text={uiutils.textFromPrimitive(
-                      primitive.value,
-                      primitive.name
-                    )}
-                    {...props}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </PangDataViewAccordionItem>
+    <TableContainer>
+      <Table className={classes.primitivesTable} size='small' {...props}>
+        <TableBody>
+          {props.primitives.map(primitive => (
+            <TableRow key={primitive.name}>
+              <TableCell
+                className={classes.primitivesTable}
+                component='th'
+                scope='row'
+              >
+                <PangDataText
+                  bolder
+                  text={utils.camelToTextCase(primitive.name)}
+                />
+              </TableCell>
+              <TableCell
+                className={classes.primitivesTable}
+                align='right'
+              >
+                <PangDataText
+                  text={uiutils.textFromPrimitive(
+                    primitive.value,
+                    primitive.name
+                  )}
+                  {...props}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
+
+export const PangDataPrimitivesAccordion = props => (
+  <PangDataViewAccordionItem
+    size={12}
+    summary={<PangDataText bolder text={props.title} />}
+    {...props}
+  >
+    <PrimitivesTable {...props} />
+  </PangDataViewAccordionItem>
+)
+
+export const PangDataPrimitivesPaper = props => (
+  <PangDataViewPaperItem size={12} {...props}>
+    <PangDataText bolder text={props.title} />
+    <PrimitivesTable {...props} />
+  </PangDataViewPaperItem>
+)

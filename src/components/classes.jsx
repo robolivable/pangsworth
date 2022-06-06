@@ -132,6 +132,7 @@ const StatCalculator = props => {
   const maxLevel = props.maxLevel || 120
   const [level, setLevel] = useState([props.level || minLevel])
   const [stat, setStat] = useState([props.stat.value || 0])
+
   const evaluation = useMemo(() => {
     let lv = level
     let st = stat
