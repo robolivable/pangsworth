@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import BaseComponent from './base-component'
 import {
@@ -33,7 +33,8 @@ import {
   PangNameChip,
   PangDataViewPaperItem,
   PangDataViewAccordionItem,
-  PangDataPrimitivesPaper
+  PangDataPrimitivesPaper,
+  colorForTheme
 } from './common'
 import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 import AuraIcon from '../../static/images/aura.svg'
@@ -300,6 +301,18 @@ const PangSlider = props => (
     </Grid>
     <Grid item xs>
       <Slider
+        PangContext={props.PangContext}
+        classes={makeStyles(() => ({
+          root: {
+            color: props => colorForTheme(props, 80)
+          },
+          markLabelActive: {
+            color: props => colorForTheme(props, 80)
+          },
+          markLabel: {
+            color: props => colorForTheme(props, 80)
+          },
+        }))()}
         value={props.value}
         min={props.min}
         max={props.max}
@@ -310,6 +323,20 @@ const PangSlider = props => (
     </Grid>
     <Grid item>
       <Input
+        PangContext={props.PangContext}
+        classes={makeStyles(() => ({
+          root: {
+            color: props => colorForTheme(props, 80)
+          },
+          underline: {
+            '&:before': {
+              borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
+            },
+            '&:after': {
+              borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
+            }
+          }
+        }))()}
         margin='dense'
         value={props.value}
         inputProps={{
@@ -338,7 +365,10 @@ const SkillLevelCalculator = props => {
   const maxSkillLevel = skillLevels.length
   const [minStr, minSta, minDex, minInt] = [0, 0, 0, 0]
   const maxCharacterLevel = props.maxCharacterLevel || 120
-  const maxStatPoints = (maxCharacterLevel - 1) * 2
+  const maxStatPoints = useMemo(
+    () => utils.Game.maxStatPointsForLevel(maxCharacterLevel),
+    [maxCharacterLevel]
+  )
 
   const [level, setLevel] = useState(props.level || minSkillLevel)
   const [str, setStr] = useState(props.str || minStr)
@@ -352,7 +382,9 @@ const SkillLevelCalculator = props => {
   const maxInt = maxStatPoints - str - sta - dex
 
   const totalStatPoints = str + sta + dex + int
-  const charLvForStatPoints = statPoints => Math.ceil((statPoints / 2) + 1)
+  const charLvForStatPoints = useMemo(() => {
+    return utils.Game.levelForStatPoints(totalStatPoints)
+  }, [totalStatPoints])
 
   const handleLevelSliderChange = (_, value) => setLevel(value)
   const handleLevelInputChange = event => setLevel(
@@ -497,6 +529,7 @@ const SkillLevelCalculator = props => {
           text={`${skill.get('name').en} Lv ${level}` /*TODO: localize*/}
         />
         <PangSlider
+          PangContext={props.PangContext}
           sliderLabel='LV'
           value={level}
           min={minSkillLevel}
@@ -584,10 +617,11 @@ const SkillLevelCalculator = props => {
               <PangDataText
                 bolder
                 littleBigger
-                text={`Character Level: ${charLvForStatPoints(totalStatPoints)}`}
+                text={`Character Level: ${charLvForStatPoints}`}
               />
               {skillScalers.includes('str') ? (
                 <PangSlider
+                  PangContext={props.PangContext}
                   sliderLabel='STR'
                   value={str}
                   min={minStr}
@@ -602,6 +636,7 @@ const SkillLevelCalculator = props => {
               ) : null}
               {skillScalers.includes('sta') ? (
                 <PangSlider
+                  PangContext={props.PangContext}
                   sliderLabel='STA'
                   value={sta}
                   min={minSta}
@@ -616,6 +651,7 @@ const SkillLevelCalculator = props => {
               ) : null}
               {skillScalers.includes('dex') ? (
                 <PangSlider
+                  PangContext={props.PangContext}
                   sliderLabel='DEX'
                   value={dex}
                   min={minDex}
@@ -630,6 +666,7 @@ const SkillLevelCalculator = props => {
               ) : null}
               {skillScalers.includes('int') ? (
                 <PangSlider
+                  PangContext={props.PangContext}
                   sliderLabel='INT'
                   value={int}
                   min={minInt}
@@ -858,7 +895,11 @@ Skills.SingleView = props => {
           </PangDataViewPaperItem>
         ) : null}
 
-        <SkillLevelCalculator skill={skill} scalers={scalers} {...props} />
+        <SkillLevelCalculator
+          PangContext={props.PangContext}
+          skill={skill}
+          scalers={scalers}
+        />
 
         <PangDataPrimitivesAccordion
           title='Extra Details'

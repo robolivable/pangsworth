@@ -40,6 +40,33 @@ const camelToTextCase = string => capitalize(
 
 const intToLocalizedString = (value, i18n) => value.toLocaleString() // TODO: localize
 
+const FACTOR = 20
+const MAX_LEVEL = 120
+const Game = {
+  maxStatPointsForLevel: (level = MAX_LEVEL) => {
+    let sp = 0 // TODO: derive closed form for improved perf
+    for (let i = 0; i <= ((level - 1) / FACTOR); ++i) {
+      for (
+        let j = Math.max((i * FACTOR + 1) - 1, 1);
+        j < Math.min(((i + 1) * FACTOR), level);
+        ++j
+      ) {
+        sp = sp + i + 2
+      }
+    }
+    return sp
+  },
+  levelForStatPoints: points => {
+    for (let l = 1; l <= MAX_LEVEL; ++l) { // TODO: derive closed form
+      if (Game.maxStatPointsForLevel(l) !== points) {
+        continue
+      }
+      return l
+    }
+    return MAX_LEVEL
+  }
+}
+
 module.exports = {
   stripArrayDuplicates,
   isObject,
@@ -49,5 +76,6 @@ module.exports = {
   prettyPrintSeconds,
   capitalize,
   camelToTextCase,
-  intToLocalizedString
+  intToLocalizedString,
+  Game
 }

@@ -692,7 +692,6 @@ export const PangContentBackdrop = props => {
 }
 
 export const DataViewerContentContainer = props => {
-  console.log({props})
   const classes = useStyles(props)
   return (
     <div className={classes.dataViewContentContainerWrapper}>

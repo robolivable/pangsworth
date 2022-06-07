@@ -31,6 +31,7 @@ import FamilyTreeIcon from '../../static/images/family-tree.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import * as config from '../config'
+import * as utils from '../utils'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
@@ -157,7 +158,7 @@ const StatCalculator = props => {
   ])
   const getLevelMarks = getMarks
   const getStatMarks = useCallback(
-    () => getMarks(0, getMaxStatPointsForLevel(level)),
+    () => getMarks(0, utils.Game.maxStatPointsForLevel(level)),
     [level]
   )
   const handleLevelSliderChange = (_, value) => setLevel(value)
@@ -175,7 +176,7 @@ const StatCalculator = props => {
   const handleStatInputChange =
     event => setStat(Number(event.target.value) || 0)
   const handleStatInputOnBlur = () => {
-    const maxStat = getMaxStatPointsForLevel(level)
+    const maxStat = utils.Game.maxStatPointsForLevel(level)
     if (!stat || level < 0) {
       setStat(0)
       return
@@ -185,8 +186,6 @@ const StatCalculator = props => {
       return // eslint-disable-line
     }
   }
-  const getMaxStatPointsForLevel = lv => (lv - 1) * 2
-
   const themeColor =
     getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
   const sliderStyle = overrideSlider({
@@ -274,7 +273,7 @@ const StatCalculator = props => {
             disabled={level === 1}
             onChange={handleStatSliderChange}
             min={0}
-            max={getMaxStatPointsForLevel(level)}
+            max={utils.Game.maxStatPointsForLevel(level)}
           />
         </Grid>
         <Grid classes={{ root: gridInputStyle.root }} item>
@@ -287,7 +286,7 @@ const StatCalculator = props => {
             inputProps={{
               step: 1,
               min: 0,
-              max: getMaxStatPointsForLevel(level),
+              max: utils.Game.maxStatPointsForLevel(level),
               type: 'number',
               'aria-labelledby': 'input-slider'
             }}
