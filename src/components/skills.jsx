@@ -284,73 +284,77 @@ const getSliderMarks = (min, max) => {
   ]
 }
 
-const PangSlider = props => (
-  <Grid
-    classes={makeStyles({
-      'spacing-xs-2': {
-        marginTop: -10,
-        marginBottom: -15
+const PangSlider = props => {
+  const sliderClasses = makeStyles(() => ({
+    root: {
+      color: props => colorForTheme(props, 80)
+    },
+    markLabelActive: {
+      color: props => colorForTheme(props, 80)
+    },
+    markLabel: {
+      color: props => colorForTheme(props, 80)
+    },
+  }))(props)
+  const inputClasses = makeStyles(() => ({
+    root: {
+      color: props => colorForTheme(props, 80)
+    },
+    underline: {
+      '&:before': {
+        borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
+      },
+      '&:after': {
+        borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
       }
-    })()}
-    container
-    spacing={2}
-    alignItems='center'
-  >
-    <Grid item>
-      <PangDataText smaller text={props.sliderLabel} />
+    }
+  }))(props)
+  return (
+    <Grid
+      classes={makeStyles({
+        'spacing-xs-2': {
+          marginTop: -10,
+          marginBottom: -15
+        }
+      })()}
+      container
+      spacing={2}
+      alignItems='center'
+    >
+      <Grid item>
+        <PangDataText smaller text={props.sliderLabel} />
+      </Grid>
+      <Grid item xs>
+        <Slider
+          PangContext={props.PangContext}
+          classes={sliderClasses}
+          value={props.value}
+          min={props.min}
+          max={props.max}
+          marks={props.sliderMarks}
+          onChange={props.sliderOnChange}
+          ValueLabelComponent={SliderValueLabelComponent}
+        />
+      </Grid>
+      <Grid item>
+        <Input
+          PangContext={props.PangContext}
+          classes={inputClasses}
+          margin='dense'
+          value={props.value}
+          inputProps={{
+            min: props.min,
+            max: props.max,
+            step: props.inputStep,
+            type: props.inputType
+          }}
+          onChange={props.inputOnChange}
+          onBlur={props.inputOnBlur}
+        />
+      </Grid>
     </Grid>
-    <Grid item xs>
-      <Slider
-        PangContext={props.PangContext}
-        classes={makeStyles(() => ({
-          root: {
-            color: props => colorForTheme(props, 80)
-          },
-          markLabelActive: {
-            color: props => colorForTheme(props, 80)
-          },
-          markLabel: {
-            color: props => colorForTheme(props, 80)
-          },
-        }))()}
-        value={props.value}
-        min={props.min}
-        max={props.max}
-        marks={props.sliderMarks}
-        onChange={props.sliderOnChange}
-        ValueLabelComponent={SliderValueLabelComponent}
-      />
-    </Grid>
-    <Grid item>
-      <Input
-        PangContext={props.PangContext}
-        classes={makeStyles(() => ({
-          root: {
-            color: props => colorForTheme(props, 80)
-          },
-          underline: {
-            '&:before': {
-              borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
-            },
-            '&:after': {
-              borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
-            }
-          }
-        }))()}
-        margin='dense'
-        value={props.value}
-        inputProps={{
-          min: props.min,
-          max: props.max,
-          step: props.inputStep,
-          type: props.inputType
-        }}
-        onChange={props.inputOnChange}
-        onBlur={props.inputOnBlur}
-      />
-    </Grid>
-  </Grid>
-)
+  )
+}
 
 const SkillLevelCalculator = props => {
   const skill = props.skill
@@ -382,9 +386,6 @@ const SkillLevelCalculator = props => {
   const maxInt = maxStatPoints - str - sta - dex
 
   const totalStatPoints = str + sta + dex + int
-  const charLvForStatPoints = useMemo(() => {
-    return utils.Game.levelForStatPoints(totalStatPoints)
-  }, [totalStatPoints])
 
   const handleLevelSliderChange = (_, value) => setLevel(value)
   const handleLevelInputChange = event => setLevel(
@@ -613,11 +614,6 @@ const SkillLevelCalculator = props => {
                 bolder
                 littleBigger
                 text={`Total Points: ${totalStatPoints}`}
-              />
-              <PangDataText
-                bolder
-                littleBigger
-                text={`Character Level: ${charLvForStatPoints}`}
               />
               {skillScalers.includes('str') ? (
                 <PangSlider
