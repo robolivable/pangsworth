@@ -121,6 +121,23 @@ class Context extends EventEmitter {
     }
   }
 
+  _generateClassAdjacencyMap () {
+    this.classAdjacency = {}
+    for (const clazz of this.Classes.iter()) {
+      clazz.connectEdgesFromContext(this)
+      if (clazz.parentClass?.id) {
+        if (!this.classAdjacency[clazz.parentClass.id]) {
+          this.classAdjacency[clazz.parentClass.id] = []
+        }
+        this.classAdjacency[clazz.parentClass.id].push(clazz)
+        continue
+      }
+      if (!this.classAdjacency[clazz.id]) {
+        this.classAdjacency[clazz.id] = []
+      }
+    }
+  }
+
   async initialize () {
     if (this.initialized) {
       return
@@ -137,6 +154,7 @@ class Context extends EventEmitter {
       }
       this._generateLootAdjacencyMap()
       this._generateShopAdjacencyMap()
+      this._generateClassAdjacencyMap()
       this.initialized = true
     } catch (error) {
       console.error('error initializing pang context', { error })

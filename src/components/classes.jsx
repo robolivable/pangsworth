@@ -25,13 +25,25 @@ import {
   PangContentBackdrop,
   getDarkTheme,
   DARK_CONTRAST_COLOR,
-  LIGHT_CONTRAST_COLOR
+  LIGHT_CONTRAST_COLOR,
+  PangDataViewAccordionItem,
+  PangDataText,
+  PangDataViewPaperGroup,
+  PangDataViewPaperItem,
+  PangDataViewItem,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
+  PangDataViewIcon,
+  PangSlider,
+  PangNameChip,
+  PangDataPrimitivesAccordion
 } from './common'
 import FamilyTreeIcon from '../../static/images/family-tree.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import * as config from '../config'
 import * as utils from '../utils'
+import * as uiutils from '../uiutils'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
@@ -600,10 +612,378 @@ Classes.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-Classes.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW Classes</div>
+const ClassStatCalculator = props => {
+  const clazz = props.clazz
+  const clazzName = clazz.get('name').en || '[no name]' /* TODO: localize */
+
+  const minLevel = parseInt(clazz.get('minLevel'))
+  const maxLevel = parseInt(clazz.get('maxLevel'))
+  const hpExpression = clazz.get('maxHP')
+  const fpExpression = clazz.get('maxFP')
+  const mpExpression = clazz.get('maxMP')
+  const [minStr, minSta, minDex, minInt] = [0, 0, 0, 0]
+
+  const [level, setLevel] = useState(props.level || minLevel)
+  const [str, setStr] = useState(props.str || minStr)
+  const [sta, setSta] = useState(props.sta || minSta)
+  const [dex, setDex] = useState(props.dex || minDex)
+  const [int, setInt] = useState(props.int || minInt)
+
+  const maxStatPoints = useMemo(
+    () => utils.Game.maxStatPointsForLevel(level),
+    [level]
+  )
+  const maxStr = maxStatPoints - sta - dex - int
+  const maxSta = maxStatPoints - str - dex - int
+  const maxDex = maxStatPoints - str - sta - int
+  const maxInt = maxStatPoints - str - sta - dex
+
+  const totalStatPoints = str + sta + dex + int
+
+  const evaluateHP = useMemo(() => {
+    let lv = level
+    let st = sta
+    if (!lv || lv < minLevel) {
+      lv = minLevel
+    }
+    if (!st || st < 0) {
+      st = 0
+    }
+    let exp = hpExpression.replaceAll('level', lv)
+    exp = exp.replaceAll('sta', st)
+    return Math.round(mathJSEval(exp))
+  }, [level, sta, hpExpression])
+
+  const evaluateFP = useMemo(() => {
+    let lv = level
+    let st = sta
+    if (!lv || lv < minLevel) {
+      lv = minLevel
+    }
+    if (!st || st < 0) {
+      st = 0
+    }
+    let exp = fpExpression.replaceAll('level', lv)
+    exp = exp.replaceAll('sta', st)
+    return Math.round(mathJSEval(exp))
+  }, [level, sta, fpExpression])
+
+  const evaluateMP = useMemo(() => {
+    let lv = level
+    let st = int
+    if (!lv || lv < minLevel) {
+      lv = minLevel
+    }
+    if (!st || st < 0) {
+      st = 0
+    }
+    let exp = mpExpression.replaceAll('level', lv)
+    exp = exp.replaceAll('int', st)
+    return Math.round(mathJSEval(exp))
+  }, [level, int, mpExpression])
+
+  const handleLevelSliderChange = (_, value) => setLevel(value)
+  const handleLevelInputChange = event => setLevel(
+    Number(event.target.value) || minLevel
+  )
+  const handleStrSliderChange = (_, value) => setStr(value)
+  const handleStrInputChange = event => setStr(
+    Number(event.target.value) || minStr
+  )
+  const handleStaSliderChange = (_, value) => setSta(value)
+  const handleStaInputChange = event => setSta(
+    Number(event.target.value) || minSta
+  )
+  const handleDexSliderChange = (_, value) => setDex(value)
+  const handleDexInputChange = event => setDex(
+    Number(event.target.value) || minDex
+  )
+  const handleIntSliderChange = (_, value) => setInt(value)
+  const handleIntInputChange = event => setInt(
+    Number(event.target.value) || minInt
+  )
+
+  const handleLevelInputBlur = () => {
+    if (!level || level < minLevel) {
+      setLevel(minLevel)
+    }
+    if (level > maxLevel) {
+      setLevel(maxLevel)
+    }
   }
+
+  const handleStrInputBlur = () => {
+    if (!str || str < minStr) {
+      setStr(minStr)
+    }
+    if (str > maxStr) {
+      setStr(maxStr)
+    }
+  }
+
+  const handleStaInputBlur = () => {
+    if (!sta || sta < minSta) {
+      setSta(minSta)
+    }
+    if (sta > maxSta) {
+      setSta(maxSta)
+    }
+  }
+
+  const handleDexInputBlur = () => {
+    if (!dex || dex < minDex) {
+      setDex(minDex)
+    }
+    if (dex > maxDex) {
+      setDex(maxDex)
+    }
+  }
+
+  const handleIntInputBlur = () => {
+    if (!int || int < minInt) {
+      setInt(minInt)
+    }
+    if (int > maxInt) {
+      setInt(maxInt)
+    }
+  }
+
+  useEffect(() => {
+    setLevel(minLevel)
+  }, [minLevel, maxLevel, hpExpression, mpExpression, fpExpression])
+  useEffect(() => { handleStrInputBlur() }, [maxStr])
+  useEffect(() => { handleStaInputBlur() }, [maxSta])
+  useEffect(() => { handleDexInputBlur() }, [maxDex])
+  useEffect(() => { handleIntInputBlur() }, [maxInt])
+
+  return (
+    <PangDataViewAccordionItem
+      size={12}
+      summary={<PangDataText bolder text='Stat Points' />}
+      {...props}
+    >
+      <div style={{
+        flexDirection: 'column',
+        width: '100%',
+        textAlign: 'left',
+      }}>
+        <PangDataText
+          bolder
+          littleBigger
+          text={`${clazzName} Lv ${level}`}
+        />
+        <PangSlider
+          PangContext={props.PangContext}
+          sliderLabel='LV'
+          value={level}
+          min={minLevel}
+          max={maxLevel}
+          sliderOnChange={handleLevelSliderChange}
+          inputOnChange={handleLevelInputChange}
+          inputOnBlur={handleLevelInputBlur}
+          inputStep={1}
+          inputType='number'
+        />
+        <PangDataViewPaperGroup {...props}>
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataViewPaperGroup {...props}>
+              <PangDataViewItem size={2}>
+                <PangDataText bolder text='HP' />
+              </PangDataViewItem>
+              <PangDataViewPaperItem
+                size={10}
+                innerStyle={{
+                  backgroundColor: uiutils.THEME_RED,
+                  height: 24,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  color: 'white',
+                }}
+                {...props}
+              >
+                <PangDataText
+                  bolder
+                  text={utils.intToLocalizedString(evaluateHP)}
+                />
+              </PangDataViewPaperItem>
+
+              <PangDataViewItem size={2}>
+                <PangDataText bolder text='MP' />
+              </PangDataViewItem>
+              <PangDataViewPaperItem
+                size={10}
+                innerStyle={{
+                  backgroundColor: uiutils.THEME_BLUE,
+                  height: 24,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  color: 'white',
+                }}
+                {...props}
+              >
+                <PangDataText
+                  bolder
+                  text={utils.intToLocalizedString(evaluateMP)}
+                />
+              </PangDataViewPaperItem>
+
+              <PangDataViewItem size={2}>
+                <PangDataText bolder text='FP' />
+              </PangDataViewItem>
+              <PangDataViewPaperItem
+                size={10}
+                innerStyle={{
+                  backgroundColor: uiutils.THEME_GREEN,
+                  height: 24,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  color: 'white',
+                }}
+                {...props}
+              >
+                <PangDataText
+                  bolder
+                  text={utils.intToLocalizedString(evaluateFP)}
+                />
+              </PangDataViewPaperItem>
+
+              <PangSlider
+                PangContext={props.PangContext}
+                sliderLabel='STR'
+                value={str}
+                min={minStr}
+                max={maxStr}
+                sliderOnChange={handleStrSliderChange}
+                inputOnChange={handleStrInputChange}
+                inputOnBlur={handleStrInputBlur}
+                inputStep={1}
+                inputType='number'
+              />
+              <PangSlider
+                PangContext={props.PangContext}
+                sliderLabel='STA'
+                value={sta}
+                min={minSta}
+                max={maxSta}
+                sliderOnChange={handleStaSliderChange}
+                inputOnChange={handleStaInputChange}
+                inputOnBlur={handleStaInputBlur}
+                inputStep={1}
+                inputType='number'
+              />
+              <PangSlider
+                PangContext={props.PangContext}
+                sliderLabel='DEX'
+                value={dex}
+                min={minDex}
+                max={maxDex}
+                sliderOnChange={handleDexSliderChange}
+                inputOnChange={handleDexInputChange}
+                inputOnBlur={handleDexInputBlur}
+                inputStep={1}
+                inputType='number'
+              />
+              <PangSlider
+                PangContext={props.PangContext}
+                sliderLabel='INT'
+                value={int}
+                min={minInt}
+                max={maxInt}
+                sliderOnChange={handleIntSliderChange}
+                inputOnChange={handleIntInputChange}
+                inputOnBlur={handleIntInputBlur}
+                inputStep={1}
+                inputType='number'
+              />
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        </PangDataViewPaperGroup>
+      </div>
+    </PangDataViewAccordionItem>
+  )
+}
+
+const useSingleViewStyles = makeStyles(() => ({
+}))
+
+Classes.SingleView = props => {
+  const classes = useSingleViewStyles(props)
+  const clazz = props.PangContext.Classes.get(props.Key)
+  const clazzName = clazz.get('name').en || '[no name]' /* TODO: localize */
+
+  clazz.connectEdgesFromContext(props.PangContext)
+
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={clazz.id} />}
+          Name={<PangDataText text={clazzName} />}
+          Type={<PangDataText text={utils.camelToTextCase(clazz.type.name)} />}
+          Level={<PangDataText text={`${clazz.get('minLevel')} - ${clazz.get('maxLevel')}`} />}
+          Class={<PangDataText text={clazzName} />}
+          {...props}
+        />
+      )}
+      Icon={<PangDataViewIcon src={clazz.icon} {...props} />}
+      {...props}
+    >
+      <PangDataViewPaperGroup {...props}>
+        {clazz.parentClass ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText
+              bolder
+              littleBigger
+              text='Promoted From'
+            />
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+            }}>
+              <img src={clazz.parentClass.icon} />
+              <PangNameChip
+                name={clazz.parentClass.get('name').en /* TODO: localize */}
+                onClick={() => props.PangContext.navigateSingleItem(clazz.parentClass)}
+              />
+            </div>
+          </PangDataViewPaperItem>
+        ) : null}
+
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Promotes To' />}
+          {...props}
+        >
+          {(props.PangContext.classAdjacency[clazz.id] || []).map(
+            childClazz => (
+              <div key={childClazz.id} style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+              }}>
+                <img src={childClazz.icon} />
+                <PangNameChip
+                  name={childClazz.get('name').en /* TODO: localize */}
+                  onClick={() => props.PangContext.navigateSingleItem(childClazz)}
+                />
+              </div>
+            )
+          )}
+        </PangDataViewAccordionItem>
+
+        <ClassStatCalculator clazz={clazz} {...props} />
+
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(clazz.primitives(['icon'])) || []}
+          {...props}
+        />
+      </PangDataViewPaperGroup>
+    </DataViewerContentContainer>
+  )
 }
 
 Classes.ROUTE = 'Classes'

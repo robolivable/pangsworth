@@ -34,7 +34,8 @@ import {
   PangDataViewPaperItem,
   PangDataViewAccordionItem,
   PangDataPrimitivesPaper,
-  colorForTheme
+  colorForTheme,
+  PangSlider
 } from './common'
 import EnlightenmentIcon from '../../static/images/enlightenment.svg'
 import AuraIcon from '../../static/images/aura.svg'
@@ -45,10 +46,6 @@ import * as utils from '../utils'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
-import Grid from '@material-ui/core/Grid'
-import Slider from '@material-ui/core/Slider'
-import Input from '@material-ui/core/Input'
-import Tooltip from '@material-ui/core/Tooltip'
 
 import { evaluate as mathJSEval } from 'mathjs'
 
@@ -254,108 +251,6 @@ Skills.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-const SliderValueLabelComponent = props => (
-  <Tooltip
-    placement='top'
-    open={props.open}
-    enterTouchDelay={0}
-    title={props.value}
-  >
-    {props.children}
-  </Tooltip>
-)
-const getSliderMarks = (min, max) => {
-  if (!parseInt(max)) {
-    return [
-      { value: 0, label: '0' }
-    ]
-  }
-  if (parseInt(max) === 1) {
-    return [
-      { value: 0, label: '0' },
-      { value: 1, label: '1' }
-    ]
-  }
-  const middleValue = Math.round(min + ((max - min) / 2))
-  return [
-    { value: min, label: min + '' },
-    { value: middleValue, label: middleValue + '' },
-    { value: max, label: max + '' }
-  ]
-}
-
-const PangSlider = props => {
-  const sliderClasses = makeStyles(() => ({
-    root: {
-      color: props => colorForTheme(props, 80)
-    },
-    markLabelActive: {
-      color: props => colorForTheme(props, 80)
-    },
-    markLabel: {
-      color: props => colorForTheme(props, 80)
-    },
-  }))(props)
-  const inputClasses = makeStyles(() => ({
-    root: {
-      color: props => colorForTheme(props, 80)
-    },
-    underline: {
-      '&:before': {
-        borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
-      },
-      '&:after': {
-        borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
-      }
-    }
-  }))(props)
-  return (
-    <Grid
-      classes={makeStyles({
-        'spacing-xs-2': {
-          marginTop: -10,
-          marginBottom: -15
-        }
-      })()}
-      container
-      spacing={2}
-      alignItems='center'
-    >
-      <Grid item>
-        <PangDataText smaller text={props.sliderLabel} />
-      </Grid>
-      <Grid item xs>
-        <Slider
-          PangContext={props.PangContext}
-          classes={sliderClasses}
-          value={props.value}
-          min={props.min}
-          max={props.max}
-          marks={props.sliderMarks}
-          onChange={props.sliderOnChange}
-          ValueLabelComponent={SliderValueLabelComponent}
-        />
-      </Grid>
-      <Grid item>
-        <Input
-          PangContext={props.PangContext}
-          classes={inputClasses}
-          margin='dense'
-          value={props.value}
-          inputProps={{
-            min: props.min,
-            max: props.max,
-            step: props.inputStep,
-            type: props.inputType
-          }}
-          onChange={props.inputOnChange}
-          onBlur={props.inputOnBlur}
-        />
-      </Grid>
-    </Grid>
-  )
-}
-
 const SkillLevelCalculator = props => {
   const skill = props.skill
   const skillScalers = props.scalers
@@ -535,7 +430,6 @@ const SkillLevelCalculator = props => {
           value={level}
           min={minSkillLevel}
           max={maxSkillLevel}
-          sliderMarks={getSliderMarks(minSkillLevel, maxSkillLevel)}
           sliderOnChange={handleLevelSliderChange}
           inputOnChange={handleLevelInputChange}
           inputOnBlur={handleLevelInputBlur}
@@ -622,7 +516,6 @@ const SkillLevelCalculator = props => {
                   value={str}
                   min={minStr}
                   max={maxStr}
-                  sliderMarks={getSliderMarks(minStr, maxStr)}
                   sliderOnChange={handleStrSliderChange}
                   inputOnChange={handleStrInputChange}
                   inputOnBlur={handleStrInputBlur}
@@ -637,7 +530,6 @@ const SkillLevelCalculator = props => {
                   value={sta}
                   min={minSta}
                   max={maxSta}
-                  sliderMarks={getSliderMarks(minSta, maxSta)}
                   sliderOnChange={handleStaSliderChange}
                   inputOnChange={handleStaInputChange}
                   inputOnBlur={handleStaInputBlur}
@@ -652,7 +544,6 @@ const SkillLevelCalculator = props => {
                   value={dex}
                   min={minDex}
                   max={maxDex}
-                  sliderMarks={getSliderMarks(minDex, maxDex)}
                   sliderOnChange={handleDexSliderChange}
                   inputOnChange={handleDexInputChange}
                   inputOnBlur={handleDexInputBlur}
@@ -667,7 +558,6 @@ const SkillLevelCalculator = props => {
                   value={int}
                   min={minInt}
                   max={maxInt}
-                  sliderMarks={getSliderMarks(minInt, maxInt)}
                   sliderOnChange={handleIntSliderChange}
                   inputOnChange={handleIntInputChange}
                   inputOnBlur={handleIntInputBlur}

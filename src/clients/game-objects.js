@@ -991,6 +991,40 @@ class Class extends GameObject {
       await this.parentClass.fetch()
     }
   }
+
+  connectEdgesFromContext (context) {
+    if (!this._parentClass) {
+      const parentId = this.get('parent')
+      if (parentId) {
+        this._parentClass = context.Classes.get(parentId)
+      }
+    }
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (Class.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'parent',
+      'maxHP',
+      'maxFP',
+      'maxMP'
+    ]
+  }
 }
 
 class Classes extends GameObjectCollection {

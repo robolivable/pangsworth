@@ -57,6 +57,8 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
+import Input from '@material-ui/core/Input'
+import Slider from '@material-ui/core/Slider'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -969,17 +971,23 @@ export const PangDataViewPaperGroup = props => {
   )
 }
 
+export const PangDataViewItem = props => (
+  <Grid item xs={props.size}>
+    {props.children}
+  </Grid>
+)
+
 export const PangDataViewPaperItem = props => {
   const classes = useStyles(props)
   return (
-    <Grid item xs={props.size}>
+    <PangDataViewItem size={props.size}>
       <Paper
         className={classes.dataViewContentUniqueSection}
         style={props.innerStyle}
       >
         {props.children}
       </Paper>
-    </Grid>
+    </PangDataViewItem>
   )
 }
 
@@ -1078,3 +1086,105 @@ export const PangDataPrimitivesPaper = props => (
     <PrimitivesTable {...props} />
   </PangDataViewPaperItem>
 )
+
+const SliderValueLabelComponent = props => (
+  <Tooltip
+    placement='top'
+    open={props.open}
+    enterTouchDelay={0}
+    title={props.value}
+  >
+    {props.children}
+  </Tooltip>
+)
+
+const getSliderMarks = (min, max) => {
+  if (!parseInt(max)) {
+    return [
+      { value: 0, label: '0' }
+    ]
+  }
+  if (parseInt(max) === 1) {
+    return [
+      { value: 0, label: '0' },
+      { value: 1, label: '1' }
+    ]
+  }
+  const middleValue = Math.round(min + ((max - min) / 2))
+  return [
+    { value: min, label: min + '' },
+    { value: middleValue, label: middleValue + '' },
+    { value: max, label: max + '' }
+  ]
+}
+export const PangSlider = props => {
+  const sliderClasses = makeStyles(() => ({
+    root: {
+      color: props => colorForTheme(props, 80)
+    },
+    markLabelActive: {
+      color: props => colorForTheme(props, 80)
+    },
+    markLabel: {
+      color: props => colorForTheme(props, 80)
+    },
+  }))(props)
+  const inputClasses = makeStyles(() => ({
+    root: {
+      color: props => colorForTheme(props, 80)
+    },
+    underline: {
+      '&:before': {
+        borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
+      },
+      '&:after': {
+        borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
+      }
+    }
+  }))(props)
+  return (
+    <Grid
+      classes={makeStyles({
+        'spacing-xs-2': {
+          marginTop: -10,
+          marginBottom: -15
+        }
+      })()}
+      container
+      spacing={2}
+      alignItems='center'
+    >
+      <Grid item>
+        <PangDataText smaller text={props.sliderLabel} />
+      </Grid>
+      <Grid item xs>
+        <Slider
+          PangContext={props.PangContext}
+          classes={sliderClasses}
+          value={props.value}
+          min={props.min}
+          max={props.max}
+          marks={getSliderMarks(props.min, props.max)}
+          onChange={props.sliderOnChange}
+          ValueLabelComponent={SliderValueLabelComponent}
+        />
+      </Grid>
+      <Grid item>
+        <Input
+          PangContext={props.PangContext}
+          classes={inputClasses}
+          margin='dense'
+          value={props.value}
+          inputProps={{
+            min: props.min,
+            max: props.max,
+            step: props.inputStep,
+            type: props.inputType
+          }}
+          onChange={props.inputOnChange}
+          onBlur={props.inputOnBlur}
+        />
+      </Grid>
+    </Grid>
+  )
+}
