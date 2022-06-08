@@ -98,6 +98,7 @@
   - Classes stats calculator UI bug causing trail on slider not to appear unless you increment using the input box
 - Data load times
   - Quests data hydration takes significant time
+  - NPC shop item loading takes significant time
 #### Miscellaneous
 - ~~Cache miss issue~~
 - Cache miss for live API updates within the version check threshold (need a manual button)
@@ -180,6 +181,7 @@
   - Graph to plot mob experience gained per level (on a monster view)
   - Items upgrade calculator (for piercing and power dice enhancing)
   - Implement data views for quests and achievements
+    - Quests integrate with NPC views (NPCs to Quests adjacency list)
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate

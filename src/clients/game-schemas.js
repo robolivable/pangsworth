@@ -108,6 +108,61 @@ const PlaceTypesMap = {
   instance: 'Instance'
 }
 
+const MenusTypesMap = {
+  trade: 'Trade',
+  dialog: 'Dialog',
+  changeelem: 'Change Element',
+  upgrade: 'Upgrade',
+  inputreward: 'Input Reward',
+  showreward: 'Show Reward',
+  piercing: 'Piercing',
+  piercingremove: 'Piercing Remove',
+  attribute: 'Attribute',
+  lodelight: 'Lodelight',
+  bank: 'Bank',
+  hairshop: 'Hair Shop',
+  itemrepair: 'Item Repair',
+  post: 'Post',
+  skinshop: 'Skin Shop',
+  buff: 'Buff',
+  arenaenter: 'Arena Enter',
+  arenaleave: 'Arena Leave',
+  guildbank: 'Guild Bank',
+  guildrank: 'Guild Rank',
+  guildrankwar: 'Guild Rank War',
+  guildrankinfo: 'Guild Rank Info',
+  guildsiegeapply: 'Guild Siege Apply',
+  guildsiegestate: 'Guild Siege State',
+  guildsiegecancel: 'Guild Siege Cancel',
+  guildsiegejoin: 'Guild Siege Join',
+  guildsiegelineup: 'Guild Siege Lineup',
+  guildsiegejackpot: 'Guild Siege Jackpot',
+  guildsiegebestplayer: 'Guiuld Siege Best Player',
+  guildsiegeranking: 'Guild Siege Ranking',
+  guildsiegejackpot2: 'Guild Siege Jackpot 2',
+  guildsiegeinfo1: 'Guild Siege Info 1',
+  guildsiegeinfo2: 'Guild Siege Info 2',
+  guildsiegeinfo3: 'Guild Siege Info 3',
+  guildsiegeinfo4: 'Guild Siege Info 4',
+  roshambo: 'Roshambo (Rock Paper Scissors)',
+  exchangeroshambo: 'Exchange Roshambo (Rock Paper Scissors)',
+  upgradecard: 'Upgrade Card',
+  safeelementupgrade: 'Safe Element Upgrade',
+  safeupgrade: 'Safe upgrade',
+  safepiercing: 'Safe Piercing',
+  createshiningpowerdice: 'Create Shining Power Dice',
+  createjewels: 'Create Jewels',
+  createuniqueweapon: 'Create Unique Weapon',
+  exchangerareitempieces: 'Exchange Rare Item Pieces',
+  exchangecardpieces: 'Exchange Card Pieces',
+  removelevelreduction: 'Remove Level Reduction',
+  removecostumeblessing: 'Remove Constume Blessing',
+  arenaranking: 'Arena Ranking',
+  arenareward: 'Arena Reward',
+  accessoryupgrade: 'Accessory Upgrade',
+  safeaccessoryupgrade: 'Safe Accessory Upgrade'
+}
+
 const formatAbilityValue = ability => {
   if (ability.get('add')) {
     const isNegative = parseInt(ability.get('rate')) < 0
@@ -122,5 +177,6 @@ const formatAbilityValue = ability => {
 module.exports = {
   AbilityParameterTypesMap,
   PlaceTypesMap,
+  MenusTypesMap,
   formatAbilityValue
 }

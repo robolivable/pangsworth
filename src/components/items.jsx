@@ -397,15 +397,9 @@ Items.SingleView = props => {
         </div>
       )
     },
-    {
-      field: 'shop',
-      resizable: false,
-      maxWidth: 70
-    },
+    { field: 'shop' },
     {
       field: 'price',
-      resizable: false,
-      maxWidth: 70,
       cellRenderer: params => utils.intToLocalizedString(params.value) // TODO: localize
     }
   ])

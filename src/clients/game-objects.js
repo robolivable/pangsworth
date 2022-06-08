@@ -1,5 +1,6 @@
 const { GalaResource } = require('./gala')
 const { Navigation } = require('./breadcrumbs')
+const { MenusTypesMap, PlaceTypesMap } = require('./game-schemas')
 
 const config = require('../config')
 const utils = require('../utils')
@@ -579,8 +580,11 @@ class Shop extends GameChildObject {
   }
 
   connectEdgesFromContext (context) {
-    for (const item of this.items()) {
-      item.connectEdgesFromContext(context)
+    if (!this._items) {
+      this._items = {}
+    }
+    for (const itemId of this.get('items') || []) {
+      this._items[itemId] = context.Items.get(itemId)
     }
   }
 }
@@ -915,11 +919,15 @@ class Monster extends GameObject {
     for (const spawn of this.spawns()) {
       spawn.connectEdgesFromContext(context)
     }
-    for (const summon of this.summoned()) {
-      summon.connectEdgesFromContext(context)
-    }
     for (const attack of this.attacks()) {
       attack.connectEdgesFromContext(context)
+    }
+
+    if (!this._summoned) {
+      this._summoned = {}
+    }
+    for (const monsterId of this.get('summoned') || []) {
+      this._summoned[monsterId] = context.Monsters.get(monsterId)
     }
   }
 }
@@ -1572,6 +1580,43 @@ class NPC extends GameObject {
     for (const shop of this.shop()) {
       shop.connectEdgesFromContext(context)
     }
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (NPC.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      if (prop === 'menus') {
+        yield {
+          name: prop,
+          value: this.props[prop].map(menu => MenusTypesMap[menu]).join(', ')
+        }
+        continue
+      }
+      if (prop === 'place') {
+        yield {
+          name: prop,
+          value: PlaceTypesMap[this.props[prop]]
+        }
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'locations',
+      'shop'
+    ]
   }
 }
 

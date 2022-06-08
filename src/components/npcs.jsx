@@ -26,7 +26,12 @@ import {
   DataViewerContentContainer,
   DataViewerGenericComponent,
   PangDataText,
-  PangDataViewIcon
+  PangDataViewIcon,
+  PangDataViewAccordionItem,
+  PangDataViewPaperGroup,
+  PangNameChip,
+  PangDataViewPaperItem,
+  PangDataPrimitivesAccordion
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BlacksmithIcon from '../../static/images/blacksmith.svg'
@@ -44,6 +49,7 @@ import ColiseumIcon from '../../static/images/coliseum.svg'
 import FairyWandIcon from '../../static/images/fairy-wand.svg'
 import ChatBubbleIcon from '../../static/images/chat-bubble.svg'
 import MountainsIcon from '../../static/images/mountains.svg'
+import ImpactPointIcon from '../../static/images/impact-point.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
@@ -346,6 +352,94 @@ NPCs.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
+const useShopItemsGridStyles = makeStyles(() => ({
+  itemIcons: {
+    backgroundColor: 'rgba(0 0 0 / 0%)',
+    height: 32,
+    width: 32,
+    objectFit: 'contain'
+  }
+}))
+
+const ShopItemsGrid = props => {
+  const classes = useShopItemsGridStyles(props)
+  const shop = props.shop
+  shop.connectEdgesFromContext(props.PangContext)
+  const itemsRowData = Array.from(shop.items()).map(item => ({
+    name: item.get('name').en, // TODO: localize
+    icon: item.icon,
+    item,
+    rarity: item.get('rarity'),
+    price: item.get('buyPrice')
+  }))
+  const [itemsColumnDefs] = useState([
+    {
+      field: 'name',
+      minWidth: 100,
+      width: 100,
+      cellRenderer: params => (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          height: '100px'
+        }}>
+          <PangNameChip
+            bolder
+            smaller
+            name={params.value}
+            innerTextStyle={{ fontSize: '1.1vw' }}
+            rarity={params.data.rarity}
+            onClick={() => props.PangContext.navigateSingleItem(
+              params.data.item
+            )}
+          />
+          <img className={classes.itemIcons} src={params.data.icon} />
+        </div>
+      )
+    },
+    {
+      field: 'price',
+      cellRenderer: params => utils.intToLocalizedString(params.value)
+    }
+  ])
+  const itemsRowHeight = 100
+
+  const getTableHeightForRowCount =
+    (rowCount, rowHeight) => rowCount * rowHeight
+
+  return (
+    <div style={{
+      flexDirection: 'column',
+      width: '100%',
+      height: getTableHeightForRowCount(
+        itemsRowData.length, itemsRowHeight
+      ),
+      minHeight: 200,
+      maxHeight: 480,
+      textAlign: 'left'
+    }}>
+      <PangDataText bolder text='Items' />
+      <div style={{ width: '100%' }}>
+        <PangDataGrid
+          PangContext={props.PangContext}
+          rowData={itemsRowData}
+          columnDefs={itemsColumnDefs}
+          rowHeight={itemsRowHeight}
+          tableStyle={{
+            height: getTableHeightForRowCount(
+              itemsRowData.length, itemsRowHeight
+            ),
+            minHeight: 170,
+            maxHeight: 450,
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 NPCs.SingleView = props => {
   const npc = props.PangContext.NPCs.get(props.Key)
   npc.connectEdgesFromContext(props.PangContext)
@@ -368,6 +462,57 @@ NPCs.SingleView = props => {
       Icon={<PangDataViewIcon src={npc.icon} {...props} />}
       {...props}
     >
+      <PangDataViewPaperGroup {...props}>
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text='Locations' />
+            <PangDataViewPaperGroup {...props}>
+              {npcLocations.map(location => (
+                <PangDataViewPaperItem
+                  size={12}
+                  innerStyle={{
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center'
+                  }}
+                  {...props}
+                >
+                  <PangNameChip
+                    bolder
+                    name={location.continent?.get('name').en /* TODO: localize */}
+                    leftIcon={<ImpactPointIcon />}
+                    onClick={() => {console.log(location)}}
+                  />
+                </PangDataViewPaperItem>
+              ))}
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        <PangDataViewAccordionItem
+          defaultCollapsed
+          size={12}
+          summary={<PangDataText bolder text='Shops' />}
+          {...props}
+        >
+          {npcShops.length ? (
+            <PangDataViewPaperGroup {...props}>
+              {npcShops.map(shop => (
+                <PangDataViewAccordionItem
+                  defaultCollapsed
+                  size={12}
+                  summary={<PangDataText bolder text={shop.get('name')?.en /* TODO: localize */} />}
+                  {...props}
+                >
+                  <ShopItemsGrid PangContext={props.PangContext} shop={shop} />
+                </PangDataViewAccordionItem>
+              ))}
+            </PangDataViewPaperGroup>
+          ) : null}
+        </PangDataViewAccordionItem>
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(npc.primitives(['image'])) || []}
+          {...props}
+        />
+      </PangDataViewPaperGroup>
     </DataViewerContentContainer>
   )
 }

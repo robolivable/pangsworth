@@ -994,7 +994,7 @@ export const PangDataViewAccordionItem = props => {
   return (
     <Grid item xs={props.size}>
       <Accordion
-        defaultExpanded
+        defaultExpanded={!props.defaultCollapsed}
         className={classes.dataViewAccordionContentSection}
       >
         <AccordionSummary
