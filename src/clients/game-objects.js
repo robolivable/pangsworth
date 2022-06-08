@@ -1564,6 +1564,15 @@ class NPC extends GameObject {
     }
     await Promise.all(promiseList)
   }
+
+  connectEdgesFromContext (context) {
+    for (const location of this.locations()) {
+      location.connectEdgesFromContext(context)
+    }
+    for (const shop of this.shop()) {
+      shop.connectEdgesFromContext(context)
+    }
+  }
 }
 
 class NPCs extends GameObjectCollection {

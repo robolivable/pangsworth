@@ -22,7 +22,11 @@ import BaseComponent from './base-component'
 import {
   PangDataGrid,
   PangContentBackdrop,
-  PangNavigationAccordionItem
+  PangNavigationAccordionItem,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
+  PangDataText,
+  PangDataViewIcon
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BlacksmithIcon from '../../static/images/blacksmith.svg'
@@ -43,6 +47,7 @@ import MountainsIcon from '../../static/images/mountains.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
+import * as utils from '../utils'
 
 const menuTypeIcons = {
   Dialog: <ChatBubbleIcon />,
@@ -142,6 +147,7 @@ const NPCsPangDataGrid = props => {
   const createRowFromGameObject = go => ({
     id: go.id,
     image: go.image,
+    icon: go.image,
     name: go.get('name').en, // TODO: localize
     type: go.type,
     menus: formatMenus(go.get('menus')),
@@ -340,10 +346,30 @@ NPCs.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-NPCs.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW NPCs</div>
-  }
+NPCs.SingleView = props => {
+  const npc = props.PangContext.NPCs.get(props.Key)
+  npc.connectEdgesFromContext(props.PangContext)
+
+  const npcShops = Array.from(npc.shop())
+  const npcLocations = Array.from(npc.locations())
+
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={npc.id} />}
+          Name={<PangDataText
+            text={npc.get('name')?.en || '[no name]' /* TODO: localize */}
+          />}
+          Type={<PangDataText text={utils.camelToTextCase(npc.type.name)} />}
+          {...props}
+        />
+      )}
+      Icon={<PangDataViewIcon src={npc.icon} {...props} />}
+      {...props}
+    >
+    </DataViewerContentContainer>
+  )
 }
 
 NPCs.ROUTE = 'NPCs'

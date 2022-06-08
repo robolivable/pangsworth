@@ -91,6 +91,23 @@ const AbilityParameterTypesMap = {
   duration: 'Duration'
 }
 
+const PlaceTypesMap = {
+  lodestar: 'Lodestar',
+  lodelight: 'Lodelight',
+  flyingstation: 'Flying Station',
+  weaponstore: 'Weapon Store',
+  armorstore: 'Armor Store',
+  foodstore: 'Food Store',
+  magicstore: 'Magic Store',
+  generalstore: 'General Store',
+  publicoffice: 'Public Office',
+  questoffice: 'Quest Office',
+  dungeon: 'Dungeon',
+  shieldstore: 'Shield Store',
+  warpzone: 'Warp Zone',
+  instance: 'Instance'
+}
+
 const formatAbilityValue = ability => {
   if (ability.get('add')) {
     const isNegative = parseInt(ability.get('rate')) < 0
@@ -104,5 +121,6 @@ const formatAbilityValue = ability => {
 
 module.exports = {
   AbilityParameterTypesMap,
+  PlaceTypesMap,
   formatAbilityValue
 }
