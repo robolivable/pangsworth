@@ -1346,6 +1346,45 @@ class EquipmentSet extends GameObject {
     }
     await Promise.all(promiseList)
   }
+
+  connectEdgesFromContext (context) {
+    if (!this._transy) {
+      const transyId = this.get('transy')
+      if (transyId) {
+        this._transy = context.Items.get(transyId)
+      }
+    }
+    if (!this._parts) {
+      this._parts = {}
+    }
+    for (const partId of this.get('parts') || []) {
+      this._parts[partId] = context.Items.get(partId)
+    }
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (EquipmentSet.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'transy',
+      'parts',
+      'bonus'
+    ]
+  }
 }
 
 class EquipmentSets extends GameObjectCollection {

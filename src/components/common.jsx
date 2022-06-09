@@ -59,6 +59,7 @@ import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import Input from '@material-ui/core/Input'
 import Slider from '@material-ui/core/Slider'
+import Avatar from '@material-ui/core/Avatar'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -955,6 +956,27 @@ export const PangDataViewIcon = props => {
       className={classes.dataViewContentIcon}
       onClick={props.iconOnClick}
     />
+  )
+}
+
+export const PangDataIcon = props => {
+  const alt = `Icon for ${props.title}.`
+  return (
+    <Avatar
+      variant='square'
+      classes={makeStyles(() => ({
+        root: {
+          backgroundColor: 'rgba(0 0 0 / 0%)'
+        }
+      }))(props)}
+    >
+      <img
+        src={props.src}
+        onClick={props.iconOnClick}
+        title={props.title}
+        alt={alt}
+      />
+    </Avatar>
   )
 }
 

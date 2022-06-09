@@ -25,7 +25,16 @@ import {
   PangNavigationAccordionItem,
   getDarkTheme,
   DARK_CONTRAST_BG_COLOR,
-  LIGHT_CONTRAST_BG_COLOR
+  LIGHT_CONTRAST_BG_COLOR,
+  PangDataViewPaperItem,
+  PangDataViewPaperGroup,
+  PangDataText,
+  PangNameChip,
+  PangDataIcon,
+  DataViewerContentContainer,
+  DataViewerGenericComponent,
+  PangDataViewIcon,
+  PangDataPrimitivesAccordion
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BattleGear from '../../static/images/battle-gear.svg'
@@ -37,6 +46,7 @@ import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import * as config from '../config'
+import * as utils from '../utils'
 import * as uiutils from '../uiutils'
 
 const useStyles = makeStyles(theme => ({
@@ -118,42 +128,28 @@ export const nameSearchCellRenderer = navigateSingleDataItem => params => {
 
 const EquipmentSetPangDataGrid = props => {
   const classes = useStyles(props)
-  const getClassById = classId => {
-    if (!classId) {
-      return null
-    }
-    return props.PangContext.Classes.get(classId)
-  }
-  const getIconStyleForSex = sex => {
-    if (sex === 'female') {
-      return config.API_RESOURCE_TYPES.classes.iconStyles.oldFemale
-    }
-    return config.API_RESOURCE_TYPES.classes.iconStyles.oldMale
-  }
+
   const createRowFromGameObject = go => {
-    const itemRef = Array.from(go.parts())[0]
-    const cls = getClassById(itemRef?.class.id)
-    const setClassIconStyle = getIconStyleForSex(itemRef?.get('sex'))
+    const setParts = Array.from(go.parts()).map(part => {
+      part.connectEdgesFromContext(props.PangContext)
+      return part
+    })
+    const part = setParts[0]
     return ({
       id: go.id,
       type: go.type,
-      parts: JSON.stringify(Array.from(go.parts()).map(part => ({
-        src: part.icon,
-        alt: `${go.get('name').en} set piece.` // TODO: localize
-      }))),
+      set: Array.from(go.parts()),
+      equipmentSet: go,
+      part: part,
       name: go.get('name').en, // TODO: localize
-      class: cls.get('name').en || null, // TODO: localize
-      classPixelIcon: cls.iconStyled(setClassIconStyle) || null,
-      rarity: itemRef?.get('rarity'),
-      lv: itemRef?.get('level'),
-      bonuses: JSON.stringify(Array.from(go.bonuses()).map(bonus => ({
-        equipped: bonus.get('equipped'),
-        ability: {
-          parameter: bonus.ability.get('parameter'),
-          add: bonus.ability.get('add'),
-          rate: bonus.ability.get('rate')
-        }
-      })))
+      class: part.class.get('name').en || null, // TODO: localize
+      classIcon: part.class.iconForVariant(part.get('sex')),
+      rarity: part.get('rarity'),
+      lv: part.get('level'),
+      bonuses: Array.from(go.bonuses()).map(
+        bonus => props.PangContext.GameSchemas
+          .AbilityParameterTypesMap[bonus.ability.get('parameter')]
+      ).join(' , ')
     })
   }
 
@@ -184,213 +180,63 @@ const EquipmentSetPangDataGrid = props => {
     )
   }, [])
 
-  const nameCellRenderer = params => {
-    const nameColor = uiutils.getThemeForRarity(params.data.rarity).color
-    if (!nameColor) {
-      return params.value
-    }
-    const name = params.value || '[no name]'
-    const style = overrideStyle({
-      color: nameColor,
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    return (
-      <Chip
-        size='small'
-        label={innerLabel}
-        onClick={() => props.PangContext.navigateSingleDataItem(params.data)}
-      />
-    )
-  }
-
-  const partsCellRenderer = params => (
-    <div className={classes.setPartsWrapper}>
-      {JSON.parse(params.value).map(({ src, alt }, key) => (
-        <Avatar
-          key={key}
-          variant='square'
-          className={classes.setPart}
-        >
-          <img key={key} src={src} alt={alt} />
-        </Avatar>
-      ))}
-    </div>
-  )
-
-  const levelCellRenderer = params => {
-    const level = params.value
-    const style = overrideStyle({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        Lv {level}
-      </Typography>
-    )
-    return (
-      <Chip
-        size='small'
-        label={innerLabel}
-      />
-    )
-  }
-
-  const classCellRenderer = params => {
-    const name = params.value || '[no name]'
-    const style = overrideStyle({
-      fontSize: '0.675rem'
-    })()
-    const innerLabel = (
-      <Typography
-        classes={{ root: style.root }}
-        variant='subtitle2'
-      >
-        {name}
-      </Typography>
-    )
-    return (
-      <Chip
-        className={classes.classText}
-        size='small'
-        icon={<img src={params.data.classPixelIcon} />}
-        label={innerLabel}
-      />
-    )
-  }
-
-  const bonusesCellRenderer = params => {
-    const bonuses = JSON.parse(params.value).reduce((prev, cur) => {
-      if (!prev[cur.equipped]) {
-        prev[cur.equipped] = []
-      }
-      prev[cur.equipped].push(cur.ability)
-      return prev
-    }, {})
-
-    const bonusParameterText = ability => {
-      const parameter =
-        props.PangContext.GameSchemas.AbilityParameterTypesMap[ability.parameter]
-      if (ability.add) {
-        return `${parameter} +${ability.add}${ability.rate ? '%' : ''}`
-      }
-      if (ability.set) {
-        return `${parameter} ${ability.set}${ability.rate ? '%' : ''}`
-      }
-      return ''
-    }
-
-    return (
-      <div className={classes.bonuses}>
-        <Grid
-          container
-          justifyContent='flex-start'
-          alignItems='center'
-          spacing={1}
-        >
-          {Object.entries(bonuses).map(([equipped, abilities], key) => (
-            <Grid key={key} item xs={12}>
-              <Paper
-                className={classes.equippedWrapper}
-                variant='outlined'
-              >
-                <div className={classes.equippedCount}>
-                  {`${equipped}x`}
-                </div>
-                <div className={classes.equipped}>
-                  {abilities.map((ability, key) => (
-                    <Chip
-                      className={classes.equippedText}
-                      key={key}
-                      size='small'
-                      icon={ability.add ? <UpgradeIcon /> : null}
-                      label={bonusParameterText(ability)}
-                    />
-                  ))}
-                </div>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </div>
-    )
-  }
-
   const [columnDefs] = useState([
+    { field: 'id', maxWidth: 55, resizable: false },
     {
-      field: 'id',
-      hide: false,
-      width: 55,
-      minWidth: 55,
-      maxWidth: 55,
-      filter: true,
-      sortable: true
-    },
-    {
-      field: 'parts',
-      hide: false,
-      width: 65,
-      minWidth: 65,
-      maxWidth: 65,
-      cellRenderer: partsCellRenderer
+      field: 'set',
+      maxWidth: 70,
+      resizable: false,
+      cellRenderer: params => params.value.map((part, key) => (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <PangDataIcon
+            key={key}
+            src={part.icon}
+            title={part.get('name')?.en /* TODO: localize */}
+            iconOnClick={() => props.PangContext.navigateSingleItem(part)}
+          />
+        </div>
+      ))
     },
     {
       field: 'name',
-      hide: false,
-      width: 105,
-      minWidth: 105,
       maxWidth: 105,
-      filter: true,
-      sortable: true,
-      resizable: true,
-      cellRenderer: nameCellRenderer
+      resizable: false,
+      cellRenderer: params => (
+        <PangNameChip
+          name={params.value}
+          onClick={() => props.PangContext.navigateSingleItem(
+            params.data.equipmentSet
+          )}
+          rarity={params.data.rarity}
+        />
+      )
     },
     {
       field: 'class',
-      hide: false,
-      width: 120,
-      minWidth: 120,
       maxWidth: 120,
-      filter: true,
-      sortable: true,
-      cellRenderer: classCellRenderer
+      resizable: false,
+      cellRenderer: params => (
+        <PangNameChip
+          name={params.value}
+          onClick={() => props.PangContext.navigateSingleItem(
+            params.data.part.class
+          )}
+          leftIcon={<img src={params.data.classIcon} />}
+        />
+      )
     },
-    {
-      field: 'lv',
-      hide: false,
-      width: 75,
-      minWidth: 75,
-      maxWidth: 75,
-      filter: true,
-      sortable: true,
-      cellRenderer: levelCellRenderer
-    },
-    {
-      field: 'bonuses',
-      hide: false,
-      width: 250,
-      minWidth: 280,
-      filter: true,
-      sortable: true,
-      resizable: true,
-      cellRenderer: bonusesCellRenderer
-    }
+    { field: 'lv', maxWidth: 55, resizable: false },
+    { field: 'bonuses' }
   ])
 
   return (
     <PangDataGrid
+      noAutoSizeAll
       PangContext={props.PangContext}
-      rowHeight={220}
+      rowHeight={215}
       rowData={rowData}
       columnDefs={columnDefs}
     />
@@ -429,10 +275,104 @@ EquipmentSet.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-EquipmentSet.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW EquipmentSet</div>
-  }
+const useSingleViewStyles = makeStyles(() => ({
+}))
+
+EquipmentSet.SingleView = props => {
+  const classes = useSingleViewStyles(props)
+  const set = props.PangContext.EquipmentSets.get(props.Key)
+  set.connectEdgesFromContext(props.PangContext)
+  const parts = Array.from(set.parts()).map(part => {
+    part.connectEdgesFromContext(props.PangContext)
+    return part
+  })
+  const singlePart = parts[0]
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={set.id} />}
+          Name={<PangDataText
+            bolder
+            text={set.get('name').en /* TODO: localize */}
+            color={singlePart.get('rarity')}
+          />}
+          Type={<PangDataText text={utils.camelToTextCase(set.type.name)} />}
+          Level={<PangDataText text={singlePart.get('level')} />}
+          Rarity={<PangDataText
+            text={uiutils.getThemeForRarity(singlePart.get('rarity')).display}
+          />}
+          Class={<PangNameChip
+            name={singlePart.class.get('name').en /* TODO: localize */}
+            onClick={() => props.PangContext.navigateSingleItem(singlePart.class)}
+            leftIcon={<img
+              src={singlePart.class.iconForVariant(singlePart.get('sex'))}
+            />}
+          />}
+          {...props}
+        />
+      )}
+      Icon={(
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-evenly'
+        }}>
+          {parts.map(part => (
+            <PangDataViewIcon
+              src={part.icon}
+              iconOnClick={() => props.PangContext.navigateSingleItem(part)}
+              {...props}
+            />
+          ))}
+        </div>
+      )}
+      {...props}
+    >
+      <PangDataViewPaperGroup {...props}>
+        {Object.entries(Array.from(set.bonuses()).reduce(
+          (prev, cur) => {
+            if (!prev[cur.get('equipped')]) {
+              prev[cur.get('equipped')] = []
+            }
+            prev[cur.get('equipped')].push(cur.ability)
+            return prev
+          },
+          {}
+        )).map(([count, abilities]) => (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText bolder text={`${count} pcs`} />
+            <PangDataViewPaperGroup {...props}>
+              {abilities.map((ability, key) => (
+                <PangDataViewPaperItem
+                  key={key}
+                  size={4}
+                  {...props}
+                >
+                  <PangDataText
+                    text={
+                      props.PangContext.GameSchemas
+                        .AbilityParameterTypesMap[ability.get('parameter')]
+                    }
+                  />
+                  <PangDataText
+                    bigger
+                    bolder
+                    color='green'
+                    text={props.PangContext.GameSchemas.formatAbilityValue(ability)}
+                  />
+                </PangDataViewPaperItem>
+              ))}
+            </PangDataViewPaperGroup>
+          </PangDataViewPaperItem>
+        ))}
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(set.primitives(['icon'])) || []}
+          {...props}
+        />
+      </PangDataViewPaperGroup>
+    </DataViewerContentContainer>
+  )
 }
 
 EquipmentSet.ROUTE = 'EquipmentSets'
