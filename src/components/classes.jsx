@@ -913,6 +913,7 @@ Classes.SingleView = props => {
 
   clazz.connectEdgesFromContext(props.PangContext)
 
+  const promotesTo = props.PangContext.classAdjacency[clazz.id] || []
   return (
     <DataViewerContentContainer
       Generic={(
@@ -951,28 +952,37 @@ Classes.SingleView = props => {
           </PangDataViewPaperItem>
         ) : null}
 
-        <PangDataViewAccordionItem
-          size={12}
-          summary={<PangDataText bolder text='Promotes To' />}
-          {...props}
-        >
-          {(props.PangContext.classAdjacency[clazz.id] || []).map(
-            childClazz => (
-              <div key={childClazz.id} style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-              }}>
-                <img src={childClazz.icon} />
-                <PangNameChip
-                  name={childClazz.get('name').en /* TODO: localize */}
-                  onClick={() => props.PangContext.navigateSingleItem(childClazz)}
-                />
-              </div>
-            )
-          )}
-        </PangDataViewAccordionItem>
+        {promotesTo.length ? (
+          <PangDataViewPaperItem size={12} {...props}>
+            <PangDataText
+              bolder
+              littleBigger
+              text='Promotes To'
+            />
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-evenly',
+              width: '100%'
+            }}>
+              {promotesTo.map(
+                childClazz => (
+                  <div key={childClazz.id} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly',
+                  }}>
+                    <img src={childClazz.icon} />
+                    <PangNameChip
+                      name={childClazz.get('name').en /* TODO: localize */}
+                      onClick={() => props.PangContext.navigateSingleItem(childClazz)}
+                    />
+                  </div>
+                )
+              )}
+            </div>
+          </PangDataViewPaperItem>
+        ) : null}
 
         <ClassStatCalculator clazz={clazz} {...props} />
 

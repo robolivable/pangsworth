@@ -182,6 +182,9 @@
   - Items upgrade calculator (for piercing and power dice enhancing)
   - Implement data views for quests and achievements
     - Quests integrate with NPC views (NPCs to Quests adjacency list)
+  - Add adjacency lists to single data views
+    - List of armors (and weapons) for a class
+    - List of skills for a class
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate
