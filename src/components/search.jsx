@@ -361,7 +361,7 @@ const PangResultsTable = props => {
       id: go.id,
       name: go.get('name')?.en, // TODO: localize
       type: go.type,
-      icon: itemObject.icon,
+      icon: itemObject?.icon,
       itemObject,
       [`${go.type.name}Type`]: type,
       ...row
@@ -450,6 +450,12 @@ const PangSearch = props => {
     setShowTable(false)
   }
 
+  const handleSearchBarKeyPress = e => {
+    if (e.key === 'Enter') {
+      setSearchTerm(e.target.value)
+    }
+  }
+
   const getSearchBar = () => {
     if (defaultSearchTerm) {
       return (
@@ -471,6 +477,7 @@ const PangSearch = props => {
           onChange={handleSearchBarOnChange}
           onBlur={handleSearchBarOnBlur}
           value={defaultSearchTerm}
+          onKeyPress={handleSearchBarKeyPress}
         />
       )
     }

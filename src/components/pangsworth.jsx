@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles, styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
@@ -196,17 +196,55 @@ const PangBreadcrumbButtons = props => {
   if (nameColor) {
     style.color = nameColor
   }
+
+  const handleBackButtonOnClick = () => {
+    if (!props.PangContext.breadcrumbs.current.prev) {
+      return
+    }
+    props.PangContext.breadcrumbs.jumpTo(
+      props.PangContext.breadcrumbs.current.prev
+    )
+    props.PangContext.askRerender()
+  }
+
+  const handleForwardButtonOnClick = () => {
+    if (!props.PangContext.breadcrumbs.current.next) {
+      return
+    }
+    props.PangContext.breadcrumbs.jumpTo(
+      props.PangContext.breadcrumbs.current.next
+    )
+    props.PangContext.askRerender()
+  }
+
+  useEffect(() => {
+    const mouseClickEventListener = e => {
+      if (typeof e !== 'object') {
+        return
+      }
+      switch (e.button) {
+        case 3:
+          handleBackButtonOnClick()
+          break
+        case 4:
+          handleForwardButtonOnClick()
+          break
+        default:
+          break
+      }
+    }
+    document.addEventListener('mousedown', mouseClickEventListener)
+    return () => {
+      document.removeEventListener('mousedown', mouseClickEventListener)
+    }
+  }, [])
+
   return (
     <ButtonGroup classes={classesButtonGroup} {...props}>
       <Button
         classes={classesButtonSide}
         disabled={!props.PangContext.breadcrumbs?.current.prev}
-        onClick={() => {
-          props.PangContext.breadcrumbs.jumpTo(
-            props.PangContext.breadcrumbs.current.prev
-          )
-          props.PangContext.askRerender()
-        }}
+        onClick={handleBackButtonOnClick}
         {...props}
       >
         <ChevronLeftIcon className={classes.breadbrumbButtons} {...props} />
@@ -266,12 +304,7 @@ const PangBreadcrumbButtons = props => {
       <Button
         classes={classesButtonSide}
         disabled={!props.PangContext.breadcrumbs?.current.next}
-        onClick={() => {
-          props.PangContext.breadcrumbs.jumpTo(
-            props.PangContext.breadcrumbs.current.next
-          )
-          props.PangContext.askRerender()
-        }}
+        onClick={handleForwardButtonOnClick}
         {...props}
       >
         <ChevronRightIcon className={classes.breadbrumbButtons} {...props} />
