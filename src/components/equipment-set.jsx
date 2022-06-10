@@ -34,7 +34,8 @@ import {
   DataViewerContentContainer,
   DataViewerGenericComponent,
   PangDataViewIcon,
-  PangDataPrimitivesAccordion
+  PangDataPrimitivesAccordion,
+  PangDataViewAccordionItem
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BattleGear from '../../static/images/battle-gear.svg'
@@ -96,17 +97,12 @@ const useStyles = makeStyles(theme => ({
 
 const overrideStyle = root => makeStyles({ root })
 
-/**
-  nameSearchCellRenderer (navigateSingleItem: function): function
-
-  Function to render equipment set names without the specified rarity.
-  This function is used by the search results table to render results
-  containing equipment sets. To reduce complexity around hydration of
-  search results, this method ignores the item rarity color.
-*/
-export const nameSearchCellRenderer = navigateSingleDataItem => params => {
+export const nameSearchCellRenderer = navigateSingleItem => params => {
   const name = params.value || '[no name]'
+  const nameColor =
+    uiutils.getThemeForRarity(params.data.itemObject.rarity).color
   const style = overrideStyle({
+    color: nameColor,
     fontSize: '0.675rem'
   })()
   const innerLabel = (
@@ -121,9 +117,14 @@ export const nameSearchCellRenderer = navigateSingleDataItem => params => {
     <Chip
       size='small'
       label={innerLabel}
-      onClick={() => navigateSingleDataItem(params.data)}
+      onClick={() => navigateSingleItem(params.data.itemObject)}
     />
   )
+}
+
+export const iconSearchCellRenderer = classes => params => {
+  const alt = `Icon for the ${params.data.name} item.`
+  return <PangDataIcon src={params.value} alt={alt} classes={classes} />
 }
 
 const EquipmentSetPangDataGrid = props => {
@@ -135,11 +136,12 @@ const EquipmentSetPangDataGrid = props => {
       return part
     })
     const part = setParts[0]
+    const iconPart = setParts[1]
     return ({
       id: go.id,
       type: go.type,
       set: Array.from(go.parts()),
-      equipmentSet: go,
+      icon: iconPart.icon,
       part: part,
       name: go.get('name').en, // TODO: localize
       class: part.class.get('name').en || null, // TODO: localize
@@ -207,8 +209,8 @@ const EquipmentSetPangDataGrid = props => {
       cellRenderer: params => (
         <PangNameChip
           name={params.value}
-          onClick={() => props.PangContext.navigateSingleItem(
-            params.data.equipmentSet
+          onClick={() => props.PangContext.navigateSingleDataItem(
+            params.data
           )}
           rarity={params.data.rarity}
         />
@@ -236,7 +238,7 @@ const EquipmentSetPangDataGrid = props => {
     <PangDataGrid
       noAutoSizeAll
       PangContext={props.PangContext}
-      rowHeight={215}
+      rowHeight={170}
       rowData={rowData}
       columnDefs={columnDefs}
     />
@@ -329,42 +331,50 @@ EquipmentSet.SingleView = props => {
       {...props}
     >
       <PangDataViewPaperGroup {...props}>
-        {Object.entries(Array.from(set.bonuses()).reduce(
-          (prev, cur) => {
-            if (!prev[cur.get('equipped')]) {
-              prev[cur.get('equipped')] = []
-            }
-            prev[cur.get('equipped')].push(cur.ability)
-            return prev
-          },
-          {}
-        )).map(([count, abilities]) => (
-          <PangDataViewPaperItem size={12} {...props}>
-            <PangDataText bolder text={`${count} pcs`} />
-            <PangDataViewPaperGroup {...props}>
-              {abilities.map((ability, key) => (
-                <PangDataViewPaperItem
-                  key={key}
-                  size={4}
-                  {...props}
-                >
-                  <PangDataText
-                    text={
-                      props.PangContext.GameSchemas
-                        .AbilityParameterTypesMap[ability.get('parameter')]
-                    }
-                  />
-                  <PangDataText
-                    bigger
-                    bolder
-                    color='green'
-                    text={props.PangContext.GameSchemas.formatAbilityValue(ability)}
-                  />
-                </PangDataViewPaperItem>
-              ))}
-            </PangDataViewPaperGroup>
-          </PangDataViewPaperItem>
-        ))}
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Stat Bonuses' />}
+          {...props}
+        >
+          <PangDataViewPaperGroup {...props}>
+            {Object.entries(Array.from(set.bonuses()).reduce(
+              (prev, cur) => {
+                if (!prev[cur.get('equipped')]) {
+                  prev[cur.get('equipped')] = []
+                }
+                prev[cur.get('equipped')].push(cur.ability)
+                return prev
+              },
+              {}
+            )).map(([count, abilities]) => (
+              <PangDataViewPaperItem size={12} {...props}>
+                <PangDataText bolder text={`${count} pcs`} />
+                <PangDataViewPaperGroup {...props}>
+                  {abilities.map((ability, key) => (
+                    <PangDataViewPaperItem
+                      key={key}
+                      size={4}
+                      {...props}
+                    >
+                      <PangDataText
+                        text={
+                          props.PangContext.GameSchemas
+                            .AbilityParameterTypesMap[ability.get('parameter')]
+                        }
+                      />
+                      <PangDataText
+                        bigger
+                        bolder
+                        color='green'
+                        text={props.PangContext.GameSchemas.formatAbilityValue(ability)}
+                      />
+                    </PangDataViewPaperItem>
+                  ))}
+                </PangDataViewPaperGroup>
+              </PangDataViewPaperItem>
+            ))}
+          </PangDataViewPaperGroup>
+        </PangDataViewAccordionItem>
         <PangDataPrimitivesAccordion
           title='Full Details'
           primitives={Array.from(set.primitives(['icon'])) || []}

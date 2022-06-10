@@ -395,7 +395,6 @@ const useSingleViewStyles = makeStyles(() => ({
 
 Monsters.SingleView = props => {
   const classes = useSingleViewStyles(props)
-  console.log({props})
 
   const monster = props.PangContext.Monsters.get(props.Key)
   const monsterDescription = monster.get('description')?.en // TODO: localize
@@ -588,9 +587,7 @@ Monsters.SingleView = props => {
               ) : null}
               {monster.get('flying') ? (
                 <PangDataViewPaperItem size={4} {...props}>
-                  <PangDataText
-                    text='Aerial'
-                  />
+                  <PangDataText text='Aerial' />
                   <PangDataText
                     bigger
                     bolder

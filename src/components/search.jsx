@@ -39,7 +39,8 @@ import World, {
 } from './world'
 import EquipmentSet, {
   // NOTE: equipment set has a separate cell renderer for search
-  nameSearchCellRenderer as equipmentSetNameCellRenderer
+  nameSearchCellRenderer as equipmentSetNameCellRenderer,
+  iconSearchCellRenderer as equipmentSetIconCellRenderer
 } from './equipment-set'
 import Quests, {
   nameCellRenderer as questsNameCellRenderer
@@ -61,6 +62,7 @@ import Items, {
   iconCellRenderer as itemsIconCellRenderer
 } from './items'
 import Skills, {
+  nameCellRenderer as skillsNameCellRenderer,
   iconCellRenderer as skillsIconCellRenderer
 } from './skills'
 import NPCs, {
@@ -234,8 +236,12 @@ const PangResultsTable = props => {
     props.PangContext.navigateSingleDataItem(item)
   const handleNavigateNPCsItem = item =>
     props.PangContext.navigateSingleDataItem(item)
-  const handleNavigateEquipmentSetsItem = item =>
+  const handleNavigateSkillsItem = item =>
     props.PangContext.navigateSingleDataItem(item)
+
+  // NOTE: equipment sets pass in the item reference
+  const handleNavigateEquipmentSetsItem = item =>
+    props.PangContext.navigateSingleItem(item)
   const handleNavigateQuestsItem = item => {}
   const handleNavigateAchievementsItem = item => {}
 
@@ -251,6 +257,8 @@ const PangResultsTable = props => {
         return classesNameCellRenderer(handleNavigateClassesItem)(params)
       case 'npcs':
         return npcsNameCellRenderer(handleNavigateNPCsItem)(params)
+      case 'skills':
+        return skillsNameCellRenderer(handleNavigateSkillsItem)(params)
       case 'equipmentSets':
         return equipmentSetNameCellRenderer(
           handleNavigateEquipmentSetsItem
@@ -265,6 +273,7 @@ const PangResultsTable = props => {
     return params.value
   }
   const iconCellRenderer = params => {
+    console.log('params type and value =>', {type: params.data.type.name, value: params.value})
     if (!params.value) {
       return null
     }
@@ -279,6 +288,10 @@ const PangResultsTable = props => {
         return classesIconCellRenderer(classes)(params)
       case 'npcs':
         return npcsIconCellRenderer(classes)(params)
+      case 'equipmentSets':
+        return equipmentSetIconCellRenderer(makeStyles(() => ({
+          root: { backgroundColor: 'rgba(0 0 0 / 0%)' }
+        }))(props))(params)
     }
     return null
   }
@@ -301,6 +314,38 @@ const PangResultsTable = props => {
     }
   ]
 
+  const getItemObjectForIdAndType = (id, type) => {
+    switch (type.name) {
+      case 'world':
+        return props.PangContext.Worlds.get(id)
+      case 'items':
+        return props.PangContext.Items.get(id)
+      case 'monsters':
+        return props.PangContext.Monsters.get(id)
+      case 'classes':
+        return props.PangContext.Classes.get(id)
+      case 'npcs':
+        return props.PangContext.NPCs.get(id)
+      case 'equipmentSets':
+        const set = props.PangContext.EquipmentSets.get(id)
+        set.connectEdgesFromContext(props.PangContext)
+        const setParts = Array.from(set.parts()).map(part => {
+          part.connectEdgesFromContext(props.PangContext)
+          return part
+        })
+        set.rarity = setParts[0].get('rarity')
+        set.icon = setParts[1].icon
+        return set
+      case 'skills':
+        return props.PangContext.Skills.get(id)
+      case 'quests':
+        return props.PangContext.Quests.get(id)
+      case 'achievements':
+        return props.PangContext.Achievements.get(id)
+    }
+    return null
+  }
+
   const createRowFromGameObject = go => {
     const { __id, id, name, type, icon, image, ...rest } = go.props
     const row = {}
@@ -311,11 +356,13 @@ const PangResultsTable = props => {
       }
       row[key] = value
     }
+    const itemObject = getItemObjectForIdAndType(go.id, go.type)
     return ({
       id: go.id,
       name: go.get('name')?.en, // TODO: localize
       type: go.type,
-      icon: go.icon,
+      icon: itemObject.icon,
+      itemObject,
       [`${go.type.name}Type`]: type,
       ...row
     })

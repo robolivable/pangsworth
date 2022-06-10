@@ -836,36 +836,44 @@ export const PangDataText = props => {
     case 'Uncommon':
       styleProps.color = uiutils.THEME_BROWN
       break
+    case 'filldarkbrown':
     case 'giant':
     case 'Giant':
       styleProps.fill = uiutils.THEME_DARK_BROWN
       break
+    case 'filldarkred':
     case 'super':
     case 'Super':
       styleProps.fill = uiutils.THEME_DARK_RED
       break
+    case 'fillpurple':
     case 'purple':
     case 'violet':
       styleProps.fill = uiutils.THEME_VIOLET
       break
+    case 'fillblue':
     case 'water':
     case 'Water':
       styleProps.fill = uiutils.THEME_BLUE
       break
+    case 'fillred':
     case 'fire':
     case 'Fire':
       styleProps.fill = uiutils.THEME_RED
       break
     case 'yellow':
+    case 'fillyellow':
     case 'electricity':
     case 'Electricity':
       styleProps.fill = uiutils.THEME_YELLOW
       break
+    case 'filllightblue':
     case 'lightblue':
     case 'wind':
     case 'Wind':
       styleProps.fill = uiutils.THEME_LIGHT_BLUE
       break
+    case 'filllightbrown':
     case 'lightbrown':
     case 'earth':
     case 'Earth':
@@ -960,11 +968,11 @@ export const PangDataViewIcon = props => {
 }
 
 export const PangDataIcon = props => {
-  const alt = `Icon for ${props.title}.`
+  const alt = props.alt || `Icon for ${props.title}.`
   return (
     <Avatar
-      variant='square'
-      classes={makeStyles(() => ({
+      variant={props.variant || 'square'}
+      classes={props.classes || makeStyles(() => ({
         root: {
           backgroundColor: 'rgba(0 0 0 / 0%)'
         }

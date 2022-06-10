@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
 
 const overrideTypography = root => makeStyles(theme => ({ root }))
 
-const nameCellRenderer = navigateSingleDataItem => params => {
+export const nameCellRenderer = navigateSingleDataItem => params => {
   const name = params.value || '[no name]'
   const style = overrideTypography({
     fontSize: '0.675rem'

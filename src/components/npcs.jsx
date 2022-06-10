@@ -463,29 +463,29 @@ NPCs.SingleView = props => {
       {...props}
     >
       <PangDataViewPaperGroup {...props}>
-          <PangDataViewPaperItem size={12} {...props}>
-            <PangDataText bolder text='Locations' />
-            <PangDataViewPaperGroup {...props}>
-              {npcLocations.map(location => (
-                <PangDataViewPaperItem
-                  size={12}
-                  innerStyle={{
-                    display: 'flex',
-                    justifyContent: 'space-evenly',
-                    alignItems: 'center'
-                  }}
-                  {...props}
-                >
-                  <PangNameChip
-                    bolder
-                    name={location.continent?.get('name').en /* TODO: localize */}
-                    leftIcon={<ImpactPointIcon />}
-                    onClick={() => {console.log(location)}}
-                  />
-                </PangDataViewPaperItem>
-              ))}
-            </PangDataViewPaperGroup>
-          </PangDataViewPaperItem>
+        <PangDataViewPaperItem size={12} {...props}>
+          <PangDataText bolder text='Locations' />
+          <PangDataViewPaperGroup {...props}>
+            {npcLocations.map(location => (
+              <PangDataViewPaperItem
+                size={12}
+                innerStyle={{
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center'
+                }}
+                {...props}
+              >
+                <PangNameChip
+                  bolder
+                  name={location.continent?.get('name').en /* TODO: localize */}
+                  leftIcon={<ImpactPointIcon />}
+                  onClick={() => {console.log(location)}}
+                />
+              </PangDataViewPaperItem>
+            ))}
+          </PangDataViewPaperGroup>
+        </PangDataViewPaperItem>
         <PangDataViewAccordionItem
           defaultCollapsed
           size={12}

@@ -68,7 +68,8 @@ class GameObject {
     return !Object.keys(rest).length
   }
 
-  get icon () {}
+  get icon () { return this.props.icon }
+  set icon (value) { this.props.icon = value }
   * images () {}
 
   get (key) {
@@ -286,6 +287,10 @@ class Place extends GameChildObject {
       return
     }
     await this.location.hydrate()
+  }
+
+  connectEdgesFromContext (context) {
+    this.location?.connectEdgesFromContext(context)
   }
 }
 
@@ -701,6 +706,50 @@ class World extends GameObject {
       promiseList.push(lodestar.hydrate())
     }
     await Promise.all(promiseList)
+  }
+
+  connectEdgesFromContext (context) {
+    if (!this._revivalWorld) {
+      const worldId = this.get('revivalWorld')
+      if (worldId) {
+        this._revivalWorld = context.Worlds.get(worldId)
+      }
+    }
+    for (const place of this.places()) {
+      place.connectEdgesFromContext(context)
+    }
+    for (const lodestar of this.lodestars()) {
+      lodestar.connectEdgesFromContext(context)
+    }
+  }
+
+  * primitives (filterPropNames = []) {
+    for (const prop in this.props) {
+      if (filterPropNames.includes(prop)) {
+        continue
+      }
+      if (World.ComplexPropNames.includes(prop)) {
+        continue
+      }
+      if (i18nUtils.isLocalizableProp(prop)) {
+        // TODO: localize
+        continue
+      }
+      yield { name: prop, value: this.props[prop] }
+    }
+  }
+
+  static get ComplexPropNames () {
+    return [
+      'continents',
+      'lodestars',
+      'places',
+      'revivalKey',
+      'revivalWorld',
+      'tileName',
+      'width',
+      'height'
+    ]
   }
 }
 

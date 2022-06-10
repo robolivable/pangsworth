@@ -22,7 +22,15 @@ import BaseComponent from './base-component'
 import {
   PangDataGrid,
   PangContentBackdrop,
-  PangNavigationAccordionItem
+  PangNavigationAccordionItem,
+  DataViewerContentContainer,
+  PangDataViewPaperGroup,
+  PangDataPrimitivesAccordion,
+  PangDataText,
+  PangNameChip,
+  PangDataViewPaperItem,
+  PangDataViewAccordionItem,
+  DataViewerGenericComponent
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import MountainsIcon from '../../static/images/mountains.svg'
@@ -30,9 +38,11 @@ import CrossedSwordsIcon from '../../static/images/crossed-swords.svg'
 import NoFlyZoneIcon from '../../static/images/no-fly-zone.svg'
 import CaveEntranceIcon from '../../static/images/cave-entrance.svg'
 import SpawnNodeIcon from '../../static/images/spawn-node.svg'
+import ImpactPointIcon from '../../static/images/impact-point.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
+import * as utils from '../utils'
 
 const useStyles = makeStyles(theme => ({
   detailsWrapper: {
@@ -296,10 +306,128 @@ World.Button = class extends BaseComponent {
   _handleOnClick () {}
 }
 
-World.SingleView = class extends BaseComponent {
-  render () {
-    return <div>TODO SINGLE VIEW World</div>
-  }
+const useSingleViewStyles = makeStyles(() => ({
+}))
+
+World.SingleView = props => {
+  const classes = useSingleViewStyles(props)
+  const world = props.PangContext.Worlds.get(props.Key)
+  world.connectEdgesFromContext(props.PangContext)
+
+  const worldPOIs = Array.from(world.places())
+  const lodestars = Array.from(world.lodestars())
+
+  return (
+    <DataViewerContentContainer
+      Generic={(
+        <DataViewerGenericComponent
+          Id={<PangDataText text={world.id} />}
+          Name={<PangDataText text={world.get('name').en /* TODO: localize */} />}
+          Type={<PangDataText text={utils.camelToTextCase(world.type.name)} />}
+        />
+      )}
+      Icon={<MountainsIcon />}
+      {...props}
+    >
+      <PangDataViewPaperGroup {...props}>
+        <PangDataViewPaperItem size={12} {...props}>
+          <PangDataText bolder text='Zone Details' />
+          <PangDataViewPaperGroup {...props}>
+            {world.get('pk') ? (
+              <PangDataViewPaperItem size={4} {...props}>
+                <PangDataText text='PK (PvP)' />
+                <PangDataText
+                  bigger
+                  bolder
+                  color='fillred'
+                  text={<CrossedSwordsIcon />}
+                />
+              </PangDataViewPaperItem>
+            ) : null}
+            {!world.get('flying') ? (
+              <PangDataViewPaperItem size={4} {...props}>
+                <PangDataText text='No Flying' />
+                <PangDataText
+                  bigger
+                  bolder
+                  color='lightblue'
+                  text={<NoFlyZoneIcon />}
+                />
+              </PangDataViewPaperItem>
+            ) : null}
+            {world.get('inDoor') ? (
+              <PangDataViewPaperItem size={4} {...props}>
+                <PangDataText text='Inside' />
+                <PangDataText
+                  bigger
+                  bolder
+                  color='lightbrown'
+                  text={<CaveEntranceIcon />}
+                />
+              </PangDataViewPaperItem>
+            ) : null}
+          </PangDataViewPaperGroup>
+        </PangDataViewPaperItem>
+        <PangDataViewAccordionItem
+          defaultCollapsed
+          size={12}
+          summary={<PangDataText bolder text='Places' />}
+          {...props}
+        >
+          {worldPOIs.map(place => (
+            <PangDataViewPaperItem
+              size={12}
+              innerStyle={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-evenly',
+                alignItems: 'center'
+              }}
+              {...props}
+            >
+              <PangNameChip
+                bolder
+                name={place.location.continent?.get('name').en /* TODO: localize */}
+                leftIcon={<ImpactPointIcon />}
+                onClick={() => conosle.log({place})}
+              />
+            </PangDataViewPaperItem>
+          ))}
+        </PangDataViewAccordionItem>
+        <PangDataViewAccordionItem
+          defaultCollapsed
+          size={12}
+          summary={<PangDataText bolder text='Lodestars' />}
+          {...props}
+        >
+          {lodestars.map(lodestar => (
+            <PangDataViewPaperItem
+              size={12}
+              innerStyle={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-evenly',
+                alignItems: 'center'
+              }}
+              {...props}
+            >
+              <PangNameChip
+                bolder
+                name={lodestar.location.continent?.get('name').en /* TODO: localize */}
+                leftIcon={<ImpactPointIcon />}
+                onClick={() => conosle.log({lodestar})}
+              />
+            </PangDataViewPaperItem>
+          ))}
+        </PangDataViewAccordionItem>
+        <PangDataPrimitivesAccordion
+          title='Full Details'
+          primitives={Array.from(world.primitives(['icon'])) || []}
+          {...props}
+        />
+      </PangDataViewPaperGroup>
+    </DataViewerContentContainer>
+  )
 }
 
 World.ROUTE = 'World'
