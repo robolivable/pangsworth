@@ -59,6 +59,7 @@ const PangMap = props => {
       world={world}
       locationObj={worldLocationObj}
       showMarker={showMarker}
+      markerLabel={props.markerLabel}
     />
   )
 }
@@ -68,10 +69,12 @@ export default class Map extends BaseComponent {
     const worldId = this.props.PangContext.routeOptions?.worldId
       || this.props.PangContext.GameSchemas.DEFAULT_WORLD_ID
     const worldLocationObj = this.props.PangContext.routeOptions?.locationObj
+    const markerLabel = this.props.PangContext.routeOptions?.markerLabel
     return <PangMap
       PangContext={this.props.PangContext}
       worldId={worldId}
       worldLocationObj={worldLocationObj}
+      markerLabel={markerLabel}
     />
   }
 }

@@ -485,6 +485,7 @@ NPCs.SingleView = props => {
                   onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
                     worldId: location.world.id,
                     locationObj: location.toJSON(),
+                    markerLabel: npc.get('name')?.en // TODO: localize
                   })}
                 />
               </PangDataViewPaperItem>

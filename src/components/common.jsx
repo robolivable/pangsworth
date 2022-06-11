@@ -73,6 +73,7 @@ import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { useMap, useMapEvents } from 'react-leaflet/hooks'
 import { Marker } from 'react-leaflet/Marker'
+import { Popup } from 'react-leaflet/Popup'
 
 const tableBufferScale = 9
 
@@ -539,7 +540,7 @@ export const PangDataViewDrawer = props => {
 
   useEffect(() => {
     const navigateHandler = () => {
-      setOpen(true)
+      handleDataViewDrawerOpen()
       props.PangContext.askRerender()
     }
     props.PangContext.on(BuiltinEvents.NAVIGATE_SINGLE_ITEM, navigateHandler)
@@ -1268,7 +1269,11 @@ const MapPanner = props => {
     iconSize: [34, 34],
     className: classes.marker
   })
-  return props.marker ? <Marker position={props.marker} icon={icon} /> : null
+  return props.marker ? (
+    <Marker position={props.marker} icon={icon}>
+      <Popup>{props.markerLabel}</Popup>
+    </Marker>
+  ) : null
 }
 
 export const PangWorldMap = props => {
@@ -1328,7 +1333,8 @@ export const PangWorldMap = props => {
       <MapPanner
         center={mapCenter}
         marker={props.showMarker ? placeMarker : null}
-      />} />
+        markerLabel={props.markerLabel}
+      />
     </MapContainer>
   )
 }

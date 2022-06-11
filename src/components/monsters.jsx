@@ -163,184 +163,43 @@ const MonstersPangDataGrid = props => {
   }, [])
 
   const [columnDefs] = useState([
-    {
-      field: 'id',
-      width: 55,
-      minWidth: 55,
-      maxWidth: 55,
-      sortable: true,
-      filter: true,
-      hide: false,
-      resizable: true
-    },
+    { field: 'id', minWidth: 55, resizable: false },
     {
       field: 'icon',
-      width: 140,
       minWidth: 140,
-      maxWidth: 140,
-      hide: false,
+      resizable: false,
       cellRenderer: iconCellRenderer(classes)
     },
     {
       field: 'name',
       width: 160,
       minWidth: 160,
-      sortable: true,
-      resizable: true,
-      filter: true,
-      hide: false,
       cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
-    {
-      field: 'lv',
-      width: 55,
-      minWidth: 55,
-      maxWidth: 55,
-      sortable: true,
-      filter: true,
-      resizable: true,
-      hide: false
-    },
-    {
-      field: 'hp',
-      sortable: true,
-      resizable: true,
-      filter: true,
-      hide: false
-    },
-    {
-      field: 'rank',
-      sortable: true,
-      resizable: true,
-      filter: true,
-      hide: false
-    },
-    {
-      field: 'flying',
-      resizable: true,
-      filter: true,
-      hide: false
-    },
-    {
-      field: 'experience',
-      sortable: true,
-      resizable: true,
-      filter: true
-    },
-    {
-      field: 'area',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'defense',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'dex',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'element',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'experienceSharing',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'hitRate',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'resourceId',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'int',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'magicDefense',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'maxAttack',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'maxDropGold',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'minAttack',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'minDropGold',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'mp',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'parry',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'runaway',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'speed',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'sta',
-      sortable: true,
-      filter: true,
-      resizable: true
-    },
-    {
-      field: 'str',
-      sortable: true,
-      filter: true,
-      resizable: true
-    }
+    { field: 'lv', minWidth: 55, resizable: false },
+    { field: 'hp' },
+    { field: 'rank' },
+    { field: 'flying' },
+    { field: 'experience' },
+    { field: 'area' },
+    { field: 'defense' },
+    { field: 'dex' },
+    { field: 'element' },
+    { field: 'experienceSharing' },
+    { field: 'hitRate' },
+    { field: 'resourceId' },
+    { field: 'int' },
+    { field: 'magicDefense' },
+    { field: 'maxAttack' },
+    { field: 'maxDropGold' },
+    { field: 'minAttack' },
+    { field: 'minDropGold' },
+    { field: 'mp' },
+    { field: 'parry' },
+    { field: 'runaway' },
+    { field: 'speed' },
+    { field: 'sta' },
+    { field: 'str' }
   ])
 
   return (
@@ -536,21 +395,23 @@ Monsters.SingleView = props => {
           leftIcon={<CompassIcon />}
           onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
             worldId: params.data.world,
-            locationObj: uiutils.locationObjFromSpawnArea(params.data.area)
+            locationObj: uiutils.locationObjFromSpawnArea(params.data.area),
+            markerLabel: params.data.monsterName
           })}
         />
       )
     }
   ])
   const spawnsRowData = Array.from(monster.spawns()).map(spawn => ({
-    continent: spawn.continent.get('name').en, // TODO: localize
+    continent: spawn.continent?.get('name').en, // TODO: localize
     area: {
       top: spawn.get('top'),
       bottom: spawn.get('bottom'),
       left: spawn.get('left'),
       right: spawn.get('right')
     },
-    world: spawn.world.id
+    world: spawn.world.id,
+    monsterName: monster.get('name')?.en // TODO: localize
   }))
   const spawnsRowHeight = 150
 

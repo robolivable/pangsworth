@@ -430,7 +430,8 @@ Items.SingleView = props => {
           leftIcon={<CompassIcon />}
           onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
             worldId: params.data.world,
-            locationObj: uiutils.locationObjFromSpawnArea(params.data.area)
+            locationObj: uiutils.locationObjFromSpawnArea(params.data.area),
+            markerLabel: params.data.itemName
           })}
         />
       )
@@ -438,14 +439,15 @@ Items.SingleView = props => {
   ])
 
   const spawnsRowData = Array.from(item.spawns()).map(spawn => ({
-    continent: spawn.continent.get('name').en, // TODO: localize
+    continent: spawn.continent?.get('name').en, // TODO: localize
     area: {
       top: spawn.get('top'),
       bottom: spawn.get('bottom'),
       left: spawn.get('left'),
       right: spawn.get('right')
     },
-    world: spawn.world.id
+    world: spawn.world.id,
+    itemName: item.get('name')?.en // TODO: localize
   }))
   const spawnsRowHeight = 35
 
@@ -595,6 +597,7 @@ Items.SingleView = props => {
                   onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
                     worldId: item.blinkwingTarget.world.id,
                     locationObj: item.blinkwingTarget.world.location.toJSON(),
+                    markerLabel: item.get('name')?.en // TODO: localize
                   })}
                 />
               </PangDataViewPaperItem>
@@ -669,7 +672,8 @@ Items.SingleView = props => {
                   leftIcon={<ImpactPointIcon />}
                   onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
                     worldId: item.location.world.id,
-                    locationObj: item.location.toJSON()
+                    locationObj: item.location.toJSON(),
+                    markerLabel: item.get('name')?.en // TODO: localize
                   })}
                 />
               </PangDataViewPaperItem>

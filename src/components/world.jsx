@@ -39,10 +39,12 @@ import NoFlyZoneIcon from '../../static/images/no-fly-zone.svg'
 import CaveEntranceIcon from '../../static/images/cave-entrance.svg'
 import SpawnNodeIcon from '../../static/images/spawn-node.svg'
 import ImpactPointIcon from '../../static/images/impact-point.svg'
+import CompassIcon from '../../static/images/compass.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
 import * as utils from '../utils'
+import * as uiutils from '../uiutils'
 
 const useStyles = makeStyles(theme => ({
   detailsWrapper: {
@@ -107,10 +109,7 @@ const WorldPangDataGrid = props => {
       flying: go.get('flying')
     }),
     worldType: go.get('type'),
-    lodestars: JSON.stringify(Array.from(go.lodestars()).map(lode => ({
-      key: lode.get('key'),
-      location: getLodeLocation(lode)
-    })))
+    lodestars: Array.from(go.lodestars())
   })
 
   const [rowData, setRowData] = useState([])
@@ -139,10 +138,6 @@ const WorldPangDataGrid = props => {
       initializeHandler
     )
   }, [])
-
-  const navigateMap = coordinates => e => {
-    console.log({ coordinates, e })
-  }
 
   const detailsCellRenderer = params => {
     const details = JSON.parse(params.value)
@@ -183,7 +178,7 @@ const WorldPangDataGrid = props => {
   const typeCellRenderer = params => params.value
 
   const lodestarsCellRenderer = params => {
-    const lodestars = JSON.parse(params.value)
+    const lodestars = params.value
     const style = overrideStyle({
       fontSize: '0.675rem',
       margin: '1px'
@@ -204,10 +199,11 @@ const WorldPangDataGrid = props => {
             icon={<SpawnNodeIcon />}
             classes={{ root: style.root }}
             size='small'
-            label={innerLabel(lodestar.key)}
+            label={innerLabel(lodestar.get('key'))}
             onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
               worldId: lodestar.location.world.id,
               locationObj: lodestar.location.toJSON(),
+              markerLabel: lodestar.get('key')
             })}
           />
         ))}
@@ -216,55 +212,25 @@ const WorldPangDataGrid = props => {
   }
 
   const [columnDefs] = useState([
-    {
-      field: 'id',
-      hide: false,
-      width: 55,
-      minWidth: 55,
-      maxWidth: 55,
-      filter: true,
-      sortable: true
-    },
+    { field: 'id', minWidth: 55, resizable: false },
     {
       field: 'name',
-      hide: false,
-      width: 150,
       minWidth: 150,
-      filter: true,
-      sortable: true,
-      resizable: true,
       cellRenderer: nameCellRenderer(props.PangContext.navigateSingleDataItem)
     },
     {
       field: 'details',
-      hide: false,
-      width: 150,
       minWidth: 150,
-      maxWidth: 150,
-      filter: true,
-      sortable: true,
-      resizable: true,
+      resizable: false,
       cellRenderer: detailsCellRenderer
     },
     {
       field: 'worldType',
-      hide: false,
-      width: 85,
       minWidth: 85,
-      maxWidth: 85,
-      filter: true,
-      sortable: true,
+      resizable: false,
       cellRenderer: typeCellRenderer
     },
-    {
-      field: 'lodestars',
-      hide: false,
-      width: 110,
-      minWidth: 110,
-      filter: true,
-      sortable: true,
-      cellRenderer: lodestarsCellRenderer
-    }
+    { field: 'lodestars', minWidth: 110, cellRenderer: lodestarsCellRenderer }
   ])
 
   return (
@@ -318,7 +284,36 @@ World.SingleView = props => {
   world.connectEdgesFromContext(props.PangContext)
 
   const worldPOIs = Array.from(world.places())
-  const lodestars = Array.from(world.lodestars())
+  const lodestarsRowData = Array.from(world.lodestars()).map(lodestar => ({
+    continent: lodestar.location?.continent?.get('name').en, // TODO: localize
+    locationObj: lodestar.location,
+    lodestarName: lodestar.get('key')
+  }))
+  const [lodestarsColumnDefs] = useState([
+    { field: 'continent', resizeable: false },
+    {
+      field: 'navigate',
+      resizeable: false,
+      sortable: false,
+      filter: false,
+      cellRenderer: params => (
+        <PangNameChip
+          littleBigger
+          bolder
+          leftIcon={<CompassIcon />}
+          onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+            worldId: params.data.locationObj.world.id,
+            locationObj: params.data.locationObj.toJSON(),
+            markerLabel: params.data.lodestarName
+          })}
+        />
+      )
+    }
+  ])
+  const lodestarsRowHeight = 150
+
+  const getTableHeightForRowCount =
+    (rowCount, rowHeight) => rowCount * rowHeight
 
   return (
     <DataViewerContentContainer
@@ -374,54 +369,70 @@ World.SingleView = props => {
         <PangDataViewAccordionItem
           defaultCollapsed
           size={12}
-          summary={<PangDataText bolder text='Places' />}
+          summary={<PangDataText bolder text='Lodestars' />}
           {...props}
         >
-          {worldPOIs.map(place => (
-            <PangDataViewPaperItem
-              size={12}
-              innerStyle={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-evenly',
-                alignItems: 'center'
-              }}
-              {...props}
-            >
-              <PangNameChip
-                bolder
-                name={place.location.continent?.get('name').en /* TODO: localize */}
-                leftIcon={<ImpactPointIcon />}
-                onClick={() => conosle.log({place})}
+          {lodestarsRowData.length ? (
+            <div style={{
+              flexDirection: 'column',
+              width: '100%',
+              height: getTableHeightForRowCount(
+                lodestarsRowData.length, lodestarsRowHeight
+              ),
+              minHeight: 200,
+              maxHeight: 480,
+              textAlign: 'left'
+            }}>
+              <PangDataGrid
+                PangContext={props.PangContext}
+                noAutoSizeAll
+                rowData={lodestarsRowData}
+                columnDefs={lodestarsColumnDefs}
+                rowHeight={lodestarsRowHeight}
+                tableStyle={{
+                  height: getTableHeightForRowCount(
+                    lodestarsRowData.length, lodestarsRowHeight
+                  ),
+                  minHeight: 170,
+                  maxHeight: 450
+                }}
               />
-            </PangDataViewPaperItem>
-          ))}
+            </div>
+          ) : null}
         </PangDataViewAccordionItem>
         <PangDataViewAccordionItem
           defaultCollapsed
           size={12}
-          summary={<PangDataText bolder text='Lodestars' />}
+          summary={<PangDataText bolder text='Places' />}
           {...props}
         >
-          {lodestars.map(lodestar => (
-            <PangDataViewPaperItem
-              size={12}
-              innerStyle={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-evenly',
-                alignItems: 'center'
-              }}
-              {...props}
-            >
-              <PangNameChip
-                bolder
-                name={lodestar.location.continent?.get('name').en /* TODO: localize */}
-                leftIcon={<ImpactPointIcon />}
-                onClick={() => conosle.log({lodestar})}
-              />
-            </PangDataViewPaperItem>
-          ))}
+          {worldPOIs.length ? (
+            <PangDataViewPaperGroup {...props}>
+              {worldPOIs.map(place => (
+                <PangDataViewPaperItem
+                  size={12}
+                  innerStyle={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center'
+                  }}
+                  {...props}
+                >
+                  <PangNameChip
+                    bolder
+                    name={place.location.continent?.get('name').en /* TODO: localize */}
+                    leftIcon={<ImpactPointIcon />}
+                    onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+                      worldId: place.location.world.id,
+                      locationObj: place.location.toJSON(),
+                      markerLabel: place.get('type')
+                    })}
+                  />
+                </PangDataViewPaperItem>
+              ))}
+            </PangDataViewPaperGroup>
+          ) : null}
         </PangDataViewAccordionItem>
         <PangDataPrimitivesAccordion
           title='Full Details'
