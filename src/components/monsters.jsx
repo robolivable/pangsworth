@@ -44,6 +44,7 @@ import WaterElementIcon from '../../static/images/element-water.svg'
 import WindElementIcon from '../../static/images/element-wind.svg'
 import ElectricityElementIcon from '../../static/images/element-electricity.svg'
 import EarthElementIcon from '../../static/images/element-earth.svg'
+import CompassIcon from '../../static/images/compass.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import { BuiltinEvents } from '../clients/context'
 import Typography from '@material-ui/core/Typography'
@@ -521,6 +522,38 @@ Monsters.SingleView = props => {
   })
   const dropsRowHeight = 100
 
+  const [spawnsColumnDefs] = useState([
+    { field: 'continent', resizable: false },
+    {
+      field: 'navigate',
+      resizable: false,
+      sortable: false,
+      filter: false,
+      cellRenderer: params => (
+        <PangNameChip
+          littleBigger
+          bolder
+          leftIcon={<CompassIcon />}
+          onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+            worldId: params.data.world,
+            locationObj: uiutils.locationObjFromSpawnArea(params.data.area)
+          })}
+        />
+      )
+    }
+  ])
+  const spawnsRowData = Array.from(monster.spawns()).map(spawn => ({
+    continent: spawn.continent.get('name').en, // TODO: localize
+    area: {
+      top: spawn.get('top'),
+      bottom: spawn.get('bottom'),
+      left: spawn.get('left'),
+      right: spawn.get('right')
+    },
+    world: spawn.world.id
+  }))
+  const spawnsRowHeight = 150
+
   const getTableHeightForRowCount =
     (rowCount, rowHeight) => rowCount * rowHeight
 
@@ -645,6 +678,29 @@ Monsters.SingleView = props => {
                 />
               </div>
             </div>
+          ) : null}
+        </PangDataViewAccordionItem>
+        <PangDataViewAccordionItem
+          size={12}
+          summary={<PangDataText bolder text='Spawns' />}
+          flexColumn
+          {...props}
+        >
+          {spawnsRowData.length ? (
+            <PangDataGrid
+              PangContext={props.PangContext}
+              noAutoSizeAll
+              rowData={spawnsRowData}
+              columnDefs={spawnsColumnDefs}
+              rowHeight={spawnsRowHeight}
+              tableStyle={{
+                height: getTableHeightForRowCount(
+                  spawnsRowData.length, spawnsRowHeight
+                ),
+                minHeight: 170,
+                maxHeight: 450
+              }}
+            />
           ) : null}
         </PangDataViewAccordionItem>
         <PangDataPrimitivesAccordion

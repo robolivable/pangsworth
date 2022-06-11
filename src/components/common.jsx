@@ -22,6 +22,7 @@ import React, {
   useRef,
   useState
 } from 'react'
+import ReactDOMServer from 'react-dom/server'
 import clsx from 'clsx'
 import { SvgIcon } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -60,11 +61,18 @@ import TableCell from '@material-ui/core/TableCell'
 import Input from '@material-ui/core/Input'
 import Slider from '@material-ui/core/Slider'
 import Avatar from '@material-ui/core/Avatar'
+import ImpactPointIcon from '../../static/images/impact-point.svg'
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 import './styles/ag-tables-balham-theme.scss'
+
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { MapContainer, TileLayer } from 'react-leaflet'
+import { useMap, useMapEvents } from 'react-leaflet/hooks'
+import { Marker } from 'react-leaflet/Marker'
 
 const tableBufferScale = 9
 
@@ -528,10 +536,17 @@ export const PangDataViewDrawer = props => {
     onStateToggle(false)
   }
 
-  props.PangContext.on(BuiltinEvents.NAVIGATE_SINGLE_ITEM, () => {
-    setOpen(true)
-    props.PangContext.askRerender()
-  })
+
+  useEffect(() => {
+    const navigateHandler = () => {
+      setOpen(true)
+      props.PangContext.askRerender()
+    }
+    props.PangContext.on(BuiltinEvents.NAVIGATE_SINGLE_ITEM, navigateHandler)
+    return () => props.PangContext.off(
+      BuiltinEvents.NAVIGATE_SINGLE_ITEM, navigateHandler
+    )
+  }, [])
 
   return (
     <div>
@@ -1216,5 +1231,104 @@ export const PangSlider = props => {
         />
       </Grid>
     </Grid>
+  )
+}
+
+const DefaultMinZoomLevel = -4
+const DefaultMaxZoomLevel = 1
+const DefaultMapZoomLevel = -1
+const DefaultMapZoomSnap = 0.25
+const DefaultCanvasHeight = 552
+const DataViewActiveShiftX = 180
+const DataPointPanZoom = 0
+const MapTilesBaseUrl = `${config.API_BASE_URL}/image/world`
+
+const PangLatLng = (world, z, x) => {
+  const lat = z - world.get('height')
+  const lng = x
+  return L.latLng(lat, lng)
+}
+
+const useMapStyles = makeStyles(() => ({
+  marker: {
+    background: 'unset',
+    border: 'unset',
+    fill: `rgba(${LIGHT_CONTRAST_COLOR} / 80%)`,
+    color: `rgba(${LIGHT_CONTRAST_COLOR} / 80%)`
+  }
+}))
+
+const MapPanner = props => {
+  const classes = useMapStyles(props)
+  const map = useMap()
+  map.flyTo(props.center, DataPointPanZoom)
+  const iconHtml = ReactDOMServer.renderToString(<ImpactPointIcon />)
+  const icon = L.divIcon({
+    html: iconHtml,
+    iconSize: [34, 34],
+    className: classes.marker
+  })
+  return props.marker ? <Marker position={props.marker} icon={icon} /> : null
+}
+
+export const PangWorldMap = props => {
+  const world = props.world
+  const worldLocationObj = props.locationObj
+  const [lat, setLat] = useState(worldLocationObj.z)
+  const [lng, setLng] = useState(worldLocationObj.x)
+  useEffect(() => {
+    setLat(worldLocationObj.z)
+    setLng(worldLocationObj.x)
+  })
+  const mapZoomSnap = props.mapZoomSnap || DefaultMapZoomSnap
+  const mapZoom = props.mapZoomLevel || DefaultMapZoomLevel
+  const mapMinZoom = props.minZoomLevel || DefaultMinZoomLevel
+  const mapMaxZoom = props.maxZoomLevel || DefaultMaxZoomLevel
+  const mapStyle = {
+    height: props.canvasHeight || DefaultCanvasHeight + 'px'
+  }
+  const tileRef = useRef(null)
+  const tileName = world.get('tileName')
+  const mapTilesUrl = MapTilesBaseUrl + `/${tileName}{x}-{y}-{z}.png`
+  const shiftCenter = props.PangContext.dataViewerActive
+  const placeMarker = PangLatLng(world, lat, lng)
+  const mapCenter = PangLatLng(
+    world,
+    lat,
+    shiftCenter ? lng + DataViewActiveShiftX : lng
+  )
+  useEffect(() => {
+    if (tileRef.current) {
+      tileRef.current.setUrl(MapTilesBaseUrl + `/${tileName}{x}-{y}-{z}.png`)
+    }
+  }, [tileName])
+  return (
+    <MapContainer
+      attributeControl
+      crs={L.CRS.Simple}
+      style={mapStyle}
+      zoomSnap={mapZoomSnap}
+      zoom={mapZoom}
+      minZoom={mapMinZoom}
+      maxZoom={mapMaxZoom}
+      center={mapCenter}
+    >
+      <TileLayer
+        ref={tileRef}
+        attribution={config.API_MAP_ATTRIBUTION}
+        url={mapTilesUrl}
+        tileSize={world.get('tileSize')}
+        minZoom={mapMinZoom}
+        maxZoom={mapMaxZoom}
+        minNativeZoom={0}
+        maxNativeZoom={0}
+        bounds={[[0, 0], [-world.get('height'), world.get('width')]]}
+        noWrap
+      />
+      <MapPanner
+        center={mapCenter}
+        marker={props.showMarker ? placeMarker : null}
+      />} />
+    </MapContainer>
   )
 }

@@ -36,6 +36,7 @@ const cacheStale = (lastCheck, expiresAt) => {
 
 const BuiltinEvents = {
   ASK_RERENDER: 'askRerender',
+  REROUTE: 'reroute',
   INITIALIZE_COMPLETED: 'initializeCompleted',
   NAVIGATE_SINGLE_ITEM: 'navigateSingleItem'
 }
@@ -58,6 +59,12 @@ class Context extends EventEmitter {
     this.localStorage = {
       search: {}
     }
+  }
+
+  reroute (route, routeOptions = {}) {
+    this.route = route
+    this.routeOptions = routeOptions
+    this.emit(BuiltinEvents.REROUTE)
   }
 
   async _initStartup () {
@@ -227,6 +234,30 @@ class Context extends EventEmitter {
     this.emit(BuiltinEvents.NAVIGATE_SINGLE_ITEM)
   }
 
+  get dataViewerActive () {
+    return this.settings.get(
+      config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer
+    )
+  }
+
+  set dataViewerActive (state) {
+    this.settings.set(
+      config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer, state
+    )
+  }
+
+  getDefaultLocationForWorld (world) {
+    switch (world.id) {
+      case GameSchemas.DEFAULT_WORLD_ID:
+        const [defaultPlace] = Array.from(world.lodestars()).filter(
+          place => place.get('key') === GameSchemas.DefaultLocations[world.id]
+        )
+        return defaultPlace.location
+      default:
+        return null
+    }
+  }
+
   get Classes () {
     return this.gameData[config.API_RESOURCE_TYPES.classes.name]
   }
@@ -279,6 +310,7 @@ class Context extends EventEmitter {
 }
 
 Context.ASK_RERENDER = BuiltinEvents.ASK_RERENDER
+Context.REROUTE = BuiltinEvents.REROUTE
 Context.INITIALIZE_COMPLETED = BuiltinEvents.INITIALIZE_COMPLETED
 Context.NAVIGATE_SINGLE_ITEM = BuiltinEvents.NAVIGATE_SINGLE_ITEM
 

@@ -205,7 +205,10 @@ const WorldPangDataGrid = props => {
             classes={{ root: style.root }}
             size='small'
             label={innerLabel(lodestar.key)}
-            onClick={navigateMap(lodestar.location)}
+            onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+              worldId: lodestar.location.world.id,
+              locationObj: lodestar.location.toJSON(),
+            })}
           />
         ))}
       </div>

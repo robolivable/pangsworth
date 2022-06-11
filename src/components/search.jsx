@@ -273,7 +273,6 @@ const PangResultsTable = props => {
     return params.value
   }
   const iconCellRenderer = params => {
-    console.log('params type and value =>', {type: params.data.type.name, value: params.value})
     if (!params.value) {
       return null
     }

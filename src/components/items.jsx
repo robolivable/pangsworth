@@ -283,7 +283,6 @@ Items.SingleView = props => {
   const itemDescription = item.get('description')?.en // TODO: localize
   item.connectEdgesFromContext(props.PangContext)
   const itemAbilities = Array.from(item.abilities())
-  const itemSpawns = Array.from(item.spawns())
   const droppedBy = item.droppedByFromContext(props.PangContext)
   const soldBy = item.soldByFromContext(props.PangContext)
 
@@ -429,7 +428,10 @@ Items.SingleView = props => {
           bolder
           name='Area'
           leftIcon={<CompassIcon />}
-          onClick={() => { console.log({params}) }}
+          onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+            worldId: params.data.world,
+            locationObj: uiutils.locationObjFromSpawnArea(params.data.area)
+          })}
         />
       )
     },
@@ -586,11 +588,14 @@ Items.SingleView = props => {
                 {...props}
               >
                 <PangNameChip
-                  bigger
+                  littleBigger
                   bolder
                   name={item.blinkwingTarget.continent.get('name').en /*TODO: localize*/}
                   leftIcon={<ImpactPointIcon />}
-                  onClick={() => {console.log(item.blinkwingTarget)}}
+                  onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+                    worldId: item.blinkwingTarget.world.id,
+                    locationObj: item.blinkwingTarget.world.location.toJSON(),
+                  })}
                 />
               </PangDataViewPaperItem>
             </PangDataViewPaperGroup>
@@ -648,16 +653,29 @@ Items.SingleView = props => {
               }}
             >
               <PangDataText bolder text='Main Spawn Location' />
-              <PangNameChip
-                littleBigger
-                bolder
-                name={item.location.continent.get('name').en /*TODO: localize*/}
-                leftIcon={<ImpactPointIcon />}
-                onClick={() => {console.log(item.location)}}
-              />
+              <PangDataViewPaperItem
+                size={12}
+                innerStyle={{
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center'
+                }}
+                {...props}
+              >
+                <PangNameChip
+                  littleBigger
+                  bolder
+                  name={item.location.continent.get('name').en /*TODO: localize*/}
+                  leftIcon={<ImpactPointIcon />}
+                  onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+                    worldId: item.location.world.id,
+                    locationObj: item.location.toJSON()
+                  })}
+                />
+              </PangDataViewPaperItem>
             </div>
           ) : null}
-          {itemSpawns.length ? (
+          {spawnsRowData.length ? (
             <div
               style={{
                 flexDirection: 'column',

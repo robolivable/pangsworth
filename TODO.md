@@ -185,6 +185,9 @@
   - Add adjacency lists to single data views
     - List of armors (and weapons) for a class
     - List of skills for a class
+- Map
+  - Spawn markers
+  - Marker icon theme
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate

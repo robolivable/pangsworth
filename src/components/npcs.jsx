@@ -54,6 +54,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
 import * as utils from '../utils'
+import * as uiutils from '../uiutils'
 
 const menuTypeIcons = {
   Dialog: <ChatBubbleIcon />,
@@ -477,10 +478,14 @@ NPCs.SingleView = props => {
                 {...props}
               >
                 <PangNameChip
+                  littleBigger
                   bolder
                   name={location.continent?.get('name').en /* TODO: localize */}
                   leftIcon={<ImpactPointIcon />}
-                  onClick={() => {console.log(location)}}
+                  onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+                    worldId: location.world.id,
+                    locationObj: location.toJSON(),
+                  })}
                 />
               </PangDataViewPaperItem>
             ))}

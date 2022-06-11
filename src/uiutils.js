@@ -50,6 +50,22 @@ const textFromPrimitive = (value, name) => {
   }
 }
 
+const MAP_ROUTE = 'Map'
+const locationObjFromSpawnArea = spawnArea => {
+  const [minX, maxX, minY, maxY] = [
+    spawnArea.left,
+    spawnArea.right,
+    spawnArea.top,
+    spawnArea.bottom
+  ]
+  const locationObj = {
+    x: Math.ceil(minX + ((maxX - minX) / 2)),
+    z: Math.ceil(minY + ((maxY - minY) / 2))
+  }
+  console.log({spawnArea, locationObj})
+  return locationObj
+}
+
 module.exports = {
   ROOT_MAX_HEIGHT_PX,
   ROOT_MAX_WIDTH_PX,
@@ -67,5 +83,7 @@ module.exports = {
   THEME_LIGHT_BLUE,
   THEME_LIGHT_BROWN,
   getThemeForRarity,
-  textFromPrimitive
+  textFromPrimitive,
+  MAP_ROUTE,
+  locationObjFromSpawnArea
 }

@@ -382,15 +382,26 @@ export default class Pangsworth extends BaseComponent {
     this.handleDataViewerDrawerStateToggle =
       this.handleDataViewerDrawerStateToggle.bind(this)
     this.rerenderParent = this.rerenderParent.bind(this)
+    this.reroute = this.reroute.bind(this)
+
     this.PangContext = props.PangContext
     this.PangContext.on(Context.ASK_RERENDER, this.rerenderParent)
+    this.PangContext.on(Context.REROUTE, this.reroute)
     toggleAGTableDarkMode(getDarkTheme(props))
     const route = this.PangContext.settings.get(
       config.SETTINGS_VALUE_KEYS.states.tabRoute
     )
     this.state = {
-      route: route || RoutesDirectory.default
+      route: route || RoutesDirectory.default,
+      subroute: {}
     }
+  }
+
+  reroute () {
+    this.setState({
+      route: this.PangContext.route,
+      subroute: this.PangContext.routeOptions
+    })
   }
 
   rerenderParent () {
@@ -457,9 +468,7 @@ export default class Pangsworth extends BaseComponent {
 
         <PangDataViewDrawer
           PangContext={this.PangContext}
-          startState={this.PangContext.settings.get(
-            config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer
-          )}
+          startState={this.PangContext.dataViewerActive}
           onDrawerStateToggle={this.handleDataViewerDrawerStateToggle}
         >
           <DataViewerBreadcrumbs>
@@ -507,9 +516,7 @@ export default class Pangsworth extends BaseComponent {
   }
 
   handleDataViewerDrawerStateToggle (state) {
-    this.PangContext.settings.set(
-      config.SETTINGS_VALUE_KEYS.states.dataViewerDrawer, state
-    )
+    this.PangContext.dataViewerActive = state
     this.PangContext.saveSettings()
   }
 }

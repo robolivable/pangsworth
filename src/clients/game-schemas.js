@@ -174,9 +174,17 @@ const formatAbilityValue = ability => {
   return ''
 }
 
+const DEFAULT_WORLD_ID = 6063
+
+const DefaultLocations = {
+  [DEFAULT_WORLD_ID]: 'flaris',
+}
+
 module.exports = {
   AbilityParameterTypesMap,
   PlaceTypesMap,
   MenusTypesMap,
-  formatAbilityValue
+  formatAbilityValue,
+  DefaultLocations,
+  DEFAULT_WORLD_ID
 }

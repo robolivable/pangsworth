@@ -19,28 +19,19 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem } from './common'
+import { PangNavigationItem, PangWorldMap } from './common'
 import TreasureMapIcon from '../../static/images/treasure-map.svg'
 import * as config from '../config'
 import { BuiltinEvents } from '../clients/context'
 
-import { MapContainer, TileLayer } from 'react-leaflet'
-
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-/* This code is needed to properly load the images in the Leaflet CSS */
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-})
-
-const DEFAULT_WORLD_ID = 6063
-
 const PangMap = props => {
-  const [worldId] = useState(props.worldId || DEFAULT_WORLD_ID)
+  const [worldId, setWorldId] = useState(props.worldId)
+
+  // NOTE: need to FORCE UPDATE THIS EVERY TIME!!!!!!!
+  useEffect(() => { setWorldId(props.worldId) })
+
   const world = props.PangContext.Worlds.get(worldId)
+
   // eslint-disable-next-line
   const [isTransparent, setIsTransparent] = useState(world.isTransparent)
   useEffect(() => {
@@ -58,35 +49,30 @@ const PangMap = props => {
   if (world?.isTransparent) {
     return null
   }
+
+  const worldLocationObj = props.worldLocationObj
+    || props.PangContext.getDefaultLocationForWorld(world).toJSON()
+  const showMarker = !!props.worldLocationObj
   return (
-    <MapContainer
-      style={{ height: '552px' }}
-      crs={L.CRS.Simple}
-      center={L.latLng(3339.728 - world.get('height'), 6960.132)}
-      zoomSnap={0.25}
-      zoom={-1.75}
-      minZoom={-4}
-      maxZoom={1}
-      attributeControl
-    >
-      <TileLayer
-        attribution='&copy; 2021 Gala Lab Corp.'
-        url={`${config.API_BASE_URL}/image/world/${world.get('tileName')}{x}-{y}-{z}.png`}
-        tileSize={world.get('tileSize')}
-        minZoom={-4}
-        maxZoom={1}
-        minNativeZoom={0}
-        maxNativeZoom={0}
-        bounds={[[0, 0], [-world.get('height'), world.get('width')]]}
-        noWrap
-      />
-    </MapContainer>
+    <PangWorldMap
+      PangContext={props.PangContext}
+      world={world}
+      locationObj={worldLocationObj}
+      showMarker={showMarker}
+    />
   )
 }
 
 export default class Map extends BaseComponent {
   render () {
-    return <PangMap PangContext={this.props.PangContext} />
+    const worldId = this.props.PangContext.routeOptions?.worldId
+      || this.props.PangContext.GameSchemas.DEFAULT_WORLD_ID
+    const worldLocationObj = this.props.PangContext.routeOptions?.locationObj
+    return <PangMap
+      PangContext={this.props.PangContext}
+      worldId={worldId}
+      worldLocationObj={worldLocationObj}
+    />
   }
 }
 

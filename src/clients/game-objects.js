@@ -2397,7 +2397,6 @@ const getNavigationByDataItem = dataItem => {
 }
 
 const getNavigationByItem = item => {
-  console.log({item})
   const navigation = new Navigation(
     item.type.name,
     item.id,

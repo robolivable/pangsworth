@@ -16,12 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const API_BASE_URL = 'https://flyff-api.sniegu.fr'
+const API_MAP_ATTRIBUTION = '&copy; 2021 Gala Lab Corp.'
 const API_REQUEST_RATE_MIN = 300
 const exportDefault = {
   API_ID_FETCH_BATCH_SIZE: 200,
   API_VERSION_CHECK_THRESHOLD_MS: 3600 * 1000,
   API_REQUEST_RATE_SEC: API_REQUEST_RATE_MIN / 60,
   API_BASE_URL,
+  API_MAP_ATTRIBUTION,
   API_RESOURCE_TYPES: {
     classes: {
       name: 'classes',
