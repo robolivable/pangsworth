@@ -19,12 +19,12 @@
 import React, { useEffect, useState } from 'react'
 
 import BaseComponent from './base-component'
-import { PangNavigationItem, PangWorldMap } from './common'
+import { PangNavigationItem, PangMap } from './common'
 import TreasureMapIcon from '../../static/images/treasure-map.svg'
 import * as config from '../config'
 import { BuiltinEvents } from '../clients/context'
 
-const PangMap = props => {
+const PangWorldMap = props => {
   const [worldId, setWorldId] = useState(props.worldId)
 
   // NOTE: need to FORCE UPDATE THIS EVERY TIME!!!!!!!
@@ -52,9 +52,9 @@ const PangMap = props => {
 
   const worldLocationObj = props.worldLocationObj
     || props.PangContext.getDefaultLocationForWorld(world).toJSON()
-  const showMarker = !!props.worldLocationObj
+  const showMarker = !!props.worldLocationObj && !props.hideMarker
   return (
-    <PangWorldMap
+    <PangMap
       PangContext={props.PangContext}
       world={world}
       locationObj={worldLocationObj}
@@ -70,11 +70,13 @@ export default class Map extends BaseComponent {
       || this.props.PangContext.GameSchemas.DEFAULT_WORLD_ID
     const worldLocationObj = this.props.PangContext.routeOptions?.locationObj
     const markerLabel = this.props.PangContext.routeOptions?.markerLabel
-    return <PangMap
+    const hideMarker = this.props.PangContext.routeOptions?.hideMarker
+    return <PangWorldMap
       PangContext={this.props.PangContext}
       worldId={worldId}
       worldLocationObj={worldLocationObj}
       markerLabel={markerLabel}
+      hideMarker={hideMarker}
     />
   }
 }

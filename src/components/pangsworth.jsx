@@ -373,6 +373,17 @@ const DataViewerEmptyView = props => {
   )
 }
 
+const defaultSubRouteForRoute = (context, route) => {
+  const worldId = context.GameSchemas.DEFAULT_WORLD_ID
+  switch (route) {
+    case 'map':
+    case 'Map':
+      return { worldId }
+    default:
+      return {}
+  }
+}
+
 export default class Pangsworth extends BaseComponent {
   constructor (props, ...args) {
     super(props, ...args)
@@ -454,6 +465,13 @@ export default class Pangsworth extends BaseComponent {
               <Typography color='inherit'>
                 {this.state.route}
               </Typography>
+              {Object.values(this.state.subroute).length ? (
+                <Typography color='inherit'>
+                  {this.PangContext.Worlds.get(
+                    this.state.subroute.worldId
+                  )?.get('name')?.en /* TODO: localize */}
+                </Typography>
+              ) : null}
             </PangBreadcrumbs>
           </MainBreadcrumbs>
           <MainContentWrapper>
@@ -496,7 +514,10 @@ export default class Pangsworth extends BaseComponent {
 
   _handleRouteChange (route) {
     return fn => e => {
-      this.setState({ route })
+      this.setState({
+        route,
+        subroute: defaultSubRouteForRoute(this.PangContext, route)
+      })
       this.PangContext.settings.set(
         config.SETTINGS_VALUE_KEYS.states.tabRoute, route
       )

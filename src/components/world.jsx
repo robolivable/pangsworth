@@ -99,9 +99,24 @@ const WorldPangDataGrid = props => {
     }
     return loc
   }
+  const getIconSrcForWorldType = type => {
+    switch (type) {
+      case 'main':
+        return '/static/images/mountains.svg'
+      case 'instance':
+        return '/static/images/mushroom-house.svg'
+      case 'event':
+        return '/static/images/trophy-laurel.svg'
+      case 'prison':
+        return '/static/images/prisoner.svg'
+      default:
+        return '/static/images/cave-entrance.svg'
+    }
+  }
   const createRowFromGameObject = go => ({
     id: go.id,
     type: go.type,
+    icon: getIconSrcForWorldType(go.get('type')),
     name: go.get('name').en, // TODO: localize
     details: JSON.stringify({
       pk: go.get('pk'),
@@ -230,13 +245,13 @@ const WorldPangDataGrid = props => {
       resizable: false,
       cellRenderer: typeCellRenderer
     },
-    { field: 'lodestars', minWidth: 110, cellRenderer: lodestarsCellRenderer }
+    { field: 'lodestars', minWidth: 200, cellRenderer: lodestarsCellRenderer }
   ])
 
   return (
     <PangDataGrid
       PangContext={props.PangContext}
-      rowHeight={100}
+      rowHeight={75}
       rowData={rowData}
       columnDefs={columnDefs}
     />
@@ -324,7 +339,6 @@ World.SingleView = props => {
           Type={<PangDataText text={utils.camelToTextCase(world.type.name)} />}
         />
       )}
-      Icon={<MountainsIcon />}
       {...props}
     >
       <PangDataViewPaperGroup {...props}>

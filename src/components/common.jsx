@@ -719,30 +719,32 @@ export const DataViewerContentContainer = props => {
         spacing={1}
         className={classes.dataViewContentGenericContainerGrid}
       >
-        <Grid item xs={12}>
-          <Paper className={classes.dataViewContentIconSection}>
-            <Grid
-              container
-              className={classes.dataViewContentIconGridContainer}
-            >
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  direction='row'
-                  alignItems='center'
-                  justifyContent='center'
-                  className={classes.dataViewContentIconWrapper}
-                >
-                  <Grid item xs={12} className={classes.dataViewContentIcon}>
-                    <div className={classes.dataViewContentIconCenter}>
-                      {props.Icon}
-                    </div>
+        {props.Icon ? (
+          <Grid item xs={12}>
+            <Paper className={classes.dataViewContentIconSection}>
+              <Grid
+                container
+                className={classes.dataViewContentIconGridContainer}
+              >
+                <Grid item xs={12}>
+                  <Grid
+                    container
+                    direction='row'
+                    alignItems='center'
+                    justifyContent='center'
+                    className={classes.dataViewContentIconWrapper}
+                  >
+                    <Grid item xs={12} className={classes.dataViewContentIcon}>
+                      <div className={classes.dataViewContentIconCenter}>
+                        {props.Icon}
+                      </div>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
+            </Paper>
+          </Grid>
+        ) : null}
         <Grid item xs={12} className={classes.dataViewContentGenericGrid}>
           <Paper className={classes.dataViewContentGenericSection}>
             <Grid
@@ -1251,6 +1253,7 @@ const PangLatLng = (world, z, x) => {
 }
 
 const useMapStyles = makeStyles(() => ({
+  navigateButtons: {},
   marker: {
     background: 'unset',
     border: 'unset',
@@ -1276,7 +1279,7 @@ const MapPanner = props => {
   ) : null
 }
 
-export const PangWorldMap = props => {
+export const PangMap = props => {
   const world = props.world
   const worldLocationObj = props.locationObj
   const [lat, setLat] = useState(worldLocationObj.z)
@@ -1307,6 +1310,8 @@ export const PangWorldMap = props => {
       tileRef.current.setUrl(MapTilesBaseUrl + `/${tileName}{x}-{y}-{z}.png`)
     }
   }, [tileName])
+
+  const navWorlds = Array.from(props.PangContext.Worlds.iter())
   return (
     <MapContainer
       attributeControl
@@ -1335,6 +1340,36 @@ export const PangWorldMap = props => {
         marker={props.showMarker ? placeMarker : null}
         markerLabel={props.markerLabel}
       />
+      <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        justifyContent: 'space-evenly',
+        padding: 4
+      }}>
+        {navWorlds.map(world => (
+          <Fab
+            style={{ zIndex: 401 }}
+            size='small'
+            variant='extended'
+            onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
+              worldId: world.id,
+              locationObj:
+                props.PangContext.GameSchemas.DefaultLocationObjectsById[
+                  world.id
+                ],
+              hideMarker: true
+            })}
+          >
+            <PangDataText
+              smaller
+              text={world.get('name').en /* TODO: localize */}
+            />
+          </Fab>
+        ))}
+      </div>
     </MapContainer>
   )
 }

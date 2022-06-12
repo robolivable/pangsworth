@@ -507,6 +507,29 @@ Monsters.SingleView = props => {
         ) : null}
         <PangDataViewAccordionItem
           size={12}
+          summary={<PangDataText bolder text='Spawns' />}
+          flexColumn
+          {...props}
+        >
+          {spawnsRowData.length ? (
+            <PangDataGrid
+              PangContext={props.PangContext}
+              noAutoSizeAll
+              rowData={spawnsRowData}
+              columnDefs={spawnsColumnDefs}
+              rowHeight={spawnsRowHeight}
+              tableStyle={{
+                height: getTableHeightForRowCount(
+                  spawnsRowData.length, spawnsRowHeight
+                ),
+                minHeight: 170,
+                maxHeight: 450
+              }}
+            />
+          ) : null}
+        </PangDataViewAccordionItem>
+        <PangDataViewAccordionItem
+          size={12}
           summary={<PangDataText bolder text='Drops' />}
           flexColumn
           {...props}
@@ -539,29 +562,6 @@ Monsters.SingleView = props => {
                 />
               </div>
             </div>
-          ) : null}
-        </PangDataViewAccordionItem>
-        <PangDataViewAccordionItem
-          size={12}
-          summary={<PangDataText bolder text='Spawns' />}
-          flexColumn
-          {...props}
-        >
-          {spawnsRowData.length ? (
-            <PangDataGrid
-              PangContext={props.PangContext}
-              noAutoSizeAll
-              rowData={spawnsRowData}
-              columnDefs={spawnsColumnDefs}
-              rowHeight={spawnsRowHeight}
-              tableStyle={{
-                height: getTableHeightForRowCount(
-                  spawnsRowData.length, spawnsRowHeight
-                ),
-                minHeight: 170,
-                maxHeight: 450
-              }}
-            />
           ) : null}
         </PangDataViewAccordionItem>
         <PangDataPrimitivesAccordion

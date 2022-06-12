@@ -174,10 +174,42 @@ const formatAbilityValue = ability => {
   return ''
 }
 
+const WorldIdsByTileName = {
+  dumuscle: 1595,
+  dukrr: 1873,
+  dudadk: 2927,
+  wdevent: 3171,
+  duflmas: 4015,
+  wdquiz: 4327,
+  wdkebaras: 4839,
+  wdmadrigal: 6063,
+  dusatemple: 615,
+  wdguildwar: 7240,
+  wdschool: 7547,
+  dubear: 7782,
+  dusatempleboss: 8346
+}
+
 const DEFAULT_WORLD_ID = 6063
 
 const DefaultLocations = {
   [DEFAULT_WORLD_ID]: 'flaris',
+}
+
+const DefaultLocationObjectsById = {
+  [WorldIdsByTileName.dumuscle]: { x: 256, z: 256 },
+  [WorldIdsByTileName.dukrr]: { x: 256, z: 256 },
+  [WorldIdsByTileName.dudadk]: { x: 1280, z: 768 },
+  [WorldIdsByTileName.wdevent]: { x: 256, z: 256 },
+  [WorldIdsByTileName.duflmas]: { x: 768, z: 768 },
+  [WorldIdsByTileName.wdquiz]: { x: 1280, z: 768 },
+  [WorldIdsByTileName.wdkebaras]: { x: 1280, z: 1280 },
+  [WorldIdsByTileName.wdmadrigal]: { x: 5376, z: 2816 },
+  [WorldIdsByTileName.dusatemple]: { x: 768, z: 768 },
+  [WorldIdsByTileName.wdguildwar]: { x: 256, z: 256 },
+  [WorldIdsByTileName.wdschool]: { x: 256, z: 256 },
+  [WorldIdsByTileName.dubear]: { x: 256, z: 256 },
+  [WorldIdsByTileName.dusatempleboss]: { x: 512, z: 512 }
 }
 
 module.exports = {
@@ -186,5 +218,7 @@ module.exports = {
   MenusTypesMap,
   formatAbilityValue,
   DefaultLocations,
-  DEFAULT_WORLD_ID
+  DEFAULT_WORLD_ID,
+  WorldIdsByTileName,
+  DefaultLocationObjectsById
 }
