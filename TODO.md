@@ -30,37 +30,30 @@
   - ~~Attack(s): nested in "monster" - monster skills~~
   - ~~Spawn(s): nested in "monster" - monster spawn locations, used to draw areas on map for spawn areas~~
   - ~~Bonus(es): nested in "equipment sets" - wrapper for "ability" describing the applied effects for set bonuses~~
-- Data focused views for game data
+- ~~Data focused views for game data~~
   - ~~List items of a specific type~~
   - ~~Filter on item types~~
   - ~~Lists are all virtualized (performance lists)~~
   - ~~Have a single item inspector view for each tab~~
   - ~~Sortable tables for data~~
-  - Tooltip magnifier for monster images
-  - All views completed
+  - ~~All views completed~~
 - ~~Search as you type~~
-- Search results data list (less data focused)
-  - Include icon in each row, button to export, button to copy item id to clipboard
-- Single item inspector fully implemented
+- ~~Single item inspector fully implemented~~
   - ~~Breadcrumbs for tracking location in extension~~
     - ~~User should be able to click through infinitely long chains of item references~~
     - ~~Use colapsed breadcrumb system~~
+- ~~Build continent game objects from worlds~~
+- ~~Pannable, zoomable canvas for map display using Leaflet~~
 - About modal on first time use
   - Describe usage terms (license)
   - Mention contribution process
-- Display appropriate copyright for tool assets (images)
-- ~~Build continent game objects from worlds~~
-  - Hook up continents to npc list to show in filterable column
-- ~~Pannable, zoomable canvas for map display using Leaflet~~
-- Data grid view caching system
-  - All row data should be cached once generated for faster load times after first time usage
-  - Persist cache in user sync settings
 
 ### Release Requirements
 #### Prerequisites
 - ~~Complete README~~
   - ~~Include contribution guideline document and contributors~~
 - License all source files
+- Display appropriate copyright for tool assets (images)
 - Generate third party licenses
   - Need to make sure ever license is viewable from the UI (maybe in about section)
 - Add license terms agreement modal for first time use
@@ -161,6 +154,9 @@
     - Copy in-game paste-able link to clipboard
 - Asset "size on disk" stats (how much API data stored, cache stats, etc.)
 - App cache refresh button
+- Data grid view caching system
+  - All row data should be cached once generated for faster load times after first time usage
+  - Persist cache in user sync settings
 - UI/UX Polish/Improvements
   - Background asset downloading
     - While downloading, the button text should change to "cancel refresh"
@@ -185,9 +181,11 @@
   - Add adjacency lists to single data views
     - List of armors (and weapons) for a class
     - List of skills for a class
+  - Tooltip magnifier for monster images
 - Map
   - Spawn markers
   - Marker icon theme
+  - Hook up continents to NPC list to show in filterable column
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate

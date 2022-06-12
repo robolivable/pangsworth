@@ -36,7 +36,8 @@ import {
   PangDataViewIcon,
   PangSlider,
   PangNameChip,
-  PangDataPrimitivesAccordion
+  PangDataPrimitivesAccordion,
+  colorForTheme
 } from './common'
 import FamilyTreeIcon from '../../static/images/family-tree.svg'
 import { makeStyles } from '@material-ui/core/styles'
@@ -79,22 +80,22 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100px'
-  },
-  statCalculatorInput: {
+  }
+}))
+
+const statCalculatorInputStyles = makeStyles(() => ({
+  root: {
     width: 36,
     fontSize: '0.725rem',
-    color: props => {
-      const themeColor =
-        getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
-      return `rgba(${themeColor} / 80%)`
+    color: props => colorForTheme(props, 80)
+  },
+  underline: {
+    '&:before': {
+      borderBottom: props => `1px solid ${colorForTheme(props, 80)}`
     },
-    '&::before': {
-      borderBottomColor: props => {
-        const themeColor =
-          getDarkTheme(props) ? DARK_CONTRAST_COLOR : LIGHT_CONTRAST_COLOR
-        return `rgba(${themeColor} / 80%)`
-      }
-    }
+    '&:after': {
+      borderBottom: props => `2px solid ${colorForTheme(props, 80)}`
+    },
   }
 }))
 
@@ -240,7 +241,8 @@ const StatCalculator = props => {
           <Slider
             classes={{
               root: sliderStyle.root,
-              markLabel: sliderStyle.markLabel
+              markLabel: sliderStyle.markLabel,
+              markLabelActive: sliderStyle.markLabel
             }}
             PangContext={props.PangContext}
             value={level}
@@ -253,7 +255,7 @@ const StatCalculator = props => {
         </Grid>
         <Grid classes={{ root: gridInputStyle.root }} item>
           <Input
-            className={classes.statCalculatorInput}
+            classes={statCalculatorInputStyles(props)}
             value={level}
             margin='dense'
             onChange={handleLevelInputChange}
@@ -290,7 +292,7 @@ const StatCalculator = props => {
         </Grid>
         <Grid classes={{ root: gridInputStyle.root }} item>
           <Input
-            className={classes.statCalculatorInput}
+            classes={statCalculatorInputStyles(props)}
             value={stat}
             margin='dense'
             onChange={handleStatInputChange}
