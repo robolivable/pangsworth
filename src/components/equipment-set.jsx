@@ -188,7 +188,7 @@ const EquipmentSetPangDataGrid = props => {
       maxWidth: 70,
       resizable: false,
       cellRenderer: params => params.value.map((part, key) => (
-        <div  
+        <div
           key={key}
           style={{
             display: 'flex',
