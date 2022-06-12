@@ -1,7 +1,5 @@
-<p align="center">
-![Sir Pangington Pangsworth](https://github.com/robolivable/pangsworth/blob/master/docs/Pangington.png?raw=true)
+![Sir Pangington Pangsworth](docs/Pangington.png)
 *Sir Pangington Pangsworth mascot art illustrated by [@Burgerbuan](https://twitter.com/burgerbuan) (Twitter handle)*
-</p>
 
 # Pangsworth Info Butler: *At your service anywhere in Madrigal.*
 
