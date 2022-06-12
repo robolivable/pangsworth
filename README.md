@@ -8,7 +8,7 @@
 ### Pangsworth Info Butler Web Extension
 Pangsworth is an open source web extension that extends the Flyff Universe game data and makes it available for viewing in the browser. It uses caching techniques to optimally store and index *all* of the game data for quick in-memory access to game information.
 
-This project aims to provide useful tools that are quick and easy to access while you play, right in the browser.
+This project aims to provide useful tools that are quick and easy to access while you play, built right in to the browser.
 
 Pangsworth is an ambitious community project in active development with big plans for the future. Make sure to check back for updates on what's coming in later releases!
 
