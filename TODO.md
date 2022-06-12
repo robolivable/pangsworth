@@ -67,10 +67,6 @@
     - All Mascot images
   - Tidy up `manifest.json`
 - Open source all code
-- Support for all Web-Extension API compatible browsers
-  - Firefox
-  - Opera
-  - Safari
 - Open issue tickets for all known bugs/issues at time of MVP
 #### Release cadence
 - Pre-commit hooks for linting/unit/UI tests
@@ -200,4 +196,8 @@
   - Allow cross-framework integration
     - Vue
 - Chrome extension store
+- Support for all Web-Extension API compatible browsers
+  - Firefox
+  - Opera
+  - Safari
 - Native client (Electron)
