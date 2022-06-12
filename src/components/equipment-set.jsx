@@ -39,7 +39,6 @@ import {
 } from './common'
 import { BuiltinEvents } from '../clients/context'
 import BattleGear from '../../static/images/battle-gear.svg'
-import UpgradeIcon from '../../static/images/upgrade.svg'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
@@ -189,12 +188,14 @@ const EquipmentSetPangDataGrid = props => {
       maxWidth: 70,
       resizable: false,
       cellRenderer: params => params.value.map((part, key) => (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
+        <div  
+          key={key}
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
           <PangDataIcon
-            key={key}
             src={part.icon}
             title={part.get('name')?.en /* TODO: localize */}
             iconOnClick={() => props.PangContext.navigateSingleItem(part)}
@@ -319,8 +320,9 @@ EquipmentSet.SingleView = props => {
           display: 'flex',
           justifyContent: 'space-evenly'
         }}>
-          {parts.map(part => (
+          {parts.map((part, key) => (
             <PangDataViewIcon
+              key={key}
               src={part.icon}
               iconOnClick={() => props.PangContext.navigateSingleItem(part)}
               {...props}

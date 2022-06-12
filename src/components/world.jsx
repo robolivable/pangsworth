@@ -422,8 +422,9 @@ World.SingleView = props => {
         >
           {worldPOIs.length ? (
             <PangDataViewPaperGroup {...props}>
-              {worldPOIs.map(place => (
+              {worldPOIs.map((place, key) => (
                 <PangDataViewPaperItem
+                  key={key}
                   size={12}
                   innerStyle={{
                     display: 'flex',

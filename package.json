@@ -6,11 +6,12 @@
   "license": "GPL-3.0",
   "scripts": {
     "build": "webpack",
-    "build-dev": "NODE_ENV=development webpack --mode development",
-    "build-release": "NODE_ENV=production npm run build",
+    "build-dev": "NODE_ENV=development npm run build -- --mode development && npm run generate-licenses",
+    "build-release": "NODE_ENV=production npm run build && npm run generate-licenses",
     "jshint": "standard",
     "postinstall": "npm run build-release",
-    "test": "jest"
+    "test": "jest",
+    "generate-licenses": "node ${PWD}/scripts/generate-licenses.js ${PWD}/build ${PWD}/src"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",

@@ -24,12 +24,14 @@ import {
   colorForTheme,
   PangIcon,
   PangDataGrid,
-  PangNavigationAccordion
+  PangNavigationAccordion,
+  PangDataText
 } from './common'
 import SearchIcon from '../../static/images/magnifying-glass.svg'
 import PangsworthLogoIcon from '../../static/images/pangsworth-logo.svg'
 import * as config from '../config'
 import * as utils from '../utils'
+import * as terms from '../terms.json'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/core/styles'
@@ -152,6 +154,12 @@ const useStyles = makeStyles(theme => ({
     width: '368px',
     height: '330px',
     position: 'absolute',
+    color: props => colorForTheme(props, 50)
+  },
+  pangsworthTerms: {
+    position: 'relative',
+    top: '455px',
+    textAlign: 'center',
     color: props => colorForTheme(props, 50)
   }
 }))
@@ -470,7 +478,7 @@ const PangSearch = props => {
           label='Search value'
           variant='filled'
           size={clsx({
-            normal: !showTable,
+            medium: !showTable,
             small: !!showTable
           })}
           onChange={handleSearchBarOnChange}
@@ -493,7 +501,7 @@ const PangSearch = props => {
         label='Search value'
         variant='outlined'
         size={clsx({
-          normal: !showTable,
+          medium: !showTable,
           small: !!showTable
         })}
         onChange={handleSearchBarOnChange}
@@ -510,29 +518,39 @@ const PangSearch = props => {
       justifyContent='flex-start'
       alginItems='center'
     >
-      {!showTable
-        ? (
-          <div className={classes.pangsworthIconWrapper}>
-            <PangIcon
-              PangContext={props.PangContext}
-              component={PangsworthLogoIcon}
-              className={classes.pangsworthIcon}
-              viewBox='0 0 975 875'
-            />
-          </div>
-          )
-        : null}
+      {!showTable ? (
+        <div className={classes.pangsworthIconWrapper}>
+          <PangIcon
+            PangContext={props.PangContext}
+            component={PangsworthLogoIcon}
+            className={classes.pangsworthIcon}
+            viewBox='0 0 975 875'
+          />
+        </div>
+      ) : null}
       {getSearchBar()}
-      {showTable
-        ? (
-          <div className={classes.searchBarTable}>
-            <PangResultsTable
-              PangContext={props.PangContext}
-              results={results}
-            />
-          </div>
-          )
-        : null}
+      {showTable ? (
+        <div className={classes.searchBarTable}>
+          <PangResultsTable
+            PangContext={props.PangContext}
+            results={results}
+          />
+        </div>
+      ) : null}
+      {!showTable ? (
+        <div className={classes.pangsworthTerms}>
+          <PangDataText
+            smaller
+            bolder
+            text={terms.simple.en /* TODO: localize */}
+          />
+          <PangDataText
+            smaller
+            bolder
+            text={terms.copyright3rdparty.en /* TODO: localize */}
+          />
+        </div>
+      ) : null}
     </Grid>
   )
 }

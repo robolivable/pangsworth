@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable react/jsx-handler-names */
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import BaseComponent from './base-component'
 import {
@@ -28,7 +28,8 @@ import {
   setBackgroundImageLoading,
   DARK_CONTRAST_COLOR,
   LIGHT_CONTRAST_COLOR,
-  toggleAGTableDarkMode
+  toggleAGTableDarkMode,
+  PangDataText
 } from './common'
 import CogIconPath from '../../static/images/cog.svg'
 
@@ -42,10 +43,19 @@ import Button from '@material-ui/core/Button'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
 import Box from '@material-ui/core/Box'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
+import Grid from '@material-ui/core/Grid'
 
 import { grey } from '@material-ui/core/colors'
 
 import * as config from '../config'
+import * as terms from '../terms.json'
+import { LICENSES } from '../licenses'
+import { LicenseName, LicenseBody } from '../license'
+import { GalaLicenseName, GalaLicenseBody } from '../gala-license'
 
 const LOADING_TOOLTIP_MSG = 'Indexing Flyff data...'
 
@@ -73,7 +83,8 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   dataSettings: {
-    flexGrow: '1'
+    flexGrow: '1',
+    marginBottom: theme.spacing(2)
   },
   prefetchButton: {
     margin: theme.spacing(1)
@@ -95,11 +106,11 @@ const GreyCheckbox = withStyles({
 
 const AppearanceSettings = props => {
   const classes = useStyles(props)
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     darkModeEnabled: getDarkTheme(props)
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     toggleAGTableDarkMode(getDarkTheme(props))
   }, [state.darkModeEnabled])
 
@@ -137,7 +148,7 @@ const AppearanceSettings = props => {
 
 const DataSettings = props => {
   const classes = useStyles(props)
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     showBackgroundImageLoadConfirm: false,
     isBackgroundImageLoading: !!props.PangContext.isBackgroundImageLoading,
     isBackgroundImageDone: true,
@@ -155,7 +166,7 @@ const DataSettings = props => {
     }))
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     props.PangContext.isBackgroundImageLoading = state.isBackgroundImageLoading
     const preloadImagesListener = ({ type, limiter }, _, respond) => {
       if (
@@ -294,12 +305,176 @@ const DataSettings = props => {
   )
 }
 
+const LicensesDialog = props => {
+  const classes = useStyles(props)
+  const [open, setOpen] = useState(false)
+  const handleClose = () => {
+    setOpen(false)
+  }
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+  const PrettyTerms = props => {
+    const [termsLeft, termsRight] = props.text.split('%LICENSE_NAME%')
+    return (
+      <div>
+        {termsLeft}
+        <span style={{ fontWeight: 'bold' }}>{props.licenseName}</span>
+        {termsRight}
+      </div>
+    )
+  }
+  return (
+    <Grow in style={{ transformOrigin: '0 0 0' }} {...{ timeout: 250 }}>
+      <Paper
+        elevation={2}
+        PangContext={props.PangContext}
+        className={`${classes.dataSettings} ${classes.settingsLeftPad} ${classes.settingsEnableDarkTheme}`}
+      >
+        <Typography variant='subtitle1' gutterBottom>About</Typography>
+        <Button
+          variant='contained'
+          color='default'
+          className={classes.prefetchButton}
+          onClick={handleClickOpen}
+        >
+          Licenses
+        </Button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>
+            {'Pangsworth Info Butler Licenses'}
+          </DialogTitle>
+          <DialogContent id='alert-dialog-description'
+            style={{
+              minHeight: '300px'
+            }}
+          >
+            <Grid
+              container
+              spacing={4}
+              direction='column'
+              alignItems='flex-start'
+              justifyContent='space-evenly'
+            >
+              <Grid container item xs={12} spacing={1}>
+                <PangDataText text={
+                  <PrettyTerms
+                    licenseName={LicenseName}
+                    text={'Pangsworth is distributed under the %LICENSE_NAME%:'}
+                  />
+                } />
+              </Grid>
+              <Grid container item xs={12} spacing={1}>
+                <Paper
+                  elevation={4}
+                  style={{
+                    maxHeight: 300,
+                    width: '100%',
+                    overflowY: 'auto',
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                    padding: 2
+                  }}
+                >
+                  {LicenseBody.split('\n\n').map((paragraph, key) => (
+                    <PangDataText
+                      key={key}
+                      smaller
+                      bolder
+                      text={paragraph}
+                      innerTypographyStyle={{ paddingBottom: 12 }}
+                    />
+                  ))}
+                </Paper>
+              </Grid>
+              <Grid container item xs={12} spacing={1}>
+                <PangDataText text={
+                  <PrettyTerms
+                    licenseName={GalaLicenseName}
+                    text={'Pangsworth uses data and assets fetched from the Flyff Universe API provided by %LICENSE_NAME%:'}
+                  />
+                } />
+              </Grid>
+              <Grid container item xs={12} spacing={1}>
+                <Paper
+                  elevation={4}
+                  style={{
+                    maxHeight: 300,
+                    width: '100%',
+                    overflowY: 'auto',
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                    padding: 2
+                  }}
+                >
+                  {GalaLicenseBody.split('\n\n').map((paragraph, key) => (
+                    <PangDataText
+                      key={key}
+                      smaller
+                      bolder
+                      text={paragraph}
+                      innerTypographyStyle={{ paddingBottom: 12 }}
+                    />
+                  ))}
+                </Paper>
+              </Grid>
+              <Grid container item xs={12} spacing={1}>
+                <PangDataText
+                  text='Pangsworth uses various third party libraries with the following respective licenses:'
+                  innerTypographyStyle={{ paddingBottom: 12 }}
+                />
+              </Grid>
+              <Grid container item xs={12} spacing={1}>
+                <Paper
+                  elevation={4}
+                  style={{
+                    maxHeight: 300,
+                    width: '100%',
+                    overflowY: 'auto',
+                    padding: 2
+                  }}
+                >
+                  {LICENSES.split('\n\n').map((paragraph, key) => (
+                    <PangDataText
+                      key={key}
+                      smaller
+                      bolder
+                      text={paragraph}
+                      innerTypographyStyle={{ paddingBottom: 12 }}
+                    />
+                  ))}
+                </Paper>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant='contained'
+              color='default'
+              className={classes.prefetchButton}
+              onClick={handleClose}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
+    </Grow>
+  )
+}
+
 const SettingsContainer = props => {
   const classes = useStyles(props)
   return (
     <div className={classes.root}>
       <AppearanceSettings {...props} />
       <DataSettings {...props} />
+      <LicensesDialog {...props} />
     </div>
   )
 }

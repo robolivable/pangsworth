@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles, styled } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
@@ -27,6 +27,15 @@ import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Popper from '@material-ui/core/Popper'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
 
 import BaseComponent from './base-component'
 import Routes from './index'
@@ -42,12 +51,15 @@ import {
   getDarkTheme,
   colorForTheme,
   bgColorForTheme,
-  toggleAGTableDarkMode
+  toggleAGTableDarkMode,
+  PangDataText
 } from './common'
 
 import Context from '../clients/context'
 
 import * as config from '../config'
+import * as terms from '../terms.json'
+import { LicenseName, LicenseBody } from '../license'
 
 console.debug('Routes =>', {RoutesDirectory, Routes})
 
@@ -174,6 +186,126 @@ const useStyleButtonMain = makeStyles(themes => ({
     contain: 'content'
   }
 }))
+
+const TermsAlertDialog = props => {
+  const [open, setOpen] = useState(false)
+  const [agree, setAgree] = useState(false)
+
+  useEffect(() => {
+    const termsAgreed = props.PangContext.settings.get(
+      config.SETTINGS_VALUE_KEYS.states.termsAgree
+    )
+    setOpen(!termsAgreed)
+  }, [])
+
+  const handleClose = (e, reason) => {
+    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+      return
+    }
+    props.PangContext.settings.set(
+      config.SETTINGS_VALUE_KEYS.states.termsAgree, true
+    )
+    props.PangContext.saveSettings()
+    setOpen(false)
+  }
+
+  const handleAgreeChanged = e => {
+    setAgree(e.target.checked)
+  }
+
+  const PrettyTerms = props => {
+    const [termsLeft, termsRight] = props.text.split('%LICENSE_NAME%')
+    return (
+      <div>
+        {termsLeft}
+        <span style={{ fontWeight: 'bold' }}>{LicenseName}</span>
+        {termsRight}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        disableEscapeKeyDown
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>
+          {terms.title.en /* TODO: localize */}
+        </DialogTitle>
+        <DialogContent id='alert-dialog-description' style={{
+          minHeight: '300px',
+          overflow: 'hidden'
+        }}>
+          <Grid
+            container
+            spacing={2}
+            direction='column'
+            alignItems='flex-start'
+            justifyContent='space-evenly'
+          >
+            {Object.values(terms.description).map((part, key) => (
+              <Grid key={key} container item xs={12} spacing={1}>
+                <PangDataText text={
+                  <PrettyTerms
+                    text={part.en /* TODO: localize */}
+                  />
+                } />
+              </Grid>
+            ))}
+            <Grid container item xs={12} spacing={1}>
+              <Paper
+                elevation={4}
+                style={{
+                  maxHeight: 300,
+                  width: '100%',
+                  overflowY: 'auto',
+                  textAlign: 'center',
+                  textTransform: 'uppercase',
+                  padding: 2
+                }}
+              >
+                {LicenseBody.split('\n\n').map((paragraph, key) => (
+                  <PangDataText
+                    key={key}
+                    smaller
+                    bolder
+                    text={paragraph}
+                    innerTypographyStyle={{ paddingBottom: 12 }}
+                  />
+                ))}
+              </Paper>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  classes={makeStyles(() => ({
+                    colorSecondary: {
+                      '&.Mui-checked': {
+                        color: props => colorForTheme(props, 80)
+                      }
+                    }
+                  }))(props)}
+                  checked={agree}
+                  onChange={handleAgreeChanged}
+                />
+              }
+              label='I agree'
+            />
+            <Button onClick={handleClose} disabled={!agree}>Get Started</Button>
+          </FormGroup>
+        </DialogActions>
+      </Dialog>
+    </div>
+  )
+}
 
 const PangBreadcrumbButtons = props => {
   const classes = useStylesBreadcrumbs(props)
@@ -508,6 +640,7 @@ export default class Pangsworth extends BaseComponent {
               : <DataViewerEmptyView PangContext={this.PangContext} />}
           </DataViewerContentWrapper>
         </PangDataViewDrawer>
+        <TermsAlertDialog PangContext={this.PangContext} />
       </RootDiv>
     )
   }

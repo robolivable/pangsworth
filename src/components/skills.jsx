@@ -446,9 +446,9 @@ const SkillLevelCalculator = props => {
         >
           {currentAbilities.length ? (
             <PangDataViewPaperGroup {...props}>
-              {currentAbilities.map(ability => (
+              {currentAbilities.map((ability, key) => (
                 <PangDataViewPaperItem
-                  key={ability.parameter}
+                  key={key}
                   size={4}
                   {...props}
                 >
@@ -576,9 +576,9 @@ const SkillLevelCalculator = props => {
         >
           {currentScalingParameters.length ? (
             <PangDataViewPaperGroup {...props}>
-              {currentScalingParameters.map(scalingParameter => (
+              {currentScalingParameters.map((scalingParameter, key) => (
                 <PangDataViewPaperItem
-                  key={scalingParameter.parameter}
+                  key={key}
                   size={4}
                   {...props}
                 >
@@ -709,9 +709,9 @@ Skills.SingleView = props => {
           <PangDataViewPaperItem size={12} {...props}>
             <PangDataText bolder text='Abilities' />
             <PangDataViewPaperGroup {...props}>
-              {skillAbilities.map(ability => (
+              {skillAbilities.map((ability, key) => (
                 <PangDataViewPaperItem
-                  key={ability.parameter}
+                  key={key}
                   size={4}
                   {...props}
                 >
@@ -754,9 +754,9 @@ Skills.SingleView = props => {
           <PangDataViewPaperItem size={12} {...props}>
             <PangDataText bolder text='Required Skills' />
             <PangDataViewPaperGroup {...props}>
-              {skillRequirements.map(requirement => (
+              {skillRequirements.map((requirement, key) => (
                 <PangDataViewPaperItem
-                  key={requirement.parameter}
+                  key={key}
                   size={4}
                   {...props}
                 >
@@ -768,8 +768,6 @@ Skills.SingleView = props => {
                     onClick={skillIconHandleOnClick(requirement.skill)}
                   />
                   <PangNameChip
-                    bold
-                    smaller
                     name={requirement.skill.get('name').en /* TODO: localize */}
                     onClick={() => props.PangContext.navigateSingleItem(
                       requirement.skill

@@ -1,4 +1,4 @@
-<!--
+/*
     Pangsworth Info Butler. At your service anywhere in Madrigal.
     Copyright (C) 2021  https://github.com/robolivable
 
@@ -14,25 +14,19 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <!-- Fonts to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-  <!-- Icons to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="stylesheet" href="popup.css" />
-</head>
+*/
 
-<body>
-  <noscript>JavaScript is disabled. :^(</noscript>
-  <div id="root">
-    <div id="placeholder" class="loader"></div>
-  </div>
-  <script src="../build/app.js"></script>
-  <script src="popup.js"></script>
-</body>
-
-</html>
+const GalaLicenseName = 'Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved.'
+const GalaLicenseBody =
+`
+  Permission to use the data and images granted only for information sites and
+tools about the official game. Gala Lab reserves the right to no longer grant
+this permission at any time. Commercial use is strictly prohibited. Use for
+in-game automation and cheating tools, or use in any other video game is
+strictly prohibited. Please contact the developers if you wish to verify that
+your use of this content is in accordance with the copyright.
+`
+module.exports = {
+  GalaLicenseName,
+  GalaLicenseBody
+}

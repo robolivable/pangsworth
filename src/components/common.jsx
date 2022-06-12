@@ -1349,8 +1349,9 @@ export const PangMap = props => {
         justifyContent: 'space-evenly',
         padding: 4
       }}>
-        {navWorlds.map(world => (
+        {navWorlds.map((world, key) => (
           <Fab
+            key={key}
             style={{ zIndex: 401 }}
             size='small'
             variant='extended'

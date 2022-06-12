@@ -467,8 +467,9 @@ NPCs.SingleView = props => {
         <PangDataViewPaperItem size={12} {...props}>
           <PangDataText bolder text='Locations' />
           <PangDataViewPaperGroup {...props}>
-            {npcLocations.map(location => (
+            {npcLocations.map((location, key) => (
               <PangDataViewPaperItem
+                key={key}
                 size={12}
                 innerStyle={{
                   display: 'flex',
@@ -500,8 +501,9 @@ NPCs.SingleView = props => {
         >
           {npcShops.length ? (
             <PangDataViewPaperGroup {...props}>
-              {npcShops.map(shop => (
+              {npcShops.map((shop, key) => (
                 <PangDataViewAccordionItem
+                  key={key}
                   defaultCollapsed
                   size={12}
                   summary={<PangDataText bolder text={shop.get('name')?.en /* TODO: localize */} />}

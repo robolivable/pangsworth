@@ -1,0 +1,16 @@
+{
+  "title": {
+    "en": "Pangsworth Info Butler Usage Terms"
+  },
+  "description": {
+    "part-1": {
+      "en": "Continued use of Pangsworth requires acknowledging and agreeing to the terms of the %LICENSE_NAME%. Please carefully read the following license text and confirm your acknowledgment before getting started. Thanks and enjoy!"
+    }
+  },
+  "simple": {
+    "en": "Pangsworth Copyright 2022 © robolivable"
+  },
+  "copyright3rdparty": {
+    "en": "Data and Assets Copyright 2002-2022 © Gala Lab Corp. All Rights Reserved."
+  }
+}

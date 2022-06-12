@@ -1,6 +1,7 @@
 {
   "name": "Pangsworth Info Butler",
   "version": "1.0",
+  "description": "Pangsworth is an open source web extension that extends the Flyff Universe game data and makes it available for viewing in the browser.",
   "manifest_version": 3,
   "action": {
     "default_title": "Pangsworth",
@@ -17,10 +18,13 @@
     "48": "static/images/icon48.png",
     "128": "static/images/icon128.png"
   },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; connect-src https://flyff-api.sniegu.fr; font-src data: https://fonts.googleapis.com https://fonts.gstatic.com; img-src data: https://flyff-api.sniegu.fr; frame-ancestors 'none';"
+  },
+  "host_permissions": [
+    "https://flyff-api.sniegu.fr/*"
+  ],
   "permissions": [
     "storage"
-  ],
-  "host_permissions": [
-    "https://*.sniegu.fr/*"
   ]
 }

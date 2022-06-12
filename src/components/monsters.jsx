@@ -308,7 +308,6 @@ Monsters.SingleView = props => {
           height: '100px',
         }}>
           <PangNameChip
-            bolder
             smaller
             name={params.value}
             innerTextStyle={{ fontSize: '1.1vw' }}
@@ -344,7 +343,6 @@ Monsters.SingleView = props => {
       field: 'class',
       cellRenderer: params => params.data.classObject ? (
         <PangNameChip
-          bolder
           smaller
           name={params.value}
           innerTextStyle={{ fontSize: '1.1vw' }}
@@ -391,7 +389,6 @@ Monsters.SingleView = props => {
       cellRenderer: params => (
         <PangNameChip
           littleBigger
-          bolder
           leftIcon={<CompassIcon />}
           onClick={() => props.PangContext.reroute(uiutils.MAP_ROUTE, {
             worldId: params.data.world,

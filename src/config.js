@@ -248,11 +248,12 @@ const exportDefault = {
       searchAccordion: 'stateSearchAccordion',
       tabRoute: 'stateTabRoute',
       mapWorld: 'stateMapWorld',
-      searchTerm: 'searchTerm'
+      searchTerm: 'searchTerm',
+      termsAgree: 'termsAgree'
     }
   },
   DEFAULT_SETTINGS: {
-    backgroundImageLoading: true,
+    backgroundImageLoading: false,
     darkTheme: false
   },
   UI_LIMITS: {

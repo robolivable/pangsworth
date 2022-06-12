@@ -52,11 +52,11 @@
 #### Prerequisites
 - ~~Complete README~~
   - ~~Include contribution guideline document and contributors~~
-- License all source files
-- Display appropriate copyright for tool assets (images)
-- Generate third party licenses
-  - Need to make sure ever license is viewable from the UI (maybe in about section)
-- Add license terms agreement modal for first time use
+- ~~License all source files~~
+- ~~Display appropriate copyright for tool assets (images)~~
+- ~~Generate third party licenses~~
+  - ~~Need to make sure ever license is viewable from the UI (maybe in about section)~~
+- ~~Add license terms agreement modal for first time use~~
 - Documentation
   - Mocks and previews
   - Guides on features
