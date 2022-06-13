@@ -7,11 +7,13 @@
   "scripts": {
     "build": "webpack",
     "build-dev": "NODE_ENV=development npm run build -- --mode development && npm run generate-licenses",
-    "build-release": "NODE_ENV=production npm run build && npm run generate-licenses",
+    "build-release": "npm run build && npm run generate-licenses && NODE_ENV=production npm run build",
     "jshint": "standard",
     "postinstall": "npm run build-release",
     "test": "jest",
-    "generate-licenses": "node ${PWD}/scripts/generate-licenses.js ${PWD}/build ${PWD}/src"
+    "generate-licenses": "node ${PWD}/scripts/generate-licenses.js ${PWD}/build ${PWD}/src",
+    "create-packable": "./scripts/create-packable.sh",
+    "prepare-release": "./scripts/prepare-release.sh"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
