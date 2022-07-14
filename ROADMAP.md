@@ -15,6 +15,9 @@
 - Graph to plot mob experience gained per level (on a monster view)
 - Asset "size on disk" stats (how much API data stored, cache stats, etc.)
 - App cache refresh button
+- Data grid view caching system
+  - All row data should be cached onced generated for faster load times after first time usage
+  - Persist cache in sync user settings
 - UI/UX Polish/Improvements
   - Background asset downloading
     - While downloading, the button text should change to "cancel refresh"
@@ -31,12 +34,33 @@
     - Pretty formatted numbers (comma separation for multiples of 1k)
     - Prettier loading overlay
   - Full Accessibility features (keyboard-only usage)
+- Game Data tools
+  - Graph to plot mob experience gained per level (on a monster view)
+  - Items upgrade calculator (for piercing and power dice enhancing)
+  - Implement data views for quests and achievements
+    - Quests integrate with NPC views (NPCs to Quests adjacency list)
+  - Add adjacency lists to single data views
+    - List of armors (and weapons) for a class
+    - List of skills for a class
+  - Tooltip magnifier for monster images
+  - Enhance class view
+    - Character class stat calculator
+      - Ability to create accurate builds for characters
+  - Enhance skill view
+    - Skill tree calculator
+    - Integration with class based stat points
+    - Additional effects from item based stats
+- Map
+  - Spawn markers
+  - Marker icon theme
+  - Hook up continents to NPC list to show in filterable column
 #### Tech debt
 - Upgrade to MUI 5.0
 - Reduce boilerplate
   - Game object schema module
   - Data tabs involving data grid
 - Reduce memory footprint wherever possible
+- Refractor routes design for search sub-routes
 #### Enhancements
 - Plugin framework
   - Allow embedding contribution from others
@@ -44,4 +68,8 @@
   - Allow cross-framework integration
     - Vue
 - Chrome extension store
+- Support for all Web-Extension API compatible browsers
+  - Firefox
+  - Opera
+  - Safari
 - Native client (Electron)
