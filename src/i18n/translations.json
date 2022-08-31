@@ -22,7 +22,7 @@
     "displayName": {
       "en": "World",
       "br": "Mundo",
-      "fr": "",
+      "fr": "Monde",
       "kr": "",
       "ar": "",
       "cns": "",
@@ -60,7 +60,7 @@
     "displayName": {
       "en": "Monsters",
       "br": "Monstros",
-      "fr": "",
+      "fr": "Monstres",
       "kr": "",
       "ar": "",
       "cns": "",
@@ -98,7 +98,7 @@
     "displayName": {
       "en": "Skills",
       "br": "Habilidades",
-      "fr": "",
+      "fr": "Sorts",
       "kr": "",
       "ar": "",
       "cns": "",
@@ -155,7 +155,7 @@
     "displayName": {
       "en": "Equipment Set",
       "br": "Conjuntos de Equip",
-      "fr": "",
+      "fr": "Set d'équipement",
       "kr": "",
       "ar": "",
       "cns": "",
@@ -174,7 +174,7 @@
     "displayName": {
       "en": "Settings",
       "br": "Opções",
-      "fr": "",
+      "fr": "Paramètres",
       "kr": "",
       "ar": "",
       "cns": "",
