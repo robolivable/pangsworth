@@ -90,7 +90,7 @@ You may not, in any capacity, contribute logics for the purpose of advertising a
 Commercial usage is prohibited within Gala Lab's copyright terms, and as a result, is prohibited in this project. Monetization made on behalf of extending this project risks legally violating these terms. This does not mean, however, that you may *never* commercialize *a fork* of this project, as long as any assets, and or data, copyrighted by Gala Lab is completely stripped and removed from the forked project. If you're unsure of when you may or may not commercialize works in this project, reach out to Gala Lab as per their official copyright notice (see bottom of README.md or LICENSE.md for a copy of this notice). For all other matters involving commercial use, refer to the project's GPLv3 license terms.
 
 #### User Privacy
-Logic developed to collect any user data (any type of data that may be considered personally identifying, e.g., emails, usernames, etc.) is currently prohibited. Pangsworth is not currently designed to be agnostic of any form of user data. This keeps privacy terms simplistic and straight forward.
+Logic developed to collect any user data (any type of data that may be considered personally identifying, e.g., emails, usernames, etc.) is currently prohibited. Pangsworth is currently designed to be agnostic of any form of user data. This keeps privacy terms simplistic and straight forward.
 
 #### Note from the author
 Thank you for reading this far! I ask those who would like to contribute to consider following these guidelines when working on improving Pangsworth. I look forward to how great this project can become! Let's build some cool sh\*t together!! <3 -Rob
